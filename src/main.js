@@ -8,6 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import store from './store'
 import {getRequest} from './utils/api'
 import {postRequest} from './utils/api'
+import {postsRequest} from './utils/api'
 import {deleteRequest} from './utils/api'
 import {putRequest} from './utils/api'
 import {initMenu} from './utils/utils'
@@ -28,6 +29,8 @@ Vue.use(ElementUI)
 
 Vue.prototype.getRequest = getRequest;
 Vue.prototype.postRequest = postRequest;
+Vue.prototype.postsRequest = postsRequest;
+
 Vue.prototype.deleteRequest = deleteRequest;
 Vue.prototype.putRequest = putRequest;
 Vue.prototype.isNotNullORBlank = isNotNullORBlank;

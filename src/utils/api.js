@@ -50,6 +50,18 @@ export const postRequest = (url, params) => {
   });
 }
 
+export const postsRequest = (url, params) => {
+  return axios({
+    method: 'post',
+    url: `${base}${url}`,
+    data: params,
+   
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
 export const uploadFileRequest = (url, params) => {
   return axios({
     method: 'post',

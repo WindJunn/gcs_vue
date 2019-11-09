@@ -177,7 +177,7 @@ export default {
   },
   methods: {
     evaluationOnline() {
-      this.postRequest("/evaluation/", this.evaluation).then(resp => {
+      this.postsRequest("/evaluation/", this.evaluation).then(resp => {
         if (resp && resp.status == 200) {
           this.result =
             "【Kr: " + resp.data.obj.Kr + " 】【Lr: " + resp.data.obj.Lr + "】";
