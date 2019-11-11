@@ -37,7 +37,7 @@
           auto-complete="off"
           placeholder="验证码"
         ></el-input>
-        <el-button type="primary" @click="smsCodes()">发送手机验证码</el-button>
+        <el-button type="primary" :disabled="buttonVisible" @click="smsCodes()">{{codeText}}</el-button>
       </el-form-item>
       <el-checkbox class="login_remember" v-model="checked" label-position="left">记住密码</el-checkbox>
       <el-form-item style="width: 100%">
@@ -52,6 +52,8 @@
   </el-form>
 </template>
 <script>
+let countDown = 60;
+
 export default {
   computed: {
     user() {
@@ -65,9 +67,11 @@ export default {
     return {
       isDot: false,
       dialogVisible: true,
+      buttonVisible: false,
       smsCode: "",
       mobile: "",
       mode: true,
+      codeText: "发送手机验证码",
       rules: {
         account: [{ required: true, message: "请输入手机号", trigger: "blur" }],
         checkPass: [{ required: true, message: "请输入密码", trigger: "blur" }]
@@ -79,8 +83,47 @@ export default {
   },
   methods: {
     smsCodes() {
-      this.getRequest("/code/sms?mobile=" + this.mobile).then(resp => {});
+      let _this = this;
+      if (this.buttonVisible) {
+        return;
+      }
+      if (this.mobile == "" || this.mobile == null) {
+        _this.$message({
+          type: "info",
+          message: "请先输入手机号"
+        });
+      } else {
+        if (countDown >= 60) {
+          this.getRequest("/nologin/code/sms?mobile=" + this.mobile).then(
+            resp => {
+              _this.$message({
+                message: "发送验证码成功",
+                type: "sucess"
+              });
+              this.setTimeDown();
+            }
+          );
+        }
+      }
     },
+    // 手机验证码定时器
+    setTimeDown() {
+      if (countDown === 0) {
+        this.buttonVisible = false;
+        this.codeText = "重新获取";
+        countDown = 60;
+        return;
+      } else {
+        this.buttonVisible = true;
+        this.codeText = countDown + "s";
+        countDown--;
+      }
+      const _self = this;
+      this.timer = setTimeout(() => {
+        _self.setTimeDown();
+      }, 1000);
+    },
+
     changeLoginMode(flag) {
       this.mode = flag;
     },
@@ -139,7 +182,7 @@ export default {
               type: "info",
               message: "权限不足，已阻止登陆"
             });
-              _this.getRequest("/logout");
+            _this.getRequest("/logout");
             _this.$store.commit("logout");
             _this.$router.replace({ path: "/" });
           } else {
