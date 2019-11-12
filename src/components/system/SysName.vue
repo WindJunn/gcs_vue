@@ -182,7 +182,7 @@ export default {
       this.postsRequest("/evaluation/", this.evaluation).then(resp => {
         if (resp && resp.status == 200) {
           this.result =
-            "【Kr: " + resp.data.obj.Kr + " 】【Lr: " + resp.data.obj.Lr + "】";
+            "【Kr: " + resp.data.obj.Kr + " 】【Lr: " + resp.data.obj.Lr + "】"+resp.data.obj.result;
         }
         // console.log(resp);
       });

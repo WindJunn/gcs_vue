@@ -38,17 +38,7 @@ Vue.prototype.isNotNullORBlank = isNotNullORBlank;
 Vue.use(VueRouter)
 //全局安装路由功能
  
-// 2. 定义路由
-// 每个路由应该映射一个组件。 
-// const routes = [
-//   { path: '/1', component: BlogDetail } 
-//   //前面to指定的地方 path  /1
-// ]
- 
-// 3. 创建 router 实例，然后传 `routes` 配置
-// const router = new VueRouter({
-//   routes
-// })
+
 
 
 router.beforeEach((to, from, next)=> {
@@ -60,7 +50,10 @@ router.beforeEach((to, from, next)=> {
     if (name == '未登录') {
       if (to.meta.requireAuth || to.name == null) {
         next({path: '/', query: {redirect: to.path}})
-      } else {
+      } 
+      
+      
+      else {
         next();
       }
     } else {

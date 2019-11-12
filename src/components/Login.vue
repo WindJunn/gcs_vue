@@ -9,12 +9,12 @@
     <h3 class="login_title">系统登录</h3>
     <div v-show="mode">
       <el-form-item prop="account">
-        <el-input type="text" v-model="loginForm.username" auto-complete="off" placeholder="手机号"></el-input>
+        <el-input type="text" v-model="loginForm.username"  placeholder="请输入手机号"></el-input>
       </el-form-item>
       <el-form-item prop="checkPass">
-        <el-input type="password" v-model="loginForm.password" auto-complete="off" placeholder="密码"></el-input>
+        <el-input type="password" v-model="loginForm.password"  placeholder="请输入密码"></el-input>
       </el-form-item>
-      <el-checkbox class="login_remember" v-model="checked" label-position="left">记住密码</el-checkbox>
+      <!-- <el-checkbox class="login_remember" v-model="checked" label-position="left">记住密码</el-checkbox> -->
       <el-form-item style="width: 100%">
         <el-button type="primary" style="width: 100%" @click="submitClick">登录</el-button>
         <el-button
@@ -27,9 +27,15 @@
 
     <div v-show="!mode">
       <el-form-item prop="account">
-        <el-input type="text" v-model="mobile" auto-complete="off" placeholder="手机号"></el-input>
+        <el-input type="text" v-model="mobile" autocomplete="off" placeholder="请输入手机号"></el-input>
       </el-form-item>
-      <el-form-item>
+      <el-form-item class="phoneVerification">
+        <div class="phoneVerificationCode">
+          <el-input v-model="smsCode" placeholder="请输入收到的验证码"></el-input>
+          <div class="phoneVerficationImage" @click="smsCodes()">{{codeText}}</div>
+        </div>
+      </el-form-item>
+      <!-- <el-form-item>
         <el-input
           type="text"
           style="width:50%;margin-left:-30px;"
@@ -38,8 +44,8 @@
           placeholder="验证码"
         ></el-input>
         <el-button type="primary" :disabled="buttonVisible" @click="smsCodes()">{{codeText}}</el-button>
-      </el-form-item>
-      <el-checkbox class="login_remember" v-model="checked" label-position="left">记住密码</el-checkbox>
+      </el-form-item> -->
+      <!-- <el-checkbox class="login_remember" v-model="checked" label-position="left">记住密码</el-checkbox> -->
       <el-form-item style="width: 100%">
         <el-button type="primary" style="width: 100%" @click="submitClickSmsCode">登录</el-button>
         <el-button
@@ -217,6 +223,19 @@ export default {
 };
 </script>
 <style>
+.phoneVerification .phoneVerificationCode {
+  display: flex;
+}
+.phoneVerification .phoneVerficationImage {
+  cursor: pointer;
+  background-color: #ffad4d;
+  width: 55%;
+  height: 40px;
+  margin-left: 10px;
+  color: white;
+  text-align: center;
+}
+
 .login-container {
   border-radius: 15px;
   background-clip: padding-box;
