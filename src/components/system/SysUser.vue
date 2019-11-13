@@ -6,7 +6,7 @@
       >
         <div style="display: inline">
           <el-input
-            placeholder="通过姓名搜索员工,记得回车哦..."
+            placeholder="通过姓名搜索用户,记得回车哦..."
             clearable
             @change="keywordsChange"
             style="width: 300px;margin: 0px;padding: 0px;"
@@ -88,11 +88,11 @@
                 </el-col>
 
                 <el-col :span="5">
-                  所属部门:
+                  所属公司:
                   <el-popover
                     v-model="showOrHidePop2"
                     placement="right"
-                    title="请选择部门"
+                    title="请选择公司"
                     trigger="manual"
                   >
                     <el-tree
@@ -135,12 +135,12 @@
 
             <el-table-column prop="phone" width="120" label="电话号码"></el-table-column>
 
-            <el-table-column prop="department.name" align="left" width="150" label="所属部门"></el-table-column>
+            <el-table-column prop="department.name" align="left" width="150" label="所属公司"></el-table-column>
 
             <!-- <el-table-column width="100" align="left" prop="position.name" label="职别"></el-table-column> -->
 
             <el-table-column prop="email" width="300" align="left" label="邮箱"></el-table-column>
-            <el-table-column prop="idCard" width="200" align="left" label="身份证号码"></el-table-column>
+            <el-table-column prop="idCard" width="200" align="left" label="角色"></el-table-column>
 
             <el-table-column fixed="right" label="操作" width="300">
               <template slot-scope="scope">
@@ -217,7 +217,7 @@
                     v-model="user.name"
                     size="mini"
                     style="width: 150px"
-                    placeholder="请输入员工姓名"
+                    placeholder="请输入用户姓名"
                   ></el-input>
                 </el-form-item>
               </div>
@@ -240,7 +240,7 @@
                     v-model="user.idCard"
                     size="mini"
                     style="width: 180px"
-                    placeholder="请输入员工身份证号码..."
+                    placeholder="请输入用户身份证号码..."
                   ></el-input>
                 </el-form-item>
               </div>
@@ -269,11 +269,11 @@
 
             <el-col :span="6">
               <div>
-                <el-form-item label="所属部门:" prop="departmentId">
+                <el-form-item label="所属公司:" prop="departmentId">
                   <el-popover
                     v-model="showOrHidePop"
                     placement="right"
-                    title="请选择部门"
+                    title="请选择公司"
                     trigger="manual"
                   >
                     <el-tree
@@ -347,7 +347,7 @@
                     v-model="iuser.name"
                     size="mini"
                     style="width: 150px"
-                    placeholder="请输入员工姓名"
+                    placeholder="请输入用户姓名"
                   ></el-input>
                 </el-form-item>
               </div>
@@ -370,7 +370,7 @@
                     v-model="iuser.idCard"
                     size="mini"
                     style="width: 180px"
-                    placeholder="请输入员工身份证号码..."
+                    placeholder="请输入用户身份证号码..."
                   ></el-input>
                 </el-form-item>
               </div>
@@ -398,11 +398,11 @@
             </el-col>
             <el-col :span="6">
               <div>
-                <el-form-item label="所属部门:" prop="departmentId">
+                <el-form-item label="所属公司:" prop="departmentId">
                   <el-popover
                     v-model="showOrHidePop"
                     placement="right"
-                    title="请选择部门"
+                    title="请选择公司"
                     trigger="manual"
                   >
                     <el-tree
@@ -593,7 +593,7 @@ export default {
         birthday: "",
         posId: "",
         email: "",
-        departmentName: "所属部门..."
+        departmentName: "所属公司..."
       },
       rules: {
         name: [{ required: true, message: "必填:姓名", trigger: "blur" }],
@@ -619,7 +619,7 @@ export default {
           { required: true, message: "必填:联系地址", trigger: "blur" }
         ],
         departmentId: [
-          { required: true, message: "必填:部门", trigger: "change" }
+          { required: true, message: "必填:公司", trigger: "change" }
         ]
       }
     };
@@ -1021,7 +1021,7 @@ export default {
  
     showEditEmpView(row) {
       console.log(row);
-      this.dialogTitle = "编辑员工";
+      this.dialogTitle = "编辑用户";
       this.iuser = row;
       // this.iuser.birthday = this.formatDate(row.birthday);
 
@@ -1048,7 +1048,7 @@ export default {
       this.user.userface = this.iuser.userface;
     },
     showAddEmpView() {
-      this.dialogTitle = "添加员工";
+      this.dialogTitle = "添加用户";
       this.dialogVisible1 = true;
       var _this = this;
       _this.iuser.parentId = 0;
@@ -1073,7 +1073,7 @@ export default {
         email: "",
         posId: "",
 
-        departmentName: "所属部门..."
+        departmentName: "所属公司..."
       };
       this.user = {
         // id: "",
@@ -1091,7 +1091,7 @@ export default {
         birthday: "",
         posId: "",
         email: "",
-        departmentName: "所属部门..."
+        departmentName: "所属公司..."
       };
     }
   }

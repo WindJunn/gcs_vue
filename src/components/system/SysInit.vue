@@ -9,7 +9,7 @@
           style="width: 300px;margin: 0px;padding: 0px;"
           size="mini"
           :disabled="advanceSearchViewVisible"
-          @keyup.enter.native="searchEmp"
+          @keyup.enter.native="searchData"
           prefix-icon="el-icon-search"
           v-model="keywords"
         ></el-input>
@@ -18,7 +18,7 @@
           size="mini"
           style="margin-left: 5px"
           icon="el-icon-search"
-          @click="searchEmp"
+          @click="searchData"
         >搜索</el-button>
         <el-button
           slot="reference"
@@ -759,6 +759,10 @@ export default {
       selItems: [],
       loading: false,
       keywords: "",
+      departmentId:'',
+      testingResultId:'',
+      evaluationResultId:'',
+      disposalAdviceId:'',
       fileUploadBtnText: "导入检测数据",
       multipleSelection: [],
 
@@ -929,6 +933,9 @@ export default {
       }
       this.deleteToDustBin(selItems[0].state);
     },
+    searchData(){
+      this.loadTableData();
+    },
 
     loadTableData() {
       var _this = this;
@@ -938,7 +945,16 @@ export default {
           this.currentPage +
           "&size=" +
           this.pageSize +
-          "&keywords=&departmentId="
+          "&keywords="+
+          this.keywords +
+          "&departmentId="+
+          this.departmentId +
+           "&testingResultId="+
+          this.testingResultId +
+           "&evaluationResultId="+
+          this.evaluationResultId +
+           "&disposalAdviceId="+
+          this.disposalAdviceId 
       ).then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {

@@ -730,9 +730,39 @@ export default {
 
       //初始化echarts
       departmentChart.setOption(this.departmentOption);
+      let self = this;
+
+      departmentChart.on("click", function(params) {
+        console.log(params);
+        self.$router.push({
+          path: "/sys/init",
+          query: { departmentId: 1 }
+        });
+      });
       postChart.setOption(this.postChartOption);
+      postChart.on("click", function(params) {
+        console.log(params);
+        self.$router.push({
+          path: "/sys/init",
+          query: { departmentId: 1 }
+        });
+      });
       personnelChart.setOption(this.personnelChartOption);
+      personnelChart.on("click", function(params) {
+        console.log(params);
+        self.$router.push({
+          path: "/sys/init",
+          query: { departmentId: 1 }
+        });
+      });
       classifyChart.setOption(this.classifyChartOption);
+      classifyChart.on("click", function(params) {
+        console.log(params);
+        self.$router.push({
+          path: "/sys/init",
+          query: { departmentId: 1 }
+        });
+      });
       // fileTypeChart.setOption(this.fileTypeChartOption);
     },
     echartShow: function() {
