@@ -6,7 +6,7 @@
       >
         <div style="display: inline">
           <el-input
-            placeholder="通过姓名搜索用户,记得回车哦..."
+            placeholder="通过姓名或手机号搜索用户,记得回车哦..."
             clearable
             @change="keywordsChange"
             style="width: 300px;margin: 0px;padding: 0px;"
@@ -16,26 +16,47 @@
             prefix-icon="el-icon-search"
             v-model="keywords"
           ></el-input>
+          <el-tag>
+             所属公司:
+          </el-tag>
+         
+          <el-popover
+            v-model="showOrHidePop2"
+            placement="right"
+            title="请选择公司"
+            trigger="manual"
+            style="width:250px"
+          >
+            <el-tree
+              :data="deps"
+              :default-expand-all="false"
+              :props="defaultProps"
+              :expand-on-click-node="false"
+              @node-click="handleNodeClick2"
+            ></el-tree>
+            <div
+              slot="reference"
+              style="width: 200px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
+              @click="showDepTree2"
+              v-bind:style="{color: depTextColor}"
+            >{{user.departmentName}}</div>
+          </el-popover>
+
           <el-button
             type="primary"
             size="mini"
-            style="margin-left: 5px"
+            style="margin-left: 15px"
             icon="el-icon-search"
             @click="searchEmp"
           >搜索</el-button>
-          <el-button
-            slot="reference"
+            <el-button
             type="primary"
             size="mini"
-            style="margin-left: 5px"
-            @click="showAdvanceSearchView"
-          >
-            <i
-              class="fa fa-lg"
-              v-bind:class="[advanceSearchViewVisible ? faangledoubleup:faangledoubledown]"
-              style="margin-right: 5px"
-            ></i>高级搜索
-          </el-button>
+            style="margin-left: 15px"
+            @click="clear"
+          >清空搜索框</el-button>
+          
+     
         </div>
         <div style="margin-left: 5px;margin-right: 20px;display: inline">
           <el-upload
@@ -53,71 +74,17 @@
               {{fileUploadBtnText}}
             </el-button>
           </el-upload>
-        
-         
+
           <el-button type="success" size="mini" @click="exportUsers">
             <i class="fa fa-lg fa-level-down" style="margin-right: 5px"></i>导出数据
           </el-button>
           <el-button type="primary" size="mini" icon="el-icon-plus" @click="showAddEmpView">添加用户</el-button>
         </div>
       </el-header>
+
       <el-main style="padding-left: 0px;padding-top: 0px">
         <div>
-          <transition name="slide-fade">
-            <div
-              style="margin-bottom: 10px;border: 1px;border-radius: 5px;border-style: solid;padding: 5px 0px 5px 0px;box-sizing:border-box;border-color: #20a0ff"
-              v-show="advanceSearchViewVisible"
-            >
-              <el-row></el-row>
-              <el-row style="margin-top: 10px">
-                <el-col :span="4">
-                  职别:
-                  <el-select
-                    v-model="user.posId"
-                    style="width: 130px"
-                    size="mini"
-                    placeholder="请选择职别"
-                  >
-                    <el-option
-                      v-for="item in positions"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"
-                    ></el-option>
-                  </el-select>
-                </el-col>
-
-                <el-col :span="5">
-                  所属公司:
-                  <el-popover
-                    v-model="showOrHidePop2"
-                    placement="right"
-                    title="请选择公司"
-                    trigger="manual"
-                  >
-                    <el-tree
-                      :data="deps"
-                      :default-expand-all="false"
-                      :props="defaultProps"
-                      :expand-on-click-node="false"
-                      @node-click="handleNodeClick2"
-                    ></el-tree>
-                    <div
-                      slot="reference"
-                      style="width: 130px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
-                      @click="showDepTree2"
-                      v-bind:style="{color: depTextColor}"
-                    >{{user.departmentName}}</div>
-                  </el-popover>
-                </el-col>
-
-                <el-col :span="5" :offset="4">
-                  <el-button size="mini" @click="cancelSearch">取消</el-button>
-                  <el-button icon="el-icon-search" type="primary" size="mini" @click="searchEmp">搜索</el-button>
-                </el-col>
-              </el-row>
-            </div>
-          </transition>
+         
           <el-table
             :data="users"
             v-loading="tableLoading"
@@ -130,14 +97,12 @@
             <el-table-column type="selection" align="left" width="30"></el-table-column>
             <el-table-column prop="name" align="left" fixed label="姓名" width="70"></el-table-column>
 
-            <el-table-column prop="gender" label="性别" width="100"></el-table-column>
-
+            <!-- <el-table-column prop="gender" label="性别" width="100"></el-table-column> -->
 
             <el-table-column prop="phone" width="120" label="电话号码"></el-table-column>
 
             <el-table-column prop="department.name" align="left" width="150" label="所属公司"></el-table-column>
 
-            <!-- <el-table-column width="100" align="left" prop="position.name" label="职别"></el-table-column> -->
 
             <el-table-column prop="email" width="300" align="left" label="邮箱"></el-table-column>
             <el-table-column prop="idCard" width="200" align="left" label="角色"></el-table-column>
@@ -154,26 +119,26 @@
                   style="padding: 3px 4px 3px 4px;margin: 2px"
                   type="primary"
                   size="mini"
-                >详情</el-button> -->
-               
-                <!-- <el-button
+                >详情</el-button>-->
+
+                <el-button
                   @click="showaddRolesView(scope.row)"
                   style="padding: 3px 4px 3px 4px;margin: 2px"
                   type="primary"
                   size="mini"
-                >角色管理</el-button> -->
+                >角色管理</el-button>
                 <el-button
                   type="danger"
                   style="padding: 3px 4px 3px 4px;margin: 2px"
                   size="mini"
                   @click="deleteEmp(scope.row)"
                 >删除</el-button>
-                <el-button
+                <!-- <el-button
                   type="danger"
                   style="padding: 3px 4px 3px 4px;margin: 2px"
                   size="mini"
                   @click="resetPassword(scope.row)"
-                >重置密码</el-button>
+                >重置密码</el-button> -->
               </template>
             </el-table-column>
           </el-table>
@@ -206,23 +171,36 @@
           style="padding: 0px;"
           :close-on-click-modal="false"
           :visible.sync="dialogVisible"
-          width="77%"
+          width="60%"
         >
           <el-row>
-            <el-col :span="6">
+            <el-col :span="7">
               <div>
                 <el-form-item label="姓名:" prop="name">
                   <el-input
                     prefix-icon="el-icon-edit"
                     v-model="user.name"
                     size="mini"
-                    style="width: 150px"
+                    style="width: 250px"
                     placeholder="请输入用户姓名"
                   ></el-input>
                 </el-form-item>
               </div>
             </el-col>
-            <el-col :span="5">
+            <el-col :span="7">
+              <div>
+                <el-form-item label="电话号码:" prop="phone">
+                  <el-input
+                    prefix-icon="el-icon-phone"
+                    v-model="user.phone"
+                    size="mini"
+                    style="width: 200px"
+                    placeholder="电话号码..."
+                  ></el-input>
+                </el-form-item>
+              </div>
+            </el-col>
+            <!-- <el-col :span="5">
               <div>
                 <el-form-item label="性别:" prop="gender">
                   <el-radio-group v-model="user.gender">
@@ -231,8 +209,8 @@
                   </el-radio-group>
                 </el-form-item>
               </div>
-            </el-col>
-            <el-col :span="8">
+            </el-col> -->
+            <!-- <el-col :span="8">
               <div>
                 <el-form-item label="身份证号码:" prop="idCard">
                   <el-input
@@ -244,10 +222,10 @@
                   ></el-input>
                 </el-form-item>
               </div>
-            </el-col>
+            </el-col> -->
           </el-row>
           <el-row>
-            <el-col :span="6">
+            <!-- <el-col :span="6">
               <div>
                 <el-form-item label="职别:" prop="posId">
                   <el-select
@@ -265,9 +243,23 @@
                   </el-select>
                 </el-form-item>
               </div>
+            </el-col> -->
+
+             <el-col :span="7">
+              <div>
+                <el-form-item label="邮箱:" prop="phone">
+                  <el-input
+                    prefix-icon="el-icon-phone"
+                    v-model="user.email"
+                    size="mini"
+                    style="width: 250px"
+                    placeholder="邮箱..."
+                  ></el-input>
+                </el-form-item>
+              </div>
             </el-col>
 
-            <el-col :span="6">
+            <el-col :span="7">
               <div>
                 <el-form-item label="所属公司:" prop="departmentId">
                   <el-popover
@@ -285,7 +277,7 @@
                     ></el-tree>
                     <div
                       slot="reference"
-                      style="width: 150px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
+                      style="width: 200px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
                       @click.left="showDepTree"
                       v-bind:style="{color: depTextColor}"
                     >{{user.departmentName}}</div>
@@ -293,32 +285,8 @@
                 </el-form-item>
               </div>
             </el-col>
-            <el-col :span="7">
-              <div>
-                <el-form-item label="电话号码:" prop="phone">
-                  <el-input
-                    prefix-icon="el-icon-phone"
-                    v-model="user.phone"
-                    size="mini"
-                    style="width: 200px"
-                    placeholder="电话号码..."
-                  ></el-input>
-                </el-form-item>
-              </div>
-            </el-col>
-              <el-col :span="7">
-              <div>
-                <el-form-item label="短号:" prop="phone">
-                  <el-input
-                    prefix-icon="el-icon-phone"
-                    v-model="user.userface"
-                    size="mini"
-                    style="width: 150px"
-                    placeholder="短号..."
-                  ></el-input>
-                </el-form-item>
-              </div>
-            </el-col>
+            
+           
           </el-row>
 
           <span slot="footer" class="dialog-footer">
@@ -456,9 +424,7 @@
           </span>
         </el-dialog>
       </div>
-    </el-form> -->
-
-
+    </el-form>-->
 
     <div style="text-align: left">
       <el-dialog title="角色管理" :visible.sync="dialogVisible5" width="25%">
@@ -541,7 +507,7 @@ export default {
       roleAll: [],
       relations: {},
       ticketSelf: [],
-      tickets:[],
+      tickets: [],
 
       fullloading: false,
       cardLoading: [],
@@ -571,7 +537,7 @@ export default {
       advanceSearchViewVisible: false,
       showOrHidePop: false,
       showOrHidePop2: false,
-      userface:'',
+      userface: "",
       role: {
         id: "",
         name: "",
@@ -581,17 +547,9 @@ export default {
         id: "",
         name: "",
         phone: "",
-        gender: "",
-        address: "",
         departmentId: "",
         enabled: "",
         username: "",
-        password: "",
-        userface: "",
-        idCard: "",
-        remark: "",
-        birthday: "",
-        posId: "",
         email: "",
         departmentName: "所属公司..."
       },
@@ -629,11 +587,10 @@ export default {
     this.initData();
     this.loadEmps();
     // this.initCards();
-      // this.loadAllRoles();
-
+    // this.loadAllRoles();
   },
   methods: {
-     addRole(rid) {
+    addRole(rid) {
       var _this = this;
       this.dialogVisible3 = false;
       this.treeLoading = true;
@@ -654,14 +611,7 @@ export default {
       this.loadEmps();
     },
 
-    refreshHr(hrId) {
-      var _this = this;
-      // _this.cardLoading.splice(index, 1, true);
-      this.putRequest("/system/iuser/id/" + hrId).then(resp => {
-        // _this.cardLoading.splice(index, 1, false);
-        // _this.iusers.splice(index, 1, resp.data);
-      });
-    },
+
 
     fileUploadSuccess(response, file, fileList) {
       if (response) {
@@ -687,7 +637,6 @@ export default {
           var data = resp.data;
         }
       });
-
     },
     cancelSearch() {
       this.advanceSearchViewVisible = false;
@@ -769,6 +718,13 @@ export default {
     searchEmp() {
       this.loadEmps();
     },
+    clear(){
+      this.keywords = "";
+      this.user.departmentId = "";
+      this.user.departmentName="";
+
+
+    },
     currentChange(currentChange) {
       this.currentPage = currentChange;
       this.loadEmps();
@@ -790,8 +746,7 @@ export default {
           this.pageSize +
           "&keywords=" +
           this.keywords +
-          "&posId=" +
-          this.user.posId +
+        
           "&departmentId=" +
           this.user.departmentId
       ).then(resp => {
@@ -800,11 +755,10 @@ export default {
           var data = resp.data;
           _this.users = data.users;
 
-          console.log(66666666)
-          
+          console.log(66666666);
+
           _this.totalCount = data.count;
-          console.log(_this.users)
-         
+          console.log(_this.users);
         }
       });
     },
@@ -812,30 +766,28 @@ export default {
       var _this = this;
       this.$refs[formName].validate(valid => {
         if (valid) {
-          if (this.iuser.id) {
+          if (this.user.id) {
             //更新
             this.tableLoading = true;
-            this.putRequest("/system/iuser/", this.user).then(resp => {
+            this.postsRequest("/system/user/update", this.user).then(resp => {
               _this.tableLoading = false;
-              // this.loadEmps();
               if (resp && resp.status == 200) {
                 var data = resp.data;
 
                 _this.dialogVisible = false;
                 this.emptyEmpData();
-
                 this.loadEmps();
               }
             });
           } else {
             //添加
             this.tableLoading = true;
-            this.postRequest("/system/iuser/", this.iuser).then(resp => {
+            this.postRequest("/system/user/", this.user).then(resp => {
               _this.tableLoading = false;
               if (resp && resp.status == 200) {
                 var data = resp.data;
 
-                _this.dialogVisible1 = false;
+                _this.dialogVisible = false;
                 _this.emptyEmpData();
                 _this.loadEmps();
               }
@@ -860,7 +812,7 @@ export default {
         }
       });
     },
- 
+
     resetPassword(row) {
       this.postRequest("/system/iuser/password", {
         username: row.username,
@@ -889,7 +841,7 @@ export default {
 
       // event.stopPropagation();
     },
-     showaddRolesView(row) {
+    showaddRolesView(row) {
       var _this = this;
       // this.loadAllDeps();
       this.dialogVisible5 = true;
@@ -904,7 +856,7 @@ export default {
 
       event.stopPropagation();
     },
-     updateHrRoles(hrId) {
+    updateHrRoles(hrId) {
       this.moreBtnState = false;
       var _this = this;
       if (this.selRolesBak.length == this.selRoles.length) {
@@ -933,14 +885,7 @@ export default {
         }
       });
     },
-    refreshHr(hrId) {
-      var _this = this;
-      // _this.cardLoading.splice(index, 1, true);
-      this.putRequest("/system/iuser/id/" + hrId).then(resp => {
-        // _this.cardLoading.splice(index, 1, false);
-        // _this.iusers.splice(index, 1, resp.data);
-      });
-    },
+
     loadSelRoles(hrRoles, index) {
       this.moreBtnState = true;
       this.selRoles = [];
@@ -949,8 +894,6 @@ export default {
         this.selRoles.push(role.id);
         this.selRolesBak.push(role.id);
         // console.log(this.selRoles)
-
-
       });
     },
     loadAllRoles() {
@@ -962,18 +905,16 @@ export default {
         }
       });
     },
-      searchClick() {
+    searchClick() {
       // this.initCards();
       this.loadAllRoles();
     },
     showRelationView(row) {
       var _this = this;
       this.dialogVisible4 = true;
-      // _this.getRelations();
       _this.getRelationsByParentId(row.id);
       this.iuser.parentId = row.id;
       this.iuser.enabled = row.enabled;
-      // console.log(_this.relations);
     },
 
     cancelEidt() {
@@ -989,16 +930,14 @@ export default {
       this.showOrHidePop2 = !this.showOrHidePop2;
     },
     handleNodeClick(data) {
-      this.iuser.departmentName = data.name;
-      this.iuser.departmentId = data.id;
-      this.user.departmentId = this.iuser.departmentId;
-      this.user.departmentName = this.iuser.departmentName;
+      this.user.departmentName = data.name;
+      this.user.departmentId = data.id;
       this.showOrHidePop = false;
       this.depTextColor = "#606266";
     },
     handleNodeClick2(data) {
-      this.iuser.departmentName = data.name;
-      this.iuser.departmentId = data.id;
+      this.user.departmentName = data.name;
+      this.user.departmentId = data.id;
       this.showOrHidePop2 = false;
       this.depTextColor = "#606266";
     },
@@ -1007,56 +946,49 @@ export default {
       this.getRequest("/system/user/basicdata").then(resp => {
         if (resp && resp.status == 200) {
           var data = resp.data;
-          // _this.nations = data.nations;
-          // _this.politics = data.politics;
           _this.deps = data.deps;
-          _this.positions = data.positions;
           // _this.role = data.roles;
         }
       });
     },
 
-
-
- 
     showEditEmpView(row) {
       console.log(row);
       this.dialogTitle = "编辑用户";
-      this.iuser = row;
-      // this.iuser.birthday = this.formatDate(row.birthday);
+      this.user = row;
+      // this.user.birthday = this.formatDate(row.birthday);
 
-      // this.iuser.posId = row.nation.id;
-      // this.iuser.posId = row.position.id;
-      this.iuser.departmentId = row.department.id;
-      this.iuser.departmentName = row.department.name;
+      // this.user.posId = row.nation.id;
+      // this.user.posId = row.position.id;
+      this.user.departmentId = row.department.id;
+      this.user.departmentName = row.department.name;
 
       this.dialogVisible = true;
 
       this.user.id = row.id;
-      this.user.name = this.iuser.name;
-      this.user.gender = this.iuser.gender;
-      this.user.phone = this.iuser.phone;
-      this.user.address = this.iuser.address;
-      this.user.departmentId = this.iuser.departmentId;
-      this.user.departmentName = this.iuser.departmentName;
-      this.user.enabled = this.iuser.enabled;
-      this.user.idCard = this.iuser.idCard;
-      this.user.email = this.iuser.email;
-      this.user.birthday = this.iuser.birthday;
-      // this.user.posId = this.iuser.posId;
-      this.user.username = this.iuser.idCard;
-      this.user.userface = this.iuser.userface;
+      // this.user.name = this.user.name;
+      // this.user.gender = this.user.gender;
+      // this.user.phone = this.user.phone;
+      // this.user.address = this.user.address;
+      // this.user.departmentId = this.user.departmentId;
+      // this.user.departmentName = this.user.departmentName;
+      // this.user.enabled = this.user.enabled;
+      // this.user.idCard = this.user.idCard;
+      // this.user.email = this.user.email;
+      // this.user.birthday = this.user.birthday;
+      // this.user.posId = this.user.posId;
+      // this.user.username = this.user.idCard;
+      // this.user.userface = this.user.userface;
     },
     showAddEmpView() {
       this.dialogTitle = "添加用户";
-      this.dialogVisible1 = true;
+      this.dialogVisible = true;
       var _this = this;
-      _this.iuser.parentId = 0;
-      _this.iuser.enabled = 1;
-      _this.iuser.password = "123";
+      // _this.user.parentId = 0;
+      _this.user.enabled = 1;
     },
     emptyEmpData() {
-      this.iuser = {
+      this.user = {
         id: "",
         name: "",
         phone: "",
@@ -1075,24 +1007,7 @@ export default {
 
         departmentName: "所属公司..."
       };
-      this.user = {
-        // id: "",
-        name: "",
-        phone: "",
-        gender: "",
-        address: "",
-        departmentId: "",
-        // enabled: true,
-        username: "",
-        password: "",
-        userface: "",
-        idCard: "",
-        remark: "",
-        birthday: "",
-        posId: "",
-        email: "",
-        departmentName: "所属公司..."
-      };
+    
     }
   }
 };
