@@ -11,6 +11,8 @@ import {postRequest} from './utils/api'
 import {postsRequest} from './utils/api'
 import {deleteRequest} from './utils/api'
 import {putRequest} from './utils/api'
+import {putsRequest} from './utils/api'
+
 import {initMenu} from './utils/utils'
 import {isNotNullORBlank} from './utils/utils'
 import './utils/filter_utils'
@@ -33,6 +35,8 @@ Vue.prototype.postsRequest = postsRequest;
 
 Vue.prototype.deleteRequest = deleteRequest;
 Vue.prototype.putRequest = putRequest;
+Vue.prototype.putsRequest = putsRequest;
+
 Vue.prototype.isNotNullORBlank = isNotNullORBlank;
 
 Vue.use(VueRouter)

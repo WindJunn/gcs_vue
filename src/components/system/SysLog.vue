@@ -76,7 +76,7 @@ export default {
       this.getRequest("/periodical/").then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {
-          _this.periodical = resp.data.periodical;
+          _this.periodical = resp.data.obj.periodical;
           console.log(_this.periodical);
         }
       });

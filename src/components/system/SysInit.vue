@@ -5,7 +5,7 @@
         <el-input
           placeholder="通过环焊缝编号搜索,记得回车哦..."
           clearable
-          @change="keywordsChange"
+          
           style="width: 300px;margin: 0px;padding: 0px;"
           size="mini"
           :disabled="advanceSearchViewVisible"
@@ -110,13 +110,13 @@
       </el-table-column>
     </el-table>
     <div style="display: flex;justify-content: space-between;margin: 2px;">
-      <el-button
+      <!-- <el-button
         type="danger"
         size="mini"
         v-if="girthWeld.length>0"
         :disabled="multipleSelection.length==0"
         @click="deleteManyEmps"
-      >批量删除</el-button>
+      >批量删除</el-button> -->
       <el-pagination
         background
         @size-change="handleSizeChange"
@@ -819,6 +819,9 @@ export default {
     // this.getAllBus();
   },
   methods: {
+    keywordsChange(){
+
+    },
     exportUsers() {},
     showDetailed(row) {
       this.weld = row;
@@ -844,8 +847,12 @@ export default {
     getGwOutwardByGwId(row) {
       var _this = this;
       this.getRequest("/girth/gwOutward?gwId=" + row.id).then(resp => {
+          console.log(resp);
+
         if (resp && resp.status == 200) {
-          _this.gwOutwards = resp.data.gwOutwards;
+          _this.gwOutwards = resp.data.obj.gwOutwards;
+          console.log(_this.gwOutwards);
+
           _this.upstreamPipe=[];
           _this.downstreamPipe=[];
           _this.weldWidth=[];
@@ -958,20 +965,12 @@ export default {
       ).then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {
-          _this.girthWeld = resp.data.girthWelds;
-          _this.totalCount = resp.data.count;
+          _this.girthWeld = resp.data.obj.girthWelds;
+          _this.totalCount = resp.data.obj.count;
         }
       });
     },
-    getAllBus() {
-      var _this = this;
-      this.getRequest("/iuser/bus/all").then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          _this.bus = resp.data.bus;
-        }
-      });
-    },
+
     handleSelectionChange(val) {
       this.selItems = val;
     },
@@ -1007,6 +1006,7 @@ export default {
         }
       });
     },
+   
     deleteServer(row) {
       this.$confirm("此操作将删除[" + row.number + "]相关所有数据, 是否继续?", "提示", {
         confirmButtonText: "确定",

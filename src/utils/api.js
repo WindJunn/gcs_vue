@@ -84,23 +84,33 @@ export const putRequest = (url, params) => {
       }
       return ret
     }],
-    // transformRequest: [function (e) {
-    //   // 数据转换的核心代码，来自我公司的前端大佬
-    //   function setDate(e) {
-    //     var t, n, i, r, o, s, a, c = "";
-    //     for (t in e)
-    //       if (n = e[t], n instanceof Array)
-    //         for (a = 0; a < n.length; ++a)
-    //           o = n[a], i = t + "[" + a + "]", s = {}, s[i] = o, c += setDate(s) + "&";
-    //       else if (n instanceof Object)
-    //         for (r in n) o = n[r], i = t + "[" + r + "]", s = {}, s[i] = o, c += setDate(s) + "&";
-    //       else void 0 !== n && null !== n && (c += encodeURIComponent(t) + "=" + encodeURIComponent(n) + "&");
-    //     return c.length ? c.substr(0, c.length - 1) : c
-    //   }
-    //   // 数据转换的核心代码结束
-    //   return setDate(e)
-    // }],
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  });
+}
+export const putsRequest = (url, params) => {
+  return axios({
+    method: 'put',
+    url: `${base}${url}`,
+    data: params,
 
+    transformRequest: [function (e) {
+      // 数据转换的核心代码，来自我公司的前端大佬
+      function setDate(e) {
+        var t, n, i, r, o, s, a, c = "";
+        for (t in e)
+          if (n = e[t], n instanceof Array)
+            for (a = 0; a < n.length; ++a)
+              o = n[a], i = t + "[" + a + "]", s = {}, s[i] = o, c += setDate(s) + "&";
+          else if (n instanceof Object)
+            for (r in n) o = n[r], i = t + "[" + r + "]", s = {}, s[i] = o, c += setDate(s) + "&";
+          else void 0 !== n && null !== n && (c += encodeURIComponent(t) + "=" + encodeURIComponent(n) + "&");
+        return c.length ? c.substr(0, c.length - 1) : c
+      }
+      // 数据转换的核心代码结束
+      return setDate(e)
+    }],
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }

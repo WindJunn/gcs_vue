@@ -200,50 +200,10 @@
                 </el-form-item>
               </div>
             </el-col>
-            <!-- <el-col :span="5">
-              <div>
-                <el-form-item label="性别:" prop="gender">
-                  <el-radio-group v-model="user.gender">
-                    <el-radio label="男">男</el-radio>
-                    <el-radio style="margin-left: 15px" label="女">女</el-radio>
-                  </el-radio-group>
-                </el-form-item>
-              </div>
-            </el-col> -->
-            <!-- <el-col :span="8">
-              <div>
-                <el-form-item label="身份证号码:" prop="idCard">
-                  <el-input
-                    prefix-icon="el-icon-edit"
-                    v-model="user.idCard"
-                    size="mini"
-                    style="width: 180px"
-                    placeholder="请输入用户身份证号码..."
-                  ></el-input>
-                </el-form-item>
-              </div>
-            </el-col> -->
+           
           </el-row>
           <el-row>
-            <!-- <el-col :span="6">
-              <div>
-                <el-form-item label="职别:" prop="posId">
-                  <el-select
-                    v-model="user.posId"
-                    style="width: 150px"
-                    size="mini"
-                    placeholder="请选择职别"
-                  >
-                    <el-option
-                      v-for="item in positions"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-              </div>
-            </el-col> -->
+           
 
              <el-col :span="7">
               <div>
@@ -297,135 +257,7 @@
       </div>
     </el-form>
 
-    <!-- <el-form :model="user" :rules="rules" ref="addUserForm" style="margin: 0px;padding: 0px;">
-      <div style="text-align: left">
-        <el-dialog
-          :title="dialogTitle"
-          style="padding: 0px;"
-          :close-on-click-modal="false"
-          :visible.sync="dialogVisible1"
-          width="77%"
-        >
-          <el-row>
-            <el-col :span="6">
-              <div>
-                <el-form-item label="姓名:" prop="name">
-                  <el-input
-                    prefix-icon="el-icon-edit"
-                    v-model="iuser.name"
-                    size="mini"
-                    style="width: 150px"
-                    placeholder="请输入用户姓名"
-                  ></el-input>
-                </el-form-item>
-              </div>
-            </el-col>
-            <el-col :span="5">
-              <div>
-                <el-form-item label="性别:" prop="gender">
-                  <el-radio-group v-model="iuser.gender">
-                    <el-radio label="男">男</el-radio>
-                    <el-radio style="margin-left: 15px" label="女">女</el-radio>
-                  </el-radio-group>
-                </el-form-item>
-              </div>
-            </el-col>
-            <el-col :span="8">
-              <div>
-                <el-form-item label="身份证号码:" prop="idCard">
-                  <el-input
-                    prefix-icon="el-icon-edit"
-                    v-model="iuser.idCard"
-                    size="mini"
-                    style="width: 180px"
-                    placeholder="请输入用户身份证号码..."
-                  ></el-input>
-                </el-form-item>
-              </div>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="6">
-              <div>
-                <el-form-item label="职别:" prop="posId">
-                  <el-select
-                    v-model="iuser.posId"
-                    style="width: 150px"
-                    size="mini"
-                    placeholder="请选择职别"
-                  >
-                    <el-option
-                      v-for="item in positions"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-              </div>
-            </el-col>
-            <el-col :span="6">
-              <div>
-                <el-form-item label="所属公司:" prop="departmentId">
-                  <el-popover
-                    v-model="showOrHidePop"
-                    placement="right"
-                    title="请选择公司"
-                    trigger="manual"
-                  >
-                    <el-tree
-                      :data="deps"
-                      :default-expand-all="false"
-                      :props="defaultProps"
-                      :expand-on-click-node="false"
-                      @node-click="handleNodeClick"
-                    ></el-tree>
-                    <div
-                      slot="reference"
-                      style="width: 150px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
-                      @click.left="showDepTree"
-                      v-bind:style="{color: depTextColor}"
-                    >{{iuser.departmentName}}</div>
-                  </el-popover>
-                </el-form-item>
-              </div>
-            </el-col>
-            <el-col :span="7">
-              <div>
-                <el-form-item label="电话号码:" prop="phone">
-                  <el-input
-                    prefix-icon="el-icon-phone"
-                    v-model="iuser.phone"
-                    size="mini"
-                    style="width: 200px"
-                    placeholder="电话号码..."
-                  ></el-input>
-                </el-form-item>
-              </div>
-            </el-col>
-             <el-col :span="7">
-              <div>
-                <el-form-item label="短号:" prop="phone">
-                  <el-input
-                    prefix-icon="el-icon-phone"
-                    v-model="iuser.userface"
-                    size="mini"
-                    style="width: 150px"
-                    placeholder="短号..."
-                  ></el-input>
-                </el-form-item>
-              </div>
-            </el-col>
-          </el-row>
-
-          <span slot="footer" class="dialog-footer">
-            <el-button size="mini" @click="cancelEidt">取 消</el-button>
-            <el-button size="mini" type="primary" @click="addUser()">确 定</el-button>
-          </span>
-        </el-dialog>
-      </div>
-    </el-form>-->
-
+   
     <div style="text-align: left">
       <el-dialog title="角色管理" :visible.sync="dialogVisible5" width="25%">
         <div class="user-info">

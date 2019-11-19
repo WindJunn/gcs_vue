@@ -27,7 +27,7 @@
 
     <div v-show="!mode">
       <el-form-item prop="account">
-        <el-input type="text" v-model="mobile" autocomplete="off" placeholder="请输入手机号"></el-input>
+        <el-input type="text" v-model="loginForm.username" autocomplete="off" placeholder="请输入手机号"></el-input>
       </el-form-item>
       <el-form-item class="phoneVerification">
         <div class="phoneVerificationCode">
@@ -93,19 +93,21 @@ export default {
       if (this.buttonVisible) {
         return;
       }
-      if (this.mobile == "" || this.mobile == null) {
+      if (this.loginForm.username == "" || this.loginForm.username == null) {
         _this.$message({
           type: "info",
           message: "请先输入手机号"
         });
       } else {
         if (countDown >= 60) {
-          this.getRequest("/nologin/code/sms?mobile=" + this.mobile).then(
+          this.getRequest("/nologin/code/sms?mobile=" + this.loginForm.username).then(
             resp => {
-              _this.$message({
-                message: "发送验证码成功",
-                type: "sucess"
-              });
+              
+              // _this.$message({
+              //   message: "resp.data.msg",
+              //   type: "sucess"
+              // });
+
               this.setTimeDown();
             }
           );
@@ -176,6 +178,7 @@ export default {
     submitClick: function() {
       var _this = this;
       this.loading = true;
+     
       this.postRequest("/login", {
         username: this.loginForm.username,
         password: this.loginForm.password
@@ -204,8 +207,9 @@ export default {
     submitClickSmsCode: function() {
       var _this = this;
       this.loading = true;
+     
       this.postRequest("/authentication/mobile", {
-        mobile: this.mobile,
+        mobile: this.loginForm.username,
         smsCode: this.smsCode
       }).then(resp => {
         _this.loading = false;
