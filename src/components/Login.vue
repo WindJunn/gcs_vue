@@ -79,8 +79,8 @@ export default {
       mode: true,
       codeText: "发送手机验证码",
       rules: {
-        account: [{ required: true, message: "请输入手机号", trigger: "blur" }],
-        checkPass: [{ required: true, message: "请输入密码", trigger: "blur" }]
+        // account: [{ required: true, message: "请输入手机号", trigger: "blur" }],
+        // checkPass: [{ required: true, message: "请输入密码", trigger: "blur" }]
       },
       checked: true,
       loginForm: {},
@@ -181,7 +181,8 @@ export default {
      
       this.postRequest("/login", {
         username: this.loginForm.username,
-        password: this.loginForm.password
+        password: this.loginForm.password,
+        'remember-me':'on'
       }).then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {
@@ -210,7 +211,9 @@ export default {
      
       this.postRequest("/authentication/mobile", {
         mobile: this.loginForm.username,
-        smsCode: this.smsCode
+        smsCode: this.smsCode,
+        'remember-me':'on'
+
       }).then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {
