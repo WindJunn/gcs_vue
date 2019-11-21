@@ -182,12 +182,12 @@ export default {
       this.postRequest("/login", {
         username: this.loginForm.username,
         password: this.loginForm.password,
-        'remember-me':'on'
+        // 'remember-me':'on'
       }).then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {
           var data = resp.data;
-          if (data.obj.departmentId != 1) {
+          if (data.obj.user.departmentId != 1) {
             _this.$message({
               type: "info",
               message: "权限不足，已阻止登陆"
@@ -196,12 +196,17 @@ export default {
             _this.$store.commit("logout");
             _this.$router.replace({ path: "/" });
           } else {
-            _this.$store.commit("login", data.obj);
+            _this.$store.commit("login", data.obj.user);
             var path = _this.$route.query.redirect;
             _this.$router.replace({
               path: path == "/" || path == undefined ? "/home" : path
             });
           }
+          //  _this.$store.commit("login", data.obj.user);
+          //   var path = _this.$route.query.redirect;
+          //   _this.$router.replace({
+          //     path: path == "/" || path == undefined ? "/home" : path
+          //   });
         }
       });
     },
@@ -218,7 +223,7 @@ export default {
         _this.loading = false;
         if (resp && resp.status == 200) {
           var data = resp.data;
-          _this.$store.commit("login", data.obj);
+          _this.$store.commit("login", data.obj.user);
           var path = _this.$route.query.redirect;
           _this.$router.replace({
             path: path == "/" || path == undefined ? "/home" : path
