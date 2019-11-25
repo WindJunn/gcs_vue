@@ -5,7 +5,6 @@
         <el-input
           placeholder="通过环焊缝编号搜索,记得回车哦..."
           clearable
-          
           style="width: 300px;margin: 0px;padding: 0px;"
           size="mini"
           :disabled="advanceSearchViewVisible"
@@ -105,7 +104,6 @@
           <!-- <el-button size="mini" @click="showEditEmpView(scope.row)">编辑</el-button> -->
           <el-button size="mini" type="primary" @click="showDetailed(scope.row)">详细信息</el-button>
           <el-button size="mini" type="danger" @click="deleteServer(scope.row)">删除</el-button>
-
         </template>
       </el-table-column>
     </el-table>
@@ -116,7 +114,7 @@
         v-if="girthWeld.length>0"
         :disabled="multipleSelection.length==0"
         @click="deleteManyEmps"
-      >批量删除</el-button> -->
+      >批量删除</el-button>-->
       <el-pagination
         background
         @size-change="handleSizeChange"
@@ -759,18 +757,22 @@ export default {
       selItems: [],
       loading: false,
       keywords: "",
-      departmentId:'',
-      testingResultId:'',
-      evaluationResultId:'',
-      disposalAdviceId:'',
+      departmentId: "",
+      testingResultId: "",
+      evaluationResultId: "",
+      disposalAdviceId: "",
+      defectId: "",
+      disposalAdviceIdNo: "",
+      pipelineName: "",
       fileUploadBtnText: "导入检测数据",
+
+      fileUploadBtnText: "导入数据",
+      faangledoubleup: "fa-angle-double-up",
+      faangledoubledown: "fa-angle-double-down",
       multipleSelection: [],
 
       dialogVisible: false,
       dustbinData: [],
-      bus: [],
-      busId: "",
-      bustime: "",
       totalCount: -1,
       currentPage: 1,
       pageSize: 10,
@@ -816,12 +818,32 @@ export default {
     var _this = this;
     this.loading = true;
     this.loadTableData();
-    // this.getAllBus();
   },
   methods: {
-    keywordsChange(){
-
+    showAdvanceSearchView() {
+      this.advanceSearchViewVisible = !this.advanceSearchViewVisible;
+      this.keywords = "";
+      if (!this.advanceSearchViewVisible) {
+        // this.emptyEmpData();
+        // this.beginDateScope = "";
+        // this.loadEmps();
+      }
     },
+    fileUploadSuccess(response, file, fileList) {
+      if (response) {
+        this.$message({ type: response.status, message: response.msg });
+      }
+      // this.loadEmps();
+      this.fileUploadBtnText = "导入数据";
+    },
+    fileUploadError(err, file, fileList) {
+      this.$message({ type: "error", message: "导入失败!" });
+      this.fileUploadBtnText = "导入数据";
+    },
+    beforeFileUpload(file) {
+      this.fileUploadBtnText = "正在导入";
+    },
+    keywordsChange() {},
     exportUsers() {},
     showDetailed(row) {
       this.weld = row;
@@ -847,17 +869,17 @@ export default {
     getGwOutwardByGwId(row) {
       var _this = this;
       this.getRequest("/girth/gwOutward?gwId=" + row.id).then(resp => {
-          console.log(resp);
+        console.log(resp);
 
         if (resp && resp.status == 200) {
           _this.gwOutwards = resp.data.obj.gwOutwards;
           console.log(_this.gwOutwards);
 
-          _this.upstreamPipe=[];
-          _this.downstreamPipe=[];
-          _this.weldWidth=[];
-          _this.weldHight=[];
-          _this.cuoBian=[];
+          _this.upstreamPipe = [];
+          _this.downstreamPipe = [];
+          _this.weldWidth = [];
+          _this.weldHight = [];
+          _this.cuoBian = [];
 
           for (let i = 0; i < _this.gwOutwards.length; i++) {
             let data = _this.gwOutwards[i];
@@ -900,30 +922,11 @@ export default {
         }
       });
     },
-    addBusServer() {
-      var _this = this;
-      this.tableLoading = true;
-      this.postRequest(
-        "/busServer/add?bustime=" + this.bustime + "&busId=" + this.busId
-      ).then(resp => {
-        _this.tableLoading = false;
-        if (resp && resp.status == 200) {
-          var data = resp.data;
-          _this.dialogVisible = false;
-          this.loadTableData();
-        }
-      });
-    },
 
     showEditEmpView(row) {
       // console.log(row);
       this.dialogTitle = "编辑学员";
-      this.bus = row;
-      // this.bus.bustime = this.formatDate(row.bustime);
-      // this.bus.bustime = this.bus.bustime;
 
-      // this.bus.firstNumber = "";
-      // this.bus.lastNumber = "";
       this.dialogVisible = true;
     },
     cancelEidt() {
@@ -940,28 +943,62 @@ export default {
       }
       this.deleteToDustBin(selItems[0].state);
     },
-    searchData(){
+    searchData() {
       this.loadTableData();
     },
 
     loadTableData() {
       var _this = this;
-      this.loading = true;
+      let departmentId = this.$route.query.departmentId;
+      let testingResultId = this.$route.query.testingResultId;
+      let evaluationResultId = this.$route.query.evaluationResultId;
+      let disposalAdviceId = this.$route.query.disposalAdviceId;
+      let defectId = this.$route.query.defectId;
+      let disposalAdviceIdNo = this.$route.query.disposalAdviceIdNo;
+      let pipelineName = this.$route.query.pipelineName;
+
+      if (departmentId != null) {
+        this.departmentId = departmentId;
+      }
+      if (testingResultId != null) {
+        this.testingResultId = testingResultId;
+      }
+      if (evaluationResultId != null) {
+        this.evaluationResultId = evaluationResultId;
+      }
+      if (disposalAdviceId != null) {
+        this.disposalAdviceId = disposalAdviceId;
+      }
+      if (defectId != null) {
+        this.defectId = defectId;
+      }
+      if (disposalAdviceIdNo != null) {
+        this.disposalAdviceIdNo = disposalAdviceIdNo;
+      }
+      if (pipelineName != null) {
+        this.pipelineName = pipelineName;
+      }
       this.getRequest(
         "/girth/?page=" +
           this.currentPage +
           "&size=" +
           this.pageSize +
-          "&keywords="+
+          "&keywords=" +
           this.keywords +
-          "&departmentId="+
+          "&departmentId=" +
           this.departmentId +
-           "&testingResultId="+
+          "&testingResultId=" +
           this.testingResultId +
-           "&evaluationResultId="+
+          "&evaluationResultId=" +
           this.evaluationResultId +
-           "&disposalAdviceId="+
-          this.disposalAdviceId 
+          "&disposalAdviceId=" +
+          this.disposalAdviceId +
+          "&defectId=" +
+          this.defectId +
+          "&disposalAdviceIdNo=" +
+          this.disposalAdviceIdNo +
+          "&pipelineName=" +
+          this.pipelineName
       ).then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {
@@ -1006,13 +1043,17 @@ export default {
         }
       });
     },
-   
+
     deleteServer(row) {
-      this.$confirm("此操作将删除[" + row.number + "]相关所有数据, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
+      this.$confirm(
+        "此操作将删除[" + row.number + "]相关所有数据, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
         .then(() => {
           this.doDelete(row.id);
         })

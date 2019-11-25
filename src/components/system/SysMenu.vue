@@ -33,13 +33,18 @@
     style="width:100%;height: 100%; margin-top:30px;   display: flex;
     justify-content: center; flex-wrap: wrap;"
   >
+    <div id="pipelineDefect" :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"></div>
+    <div id="pipelineDefectNo" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
     <div
-      id="departmentChart"
+      id="pipelineDefectFix"
       :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"
     ></div>
-    <div id="postChart" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
-    <div id="personnelChart" :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"></div>
-    <div id="classifyChart" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
+    <div id="totalResult" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
+    <div id="totalAdvices" :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"></div>
+    <div id="totalAdvice" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
+    <div id="companyDefect" :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"></div>
+    <div id="companyDefectNo" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
+    <div id="companyDefectFix" :style="{width: '48%', height: '30%'}"></div>
   </div>
 </template>
 
@@ -149,7 +154,7 @@ export default {
     return {
       departmentOption: {
         title: {
-          text: "分公司",
+          text: "不同管线超标缺陷",
           subtext: "",
           x: "left",
           textStyle: {
@@ -233,14 +238,862 @@ export default {
               }
             }
           }
-        ],
-        color: [
-          "rgb(187,140,238)",
-          "rgb(134,146,243)",
-          "rgb(60,184,255)",
-          "rgb(113,171,246)",
-          "rgb(255,193,134)"
-        ] //饼图分块颜色设置
+        ]
+        // color: [
+        //   "rgb(187,140,238)",
+        //   "rgb(134,146,243)",
+        //   "rgb(60,184,255)",
+        //   "rgb(113,171,246)",
+        //   "rgb(255,193,134)"
+        // ] //饼图分块颜色设置
+      },
+      pipelineDefect: {
+        title: {
+          text: "不同管线超标缺陷",
+          subtext: "",
+          x: "left",
+          textStyle: {
+            color: "#222",
+            fontStyle: "normal",
+            fontWeight: "600",
+            fontFamily: "san-serif",
+            fontSize: 16
+          }
+        },
+        tooltip: {
+          trigger: "item",
+          /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
+          formatter: "{a} {b} : ({c}道) {d}%"
+        },
+        legend: {
+          x: "70%",
+          y: "25%",
+          orient: "vertical",
+          left: "left",
+          itemWidth: 10,
+          itemHeight: 10,
+          selectedMode: false, //禁止点击
+          textStyle: {
+            fontSize: 12,
+            color: "#999"
+          },
+          formatter: function(name) {
+            //避免文字太长做省略处理
+            return name.length > 4 ? name.slice(0, 4) + "..." : name;
+          },
+          data: []
+        },
+        series: [
+          {
+            name: "",
+            type: "pie",
+            radius: "75%",
+            center: ["60%", "54%"],
+            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
+            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
+            selectedOffset: 5, //选中扇区的偏移距离
+            data: [],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  textStyle: {
+                    fontSize: 12
+                  },
+                  /* formatter: '{b} : ({c}门) \n {d}%'	*/
+                  formatter: function(params) {
+                    //避免文字太长做省略处理
+                    var name = params.name; //名字
+                    var percent = params.percent; //占比
+                    var value = params.value; //数量
+                    if (name.length > 8) {
+                      return (
+                        name.slice(0, 7) +
+                        "..." +
+                        "\n" +
+                        "(" +
+                        value +
+                        "道)" +
+                        percent +
+                        "%"
+                      );
+                    } else {
+                      return name + "\n" + "(" + value + "道)" + percent + "%";
+                    }
+                  }
+                },
+                labelLine: {
+                  show: true
+                }
+              },
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)"
+              }
+            }
+          }
+        ]
+        // color: [
+        //   "rgb(187,140,238)",
+        //   "rgb(134,146,243)",
+        //   "rgb(60,184,255)",
+        //   "rgb(113,171,246)",
+        //   "rgb(255,193,134)"
+        // ] //饼图分块颜色设置
+      },
+      pipelineDefectNo: {
+        title: {
+          text: "不同管线缺陷评价不可接受",
+          subtext: "",
+          x: "left",
+          textStyle: {
+            color: "#222",
+            fontStyle: "normal",
+            fontWeight: "600",
+            fontFamily: "san-serif",
+            fontSize: 16
+          }
+        },
+        tooltip: {
+          trigger: "item",
+          /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
+          formatter: "{a} {b} : ({c}道) {d}%"
+        },
+        legend: {
+          x: "70%",
+          y: "25%",
+          orient: "vertical",
+          left: "left",
+          itemWidth: 10,
+          itemHeight: 10,
+          selectedMode: false, //禁止点击
+          textStyle: {
+            fontSize: 12,
+            color: "#999"
+          },
+          formatter: function(name) {
+            //避免文字太长做省略处理
+            return name.length > 4 ? name.slice(0, 4) + "..." : name;
+          },
+          data: []
+        },
+        series: [
+          {
+            name: "",
+            type: "pie",
+            radius: "75%",
+            center: ["60%", "54%"],
+            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
+            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
+            selectedOffset: 5, //选中扇区的偏移距离
+            data: [],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  textStyle: {
+                    fontSize: 12
+                  },
+                  /* formatter: '{b} : ({c}门) \n {d}%'	*/
+                  formatter: function(params) {
+                    //避免文字太长做省略处理
+                    var name = params.name; //名字
+                    var percent = params.percent; //占比
+                    var value = params.value; //数量
+                    if (name.length > 8) {
+                      return (
+                        name.slice(0, 7) +
+                        "..." +
+                        "\n" +
+                        "(" +
+                        value +
+                        "道)" +
+                        percent +
+                        "%"
+                      );
+                    } else {
+                      return name + "\n" + "(" + value + "道)" + percent + "%";
+                    }
+                  }
+                },
+                labelLine: {
+                  show: true
+                }
+              },
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)"
+              }
+            }
+          }
+        ]
+      },
+      pipelineDefectFix: {
+        title: {
+          text: "不同管线缺陷评价需处置",
+          subtext: "",
+          x: "left",
+          textStyle: {
+            color: "#222",
+            fontStyle: "normal",
+            fontWeight: "600",
+            fontFamily: "san-serif",
+            fontSize: 16
+          }
+        },
+        tooltip: {
+          trigger: "item",
+          /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
+          formatter: "{a} {b} : ({c}道) {d}%"
+        },
+        legend: {
+          x: "70%",
+          y: "25%",
+          orient: "vertical",
+          left: "left",
+          itemWidth: 10,
+          itemHeight: 10,
+          selectedMode: false, //禁止点击
+          textStyle: {
+            fontSize: 12,
+            color: "#999"
+          },
+          formatter: function(name) {
+            //避免文字太长做省略处理
+            return name.length > 4 ? name.slice(0, 4) + "..." : name;
+          },
+          data: []
+        },
+        series: [
+          {
+            name: "",
+            type: "pie",
+            radius: "75%",
+            center: ["60%", "54%"],
+            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
+            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
+            selectedOffset: 5, //选中扇区的偏移距离
+            data: [],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  textStyle: {
+                    fontSize: 12
+                  },
+                  /* formatter: '{b} : ({c}门) \n {d}%'	*/
+                  formatter: function(params) {
+                    //避免文字太长做省略处理
+                    var name = params.name; //名字
+                    var percent = params.percent; //占比
+                    var value = params.value; //数量
+                    if (name.length > 8) {
+                      return (
+                        name.slice(0, 7) +
+                        "..." +
+                        "\n" +
+                        "(" +
+                        value +
+                        "道)" +
+                        percent +
+                        "%"
+                      );
+                    } else {
+                      return name + "\n" + "(" + value + "道)" + percent + "%";
+                    }
+                  }
+                },
+                labelLine: {
+                  show: true
+                }
+              },
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)"
+              }
+            }
+          }
+        ]
+        // color: [
+        //   "rgb(187,140,238)",
+        //   "rgb(134,146,243)",
+        //   "rgb(60,184,255)",
+        //   "rgb(113,171,246)",
+        //   "rgb(255,193,134)"
+        // ] //饼图分块颜色设置
+      },
+      totalResult: {
+        title: {
+          text: "适用性评价结果",
+          subtext: "",
+          x: "left",
+          textStyle: {
+            color: "#222",
+            fontStyle: "normal",
+            fontWeight: "600",
+            fontFamily: "san-serif",
+            fontSize: 16
+          }
+        },
+        tooltip: {
+          trigger: "item",
+          /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
+          formatter: "{a} {b} : ({c}道) {d}%"
+        },
+        legend: {
+          x: "70%",
+          y: "25%",
+          orient: "vertical",
+          left: "left",
+          itemWidth: 10,
+          itemHeight: 10,
+          selectedMode: false, //禁止点击
+          textStyle: {
+            fontSize: 12,
+            color: "#999"
+          },
+          formatter: function(name) {
+            //避免文字太长做省略处理
+            return name.length > 4 ? name.slice(0, 4) + "..." : name;
+          },
+          data: []
+        },
+        series: [
+          {
+            name: "",
+            type: "pie",
+            radius: "75%",
+            center: ["60%", "54%"],
+            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
+            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
+            selectedOffset: 5, //选中扇区的偏移距离
+            data: [],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  textStyle: {
+                    fontSize: 12
+                  },
+                  /* formatter: '{b} : ({c}门) \n {d}%'	*/
+                  formatter: function(params) {
+                    //避免文字太长做省略处理
+                    var name = params.name; //名字
+                    var percent = params.percent; //占比
+                    var value = params.value; //数量
+                    if (name.length > 8) {
+                      return (
+                        name.slice(0, 7) +
+                        "..." +
+                        "\n" +
+                        "(" +
+                        value +
+                        "道)" +
+                        percent +
+                        "%"
+                      );
+                    } else {
+                      return name + "\n" + "(" + value + "道)" + percent + "%";
+                    }
+                  }
+                },
+                labelLine: {
+                  show: true
+                }
+              },
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)"
+              }
+            }
+          }
+        ]
+        // color: [
+        //   "rgb(187,140,238)",
+        //   "rgb(134,146,243)",
+        //   "rgb(60,184,255)",
+        //   "rgb(113,171,246)",
+        //   "rgb(255,193,134)"
+        // ] //饼图分块颜色设置
+      },
+      totalAdvices: {
+        title: {
+          text: "是否需处置",
+          subtext: "",
+          x: "left",
+          textStyle: {
+            color: "#222",
+            fontStyle: "normal",
+            fontWeight: "600",
+            fontFamily: "san-serif",
+            fontSize: 16
+          }
+        },
+        tooltip: {
+          trigger: "item",
+          /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
+          formatter: "{a} {b} : ({c}道) {d}%"
+        },
+        legend: {
+          x: "70%",
+          y: "25%",
+          orient: "vertical",
+          left: "left",
+          itemWidth: 10,
+          itemHeight: 10,
+          selectedMode: false, //禁止点击
+          textStyle: {
+            fontSize: 12,
+            color: "#999"
+          },
+          formatter: function(name) {
+            //避免文字太长做省略处理
+            return name.length > 4 ? name.slice(0, 4) + "..." : name;
+          },
+          data: []
+        },
+        series: [
+          {
+            name: "",
+            type: "pie",
+            radius: "75%",
+            center: ["60%", "54%"],
+            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
+            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
+            selectedOffset: 5, //选中扇区的偏移距离
+            data: [],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  textStyle: {
+                    fontSize: 12
+                  },
+                  /* formatter: '{b} : ({c}门) \n {d}%'	*/
+                  formatter: function(params) {
+                    //避免文字太长做省略处理
+                    var name = params.name; //名字
+                    var percent = params.percent; //占比
+                    var value = params.value; //数量
+                    if (name.length > 8) {
+                      return (
+                        name.slice(0, 7) +
+                        "..." +
+                        "\n" +
+                        "(" +
+                        value +
+                        "道)" +
+                        percent +
+                        "%"
+                      );
+                    } else {
+                      return name + "\n" + "(" + value + "道)" + percent + "%";
+                    }
+                  }
+                },
+                labelLine: {
+                  show: true
+                }
+              },
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)"
+              }
+            }
+          }
+        ]
+        // color: [
+        //   "rgb(187,140,238)",
+        //   "rgb(134,146,243)",
+        //   "rgb(60,184,255)",
+        //   "rgb(113,171,246)",
+        //   "rgb(255,193,134)"
+        // ] //饼图分块颜色设置
+      },
+      totalAdvice: {
+        title: {
+          text: "处置详情",
+          subtext: "",
+          x: "left",
+          textStyle: {
+            color: "#222",
+            fontStyle: "normal",
+            fontWeight: "600",
+            fontFamily: "san-serif",
+            fontSize: 16
+          }
+        },
+        tooltip: {
+          trigger: "item",
+          /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
+          formatter: "{a} {b} : ({c}道) {d}%"
+        },
+        legend: {
+          x: "70%",
+          y: "25%",
+          orient: "vertical",
+          left: "left",
+          itemWidth: 10,
+          itemHeight: 10,
+          selectedMode: false, //禁止点击
+          textStyle: {
+            fontSize: 12,
+            color: "#999"
+          },
+          formatter: function(name) {
+            //避免文字太长做省略处理
+            return name.length > 4 ? name.slice(0, 4) + "..." : name;
+          },
+          data: []
+        },
+        series: [
+          {
+            name: "",
+            type: "pie",
+            radius: "75%",
+            center: ["60%", "54%"],
+            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
+            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
+            selectedOffset: 5, //选中扇区的偏移距离
+            data: [],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  textStyle: {
+                    fontSize: 12
+                  },
+                  /* formatter: '{b} : ({c}门) \n {d}%'	*/
+                  formatter: function(params) {
+                    //避免文字太长做省略处理
+                    var name = params.name; //名字
+                    var percent = params.percent; //占比
+                    var value = params.value; //数量
+                    if (name.length > 8) {
+                      return (
+                        name.slice(0, 7) +
+                        "..." +
+                        "\n" +
+                        "(" +
+                        value +
+                        "道)" +
+                        percent +
+                        "%"
+                      );
+                    } else {
+                      return name + "\n" + "(" + value + "道)" + percent + "%";
+                    }
+                  }
+                },
+                labelLine: {
+                  show: true
+                }
+              },
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)"
+              }
+            }
+          }
+        ]
+        // color: [
+        //   "rgb(187,140,238)",
+        //   "rgb(134,146,243)",
+        //   "rgb(60,184,255)",
+        //   "rgb(113,171,246)",
+        //   "rgb(255,193,134)"
+        // ] //饼图分块颜色设置
+      },
+      companyDefect: {
+        title: {
+          text: "各公司超标缺陷",
+          subtext: "",
+          x: "left",
+          textStyle: {
+            color: "#222",
+            fontStyle: "normal",
+            fontWeight: "600",
+            fontFamily: "san-serif",
+            fontSize: 16
+          }
+        },
+        tooltip: {
+          trigger: "item",
+          /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
+          formatter: "{a} {b} : ({c}道) {d}%"
+        },
+        legend: {
+          x: "70%",
+          y: "25%",
+          orient: "vertical",
+          left: "left",
+          itemWidth: 10,
+          itemHeight: 10,
+          selectedMode: false, //禁止点击
+          textStyle: {
+            fontSize: 12,
+            color: "#999"
+          },
+          formatter: function(name) {
+            //避免文字太长做省略处理
+            return name.length > 4 ? name.slice(0, 4) + "..." : name;
+          },
+          data: []
+        },
+        series: [
+          {
+            name: "",
+            type: "pie",
+            radius: "75%",
+            center: ["60%", "54%"],
+            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
+            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
+            selectedOffset: 5, //选中扇区的偏移距离
+            data: [],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  textStyle: {
+                    fontSize: 12
+                  },
+                  /* formatter: '{b} : ({c}门) \n {d}%'	*/
+                  formatter: function(params) {
+                    //避免文字太长做省略处理
+                    var name = params.name; //名字
+                    var percent = params.percent; //占比
+                    var value = params.value; //数量
+                    if (name.length > 8) {
+                      return (
+                        name.slice(0, 7) +
+                        "..." +
+                        "\n" +
+                        "(" +
+                        value +
+                        "道)" +
+                        percent +
+                        "%"
+                      );
+                    } else {
+                      return name + "\n" + "(" + value + "道)" + percent + "%";
+                    }
+                  }
+                },
+                labelLine: {
+                  show: true
+                }
+              },
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)"
+              }
+            }
+          }
+        ]
+        // color: [
+        //   "rgb(187,140,238)",
+        //   "rgb(134,146,243)",
+        //   "rgb(60,184,255)",
+        //   "rgb(113,171,246)",
+        //   "rgb(255,193,134)"
+        // ] //饼图分块颜色设置
+      },
+      companyDefectNo: {
+        title: {
+          text: "各公司缺陷评价不可接受",
+          subtext: "",
+          x: "left",
+          textStyle: {
+            color: "#222",
+            fontStyle: "normal",
+            fontWeight: "600",
+            fontFamily: "san-serif",
+            fontSize: 16
+          }
+        },
+        tooltip: {
+          trigger: "item",
+          /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
+          formatter: "{a} {b} : ({c}道) {d}%"
+        },
+        legend: {
+          x: "70%",
+          y: "25%",
+          orient: "vertical",
+          left: "left",
+          itemWidth: 10,
+          itemHeight: 10,
+          selectedMode: false, //禁止点击
+          textStyle: {
+            fontSize: 12,
+            color: "#999"
+          },
+          formatter: function(name) {
+            //避免文字太长做省略处理
+            return name.length > 4 ? name.slice(0, 4) + "..." : name;
+          },
+          data: []
+        },
+        series: [
+          {
+            name: "",
+            type: "pie",
+            radius: "75%",
+            center: ["60%", "54%"],
+            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
+            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
+            selectedOffset: 5, //选中扇区的偏移距离
+            data: [],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  textStyle: {
+                    fontSize: 12
+                  },
+                  /* formatter: '{b} : ({c}门) \n {d}%'	*/
+                  formatter: function(params) {
+                    //避免文字太长做省略处理
+                    var name = params.name; //名字
+                    var percent = params.percent; //占比
+                    var value = params.value; //数量
+                    if (name.length > 8) {
+                      return (
+                        name.slice(0, 7) +
+                        "..." +
+                        "\n" +
+                        "(" +
+                        value +
+                        "道)" +
+                        percent +
+                        "%"
+                      );
+                    } else {
+                      return name + "\n" + "(" + value + "道)" + percent + "%";
+                    }
+                  }
+                },
+                labelLine: {
+                  show: true
+                }
+              },
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)"
+              }
+            }
+          }
+        ]
+        // color: [
+        //   "rgb(187,140,238)",
+        //   "rgb(134,146,243)",
+        //   "rgb(60,184,255)",
+        //   "rgb(113,171,246)",
+        //   "rgb(255,193,134)"
+        // ] //饼图分块颜色设置
+      },
+      companyDefectFix: {
+        title: {
+          text: "各公司缺陷评价需处置",
+          subtext: "",
+          x: "left",
+          textStyle: {
+            color: "#222",
+            fontStyle: "normal",
+            fontWeight: "600",
+            fontFamily: "san-serif",
+            fontSize: 16
+          }
+        },
+        tooltip: {
+          trigger: "item",
+          /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
+          formatter: "{a} {b} : ({c}道) {d}%"
+        },
+        legend: {
+          x: "70%",
+          y: "25%",
+          orient: "vertical",
+          left: "left",
+          itemWidth: 10,
+          itemHeight: 10,
+          selectedMode: false, //禁止点击
+          textStyle: {
+            fontSize: 12,
+            color: "#999"
+          },
+          formatter: function(name) {
+            //避免文字太长做省略处理
+            return name.length > 4 ? name.slice(0, 4) + "..." : name;
+          },
+          data: []
+        },
+        series: [
+          {
+            name: "",
+            type: "pie",
+            radius: "75%",
+            center: ["60%", "54%"],
+            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
+            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
+            selectedOffset: 5, //选中扇区的偏移距离
+            data: [],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  textStyle: {
+                    fontSize: 12
+                  },
+                  /* formatter: '{b} : ({c}门) \n {d}%'	*/
+                  formatter: function(params) {
+                    //避免文字太长做省略处理
+                    var name = params.name; //名字
+                    var percent = params.percent; //占比
+                    var value = params.value; //数量
+                    if (name.length > 8) {
+                      return (
+                        name.slice(0, 7) +
+                        "..." +
+                        "\n" +
+                        "(" +
+                        value +
+                        "道)" +
+                        percent +
+                        "%"
+                      );
+                    } else {
+                      return name + "\n" + "(" + value + "道)" + percent + "%";
+                    }
+                  }
+                },
+                labelLine: {
+                  show: true
+                }
+              },
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)"
+              }
+            }
+          }
+        ]
+        // color: [
+        //   "rgb(187,140,238)",
+        //   "rgb(134,146,243)",
+        //   "rgb(60,184,255)",
+        //   "rgb(113,171,246)",
+        //   "rgb(255,193,134)"
+        // ] //饼图分块颜色设置
       },
       postChartOption: {
         title: {
@@ -506,98 +1359,11 @@ export default {
           "rgb(255,193,134)"
         ]
       },
-      // fileTypeChartOption: {
-      //   title: {
-      //     text: "类型统计",
-      //     subtext: "",
-      //     x: "left",
-      //     textStyle: {
-      //       color: "#222",
-      //       fontStyle: "normal",
-      //       fontWeight: "600",
-      //       fontFamily: "san-serif",
-      //       fontSize: 16
-      //     }
-      //   },
-      //   tooltip: {
-      //     trigger: "item",
-      //     formatter: "{a} {b} : ({c}道) {d}%"
-      //   },
-      //   legend: {
-      //     x: "70%",
-      //     y: "25%",
-      //     orient: "vertical",
-      //     left: "left",
-      //     itemWidth: 10,
-      //     itemHeight: 10,
-      //     selectedMode: false, //禁止点击
-      //     textStyle: {
-      //       fontSize: 12,
-      //       color: "#999"
-      //     },
-      //     formatter: function(name) {
-      //       return name.length > 4 ? name.slice(0, 4) + "..." : name;
-      //     },
-      //     data: []
-      //   },
-      //   series: [
-      //     {
-      //       name: "",
-      //       type: "pie",
-      //       radius: "75%",
-      //       center: ["50%", "54%"],
-      //       hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
-      //       selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
-      //       selectedOffset: 5, //选中扇区的偏移距离
-      //       data: [],
-      //       itemStyle: {
-      //         normal: {
-      //           label: {
-      //             show: true,
-      //             formatter: function(params) {
-      //               var name = params.name; //名字
-      //               var percent = params.percent; //占比
-      //               var value = params.value; //数量
-      //               if (name.length > 8) {
-      //                 return (
-      //                   name.slice(0, 7) +
-      //                   "..." +
-      //                   "\n" +
-      //                   "(" +
-      //                   value +
-      //                   "道)" +
-      //                   percent +
-      //                   "%"
-      //                 );
-      //               } else {
-      //                 return name + "\n" + "(" + value + "道)" + percent + "%";
-      //               }
-      //             }
-      //           },
-      //           labelLine: {
-      //             show: true
-      //           }
-      //         },
-      //         emphasis: {
-      //           shadowBlur: 10,
-      //           shadowOffsetX: 0,
-      //           shadowColor: "rgba(0, 0, 0, 0.5)"
-      //         }
-      //       }
-      //     }
-      //   ],
-      //   color: [
-      //     "rgb(187,140,238)",
-      //     "rgb(134,146,243)",
-      //     "rgb(60,184,255)",
-      //     "rgb(113,171,246)",
-      //     "rgb(255,193,134)"
-      //   ]
-      // },
 
       echartBtn: true,
       echartOn: true,
-      echartNum: 1
+      echartNum: 1,
+      datas: []
     };
   },
   mounted: function() {
@@ -605,67 +1371,113 @@ export default {
   },
   methods: {
     queryCoursePieChart: function() {
+      var _this = this;
+      this.getRequest("/data/").then(resp => {
+        if (resp && resp.status == 200) {
+          this.datas = resp.data.obj;
+          let d = this.datas[0].data;
+          let d1 = this.datas[1].data;
+          let d2 = this.datas[2].data;
+          let d3 = this.datas[3].data;
+          let d4 = this.datas[4].data;
+          let d5 = this.datas[5].data;
+          let d6 = this.datas[6].data;
+          let d7 = this.datas[7].data;
+          let d8 = this.datas[8].data;
+
+          this.pipelineDefect.series[0].data = d;
+          d.forEach(element => {
+            this.pipelineDefect.legend.data.push(element.name);
+          });
+
+          this.pipelineDefectNo.series[0].data = d1;
+          d1.forEach(element => {
+            this.pipelineDefectNo.legend.data.push(element.name);
+          });
+          this.pipelineDefectFix.series[0].data = d2;
+          d2.forEach(element => {
+            this.pipelineDefectFix.legend.data.push(element.name);
+          });
+          this.totalResult.series[0].data = d3;
+          d3.forEach(element => {
+            this.totalResult.legend.data.push(element.name);
+          });
+          this.totalAdvices.series[0].data = d4;
+          d4.forEach(element => {
+            this.totalAdvices.legend.data.push(element.name);
+          });
+          this.totalAdvice.series[0].data = d5;
+          d5.forEach(element => {
+            this.totalAdvice.legend.data.push(element.name);
+          });
+          this.companyDefect.series[0].data = d6;
+          d6.forEach(element => {
+            this.companyDefect.legend.data.push(element.name);
+          });
+          this.companyDefectNo.series[0].data = d7;
+          d7.forEach(element => {
+            this.companyDefectNo.legend.data.push(element.name);
+          });
+          this.companyDefectFix.series[0].data = d8;
+          d8.forEach(element => {
+            this.companyDefectFix.legend.data.push(element.name);
+          });
+
+          // /*****************岗位统计****************/
+          // this.postChartOption.series[0].data = [
+          //   { name: "不可接受", value: 2 },
+          //   { name: "可接受", value: 263 }
+          // ];
+          // this.postChartOption.legend.data = ["不可接受", "可接受"];
+
+          // /*****************人员统计****************/
+          // this.personnelChartOption.series[0].data = [
+          //   { value: 10, name: "打磨" },
+          //   { value: 30, name: "复检" },
+          //   { value: 12, name: "套筒或复合材料修复" },
+          //   { value: 12, name: "B套修复或换管处理" }
+          // ];
+          // this.personnelChartOption.legend.data = [
+          //   "打磨",
+          //   "复检",
+          //   "套筒或复合材料修复",
+          //   "B套修复或换管处理"
+          // ];
+          // /*****************课程分类****************/
+          // this.classifyChartOption.series[0].data = [
+          //   { value: 10, name: "打磨" },
+          //   { value: 30, name: "复检" },
+          //   { value: 12, name: "套筒或复合材料修复" },
+          //   { value: 12, name: "B套修复或换管处理" },
+          //   { value: 201, name: "按普通焊缝管处理" }
+          // ];
+          // this.classifyChartOption.legend.data = [
+          //   "打磨",
+          //   "复检",
+          //   "套筒或复合材料修复",
+          //   "B套修复或换管处理",
+          //   "按普通焊缝管处理"
+          // ];
+          /*****************文件类型****************/
+          // this.fileTypeChartOption.series[0].data = [1, 2, 3, 4, 5];
+          // this.fileTypeChartOption.legend.data = [1, 2, 3, 4, 5];
+
+          //初始化
+          this.drawLine();
+        }
+      });
       /*****************部门统计****************/
-      this.departmentOption.series[0].data = [
-        { value: 5, name: "独山子" },
-        { value: 30, name: "乌输" },
-        { value: 23, name: "新疆" },
-        { value: 13, name: "塔输" },
-        { value: 154, name: "酒泉" },
-        { value: 1, name: "甘肃" },
-        { value: 15, name: "兰州" }
-      ];
-      this.departmentOption.legend.data = [
-        "独山子",
-        "乌输",
-        "新疆",
-        "塔输",
-        "酒泉",
-        "甘肃",
-        "兰州"
-      ];
+      // this.departmentOption.series[0].data = [
+      //   { value: 5, name: "独山子" },
+      //   { value: 30, name: "乌输" },
+      //   { value: 23, name: "新疆" },
+      //   { value: 13, name: "塔输" },
+      //   { value: 154, name: "酒泉" },
+      //   { value: 1, name: "甘肃" },
+      //   { value: 15, name: "兰州" }
+      // ];
+      // console.log(this.datas[0])
 
-      /*****************岗位统计****************/
-      this.postChartOption.series[0].data = [
-        { value: 2, name: "不可接受" },
-        { value: 263, name: "可接受" }
-      ];
-      this.postChartOption.legend.data = ["不可接受", "可接受"];
-
-      /*****************人员统计****************/
-      this.personnelChartOption.series[0].data = [
-        { value: 10, name: "打磨" },
-        { value: 30, name: "复检" },
-        { value: 12, name: "套筒或复合材料修复" },
-        { value: 12, name: "B套修复或换管处理" }
-      ];
-      this.personnelChartOption.legend.data = [
-        "打磨",
-        "复检",
-        "套筒或复合材料修复",
-        "B套修复或换管处理"
-      ];
-      /*****************课程分类****************/
-      this.classifyChartOption.series[0].data = [
-        { value: 10, name: "打磨" },
-        { value: 30, name: "复检" },
-        { value: 12, name: "套筒或复合材料修复" },
-        { value: 12, name: "B套修复或换管处理" },
-        { value: 201, name: "按普通焊缝管处理" }
-      ];
-      this.classifyChartOption.legend.data = [
-        "打磨",
-        "复检",
-        "套筒或复合材料修复",
-        "B套修复或换管处理",
-        "按普通焊缝管处理"
-      ];
-      /*****************文件类型****************/
-      // this.fileTypeChartOption.series[0].data = [1, 2, 3, 4, 5];
-      // this.fileTypeChartOption.legend.data = [1, 2, 3, 4, 5];
-
-      //初始化
-      this.drawLine();
       // this.getRequest(
       // 	this.api.queryCoursePieChart, {
       // 		params:{
@@ -686,27 +1498,6 @@ export default {
       // 		return false;
       // 	}
 
-      // 	/*****************部门统计****************/
-      // 	this.departmentOption.series[0].data=data.body.data.courseCountUsers1.list;
-      // 	this.departmentOption.legend.data=data.body.data.courseCountUsers1.names.split(',');
-
-      // 	/*****************岗位统计****************/
-      // 	this.postChartOption.series[0].data=data.body.data.courseCountUsers2.list;
-      // 	this.postChartOption.legend.data=data.body.data.courseCountUsers2.names.split(',');
-
-      // 	/*****************人员统计****************/
-      // 	this.personnelChartOption.series[0].data=data.body.data.courseCountUsers3.list;
-      // 	this.personnelChartOption.legend.data=data.body.data.courseCountUsers3.names.split(',');
-      // 	/*****************课程分类****************/
-      // 	this.classifyChartOption.series[0].data=data.body.data.courseCountUsers4.list;
-      // 	this.classifyChartOption.legend.data=data.body.data.courseCountUsers4.names.split(',');
-      // 	/*****************文件类型****************/
-      // 	this.fileTypeChartOption.series[0].data=data.body.data.courseCountUsers5.list;
-      // 	this.fileTypeChartOption.legend.data=data.body.data.courseCountUsers5.names.split(',');
-
-      // 	//初始化
-      // 	this.drawLine();
-
       // }, function(err) {
       // 	this.$message.error('网络通讯错误')
       // });
@@ -714,56 +1505,116 @@ export default {
     drawLine: function() {
       // 初始化echarts实例
       //获取demo元素
-      let departmentChart = echarts.init(
-        document.getElementById("departmentChart")
+      let pipelineDefect = echarts.init(
+        document.getElementById("pipelineDefect")
       );
-      let postChart = echarts.init(document.getElementById("postChart"));
-      let personnelChart = echarts.init(
-        document.getElementById("personnelChart")
+      let pipelineDefectNo = echarts.init(
+        document.getElementById("pipelineDefectNo")
       );
-      let classifyChart = echarts.init(
-        document.getElementById("classifyChart")
+      let pipelineDefectFix = echarts.init(
+        document.getElementById("pipelineDefectFix")
       );
-      // let fileTypeChart = echarts.init(
-      //   document.getElementById("fileTypeChart")
-      // );
+      let totalResult = echarts.init(document.getElementById("totalResult"));
+      let totalAdvices = echarts.init(document.getElementById("totalAdvices"));
+      let totalAdvice = echarts.init(document.getElementById("totalAdvice"));
+      let companyDefect = echarts.init(
+        document.getElementById("companyDefect")
+      );
+      let companyDefectNo = echarts.init(
+        document.getElementById("companyDefectNo")
+      );
+      let companyDefectFix = echarts.init(
+        document.getElementById("companyDefectFix")
+      );
 
       //初始化echarts
-      departmentChart.setOption(this.departmentOption);
+      pipelineDefect.setOption(this.pipelineDefect);
       let self = this;
 
-      departmentChart.on("click", function(params) {
+      pipelineDefect.on("click", function(params) {
+        console.log(params.data);
+        let s = params.data.query.split("=")[2]
+        self.$router.push({
+          path: "/sys/init",
+          query: { defectId: 1,pipelineName: s}
+        });
+      });
+
+      pipelineDefectNo.setOption(this.pipelineDefectNo);
+      pipelineDefectNo.on("click", function(params) {
         console.log(params);
         self.$router.push({
           path: "/sys/init",
           query: { departmentId: 1 }
         });
       });
-      postChart.setOption(this.postChartOption);
-      postChart.on("click", function(params) {
+      pipelineDefectFix.setOption(this.pipelineDefectFix);
+      pipelineDefectFix.on("click", function(params) {
         console.log(params);
         self.$router.push({
           path: "/sys/init",
           query: { departmentId: 1 }
         });
       });
-      personnelChart.setOption(this.personnelChartOption);
-      personnelChart.on("click", function(params) {
+      totalResult.setOption(this.totalResult);
+      totalResult.on("click", function(params) {
         console.log(params);
         self.$router.push({
           path: "/sys/init",
           query: { departmentId: 1 }
         });
       });
-      classifyChart.setOption(this.classifyChartOption);
-      classifyChart.on("click", function(params) {
+      totalAdvices.setOption(this.totalAdvices);
+      totalAdvices.on("click", function(params) {
         console.log(params);
         self.$router.push({
           path: "/sys/init",
           query: { departmentId: 1 }
         });
       });
-      // fileTypeChart.setOption(this.fileTypeChartOption);
+      let a = [
+        pipelineDefect,
+        pipelineDefectNo,
+        pipelineDefectFix,
+        totalResult,
+        totalAdvices,
+        totalAdvice,
+        companyDefect,
+        companyDefectNo,
+        companyDefectFix
+      ];
+      totalAdvice.setOption(this.totalAdvice);
+      totalAdvice.on("click", function(params) {
+        console.log(params);
+        self.$router.push({
+          path: "/sys/init",
+          query: { departmentId: 1 }
+        });
+      });
+      companyDefect.setOption(this.companyDefect);
+      companyDefect.on("click", function(params) {
+        console.log(params);
+        self.$router.push({
+          path: "/sys/init",
+          query: { departmentId: 1 }
+        });
+      });
+      companyDefectNo.setOption(this.companyDefectNo);
+      companyDefectNo.on("click", function(params) {
+        console.log(params);
+        self.$router.push({
+          path: "/sys/init",
+          query: { departmentId: 1 }
+        });
+      });
+      companyDefectFix.setOption(this.companyDefectFix);
+      companyDefectFix.on("click", function(params) {
+        console.log(params);
+        self.$router.push({
+          path: "/sys/init",
+          query: { departmentId: 1 }
+        });
+      });
     },
     echartShow: function() {
       //图表展示隐藏
