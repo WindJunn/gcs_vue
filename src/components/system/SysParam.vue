@@ -15,17 +15,16 @@
     ></el-header>
 
     <div
-      style="width:80%;margin-left:10%;margin-top:0px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;"
+      style="width:90%;margin-left:5%;margin-top:10px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;"
     >
-      <div style="font-size:25px">在线评价参数</div>
+      <div style="font-size:25px">在线评价参数管理</div>
       <div v-for="item in paramExplanations" :key="item.id">
         <div style="margin-top:10px;">
-          <el-tag style="margin-left:20px;">列：{{item.colum}}</el-tag>
+          <el-tag style="margin-left:10px;">列：{{item.colum}}</el-tag>
           <el-input
-            style="margin-left:10px;width:15%"
+            style="margin-left:10px;width:20%"
             placeholder="请输入内容"
             v-model="item.name"
-            clearable
           ></el-input>
           <el-tag style="margin-left:20px;">解释说明：</el-tag>
           <el-input

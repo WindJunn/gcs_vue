@@ -152,101 +152,7 @@ require("echarts/lib/component/legendScroll");
 export default {
   data() {
     return {
-      departmentOption: {
-        title: {
-          text: "不同管线超标缺陷",
-          subtext: "",
-          x: "left",
-          textStyle: {
-            color: "#222",
-            fontStyle: "normal",
-            fontWeight: "600",
-            fontFamily: "san-serif",
-            fontSize: 16
-          }
-        },
-        tooltip: {
-          trigger: "item",
-          /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
-          formatter: "{a} {b} : ({c}道) {d}%"
-        },
-        legend: {
-          x: "70%",
-          y: "25%",
-          orient: "vertical",
-          left: "left",
-          itemWidth: 10,
-          itemHeight: 10,
-          selectedMode: false, //禁止点击
-          textStyle: {
-            fontSize: 12,
-            color: "#999"
-          },
-          formatter: function(name) {
-            //避免文字太长做省略处理
-            return name.length > 4 ? name.slice(0, 4) + "..." : name;
-          },
-          data: []
-        },
-        series: [
-          {
-            name: "",
-            type: "pie",
-            radius: "75%",
-            center: ["60%", "54%"],
-            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
-            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
-            selectedOffset: 5, //选中扇区的偏移距离
-            data: [],
-            itemStyle: {
-              normal: {
-                label: {
-                  show: true,
-                  textStyle: {
-                    fontSize: 12
-                  },
-                  /* formatter: '{b} : ({c}门) \n {d}%'	*/
-                  formatter: function(params) {
-                    //避免文字太长做省略处理
-                    var name = params.name; //名字
-                    var percent = params.percent; //占比
-                    var value = params.value; //数量
-                    if (name.length > 8) {
-                      return (
-                        name.slice(0, 7) +
-                        "..." +
-                        "\n" +
-                        "(" +
-                        value +
-                        "道)" +
-                        percent +
-                        "%"
-                      );
-                    } else {
-                      return name + "\n" + "(" + value + "道)" + percent + "%";
-                    }
-                  }
-                },
-                labelLine: {
-                  show: true
-                }
-              },
-              emphasis: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: "rgba(0, 0, 0, 0.5)"
-              }
-            }
-          }
-        ]
-        // color: [
-        //   "rgb(187,140,238)",
-        //   "rgb(134,146,243)",
-        //   "rgb(60,184,255)",
-        //   "rgb(113,171,246)",
-        //   "rgb(255,193,134)"
-        // ] //饼图分块颜色设置
-      },
+      
       pipelineDefect: {
         title: {
           text: "不同管线超标缺陷",
@@ -1095,270 +1001,7 @@ export default {
         //   "rgb(255,193,134)"
         // ] //饼图分块颜色设置
       },
-      postChartOption: {
-        title: {
-          text: "安全评价结果",
-          subtext: "",
-          x: "left",
-          textStyle: {
-            color: "#222",
-            fontStyle: "normal",
-            fontWeight: "600",
-            fontFamily: "san-serif",
-            fontSize: 16
-          }
-        },
-        tooltip: {
-          trigger: "item",
-          formatter: "{a} {b} : ({c}道) {d}%"
-        },
-        legend: {
-          x: "70%",
-          y: "25%",
-          orient: "vertical",
-          left: "left",
-          itemWidth: 10,
-          itemHeight: 10,
-          selectedMode: false, //禁止点击
-          textStyle: {
-            fontSize: 12,
-            color: "#999"
-          },
-          formatter: function(name) {
-            return name.length > 4 ? name.slice(0, 4) + "..." : name;
-          },
-          data: []
-        },
-        series: [
-          {
-            name: "",
-            type: "pie",
-            radius: "75%",
-            center: ["60%", "54%"],
-            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
-            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
-            selectedOffset: 5, //选中扇区的偏移距离
-            data: [],
-            itemStyle: {
-              normal: {
-                label: {
-                  show: true,
-                  formatter: function(params) {
-                    var name = params.name; //名字
-                    var percent = params.percent; //占比
-                    var value = params.value; //数量
-                    if (name.length > 8) {
-                      return (
-                        name.slice(0, 7) +
-                        "..." +
-                        "\n" +
-                        "(" +
-                        value +
-                        "道)" +
-                        percent +
-                        "%"
-                      );
-                    } else {
-                      return name + "\n" + "(" + value + "道)" + percent + "%";
-                    }
-                  }
-                },
-                labelLine: {
-                  show: true
-                }
-              },
-              emphasis: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: "rgba(0, 0, 0, 0.5)"
-              }
-            }
-          }
-        ],
-        color: [
-          "rgb(187,140,238)",
-          "rgb(134,146,243)",
-          "rgb(60,184,255)",
-          "rgb(113,171,246)",
-          "rgb(255,193,134)"
-        ]
-      },
-      personnelChartOption: {
-        title: {
-          text: "处置方式",
-          subtext: "",
-          x: "left",
-          textStyle: {
-            color: "#222",
-            fontStyle: "normal",
-            fontWeight: "600",
-            fontFamily: "san-serif",
-            fontSize: 16
-          }
-        },
-        tooltip: {
-          trigger: "item",
-          formatter: "{a} {b} : ({c}道) {d}%"
-        },
-        legend: {
-          x: "70%",
-          y: "25%",
-          orient: "vertical",
-          left: "left",
-          itemWidth: 10,
-          itemHeight: 10,
-          selectedMode: false, //禁止点击
-          textStyle: {
-            fontSize: 12,
-            color: "#999"
-          },
-          formatter: function(name) {
-            return name.length > 4 ? name.slice(0, 4) + "..." : name;
-          },
-          data: []
-        },
-        series: [
-          {
-            name: "",
-            type: "pie",
-            radius: "75%",
-            center: ["60%", "54%"],
-            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
-            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
-            selectedOffset: 5, //选中扇区的偏移距离
-            data: [],
-            itemStyle: {
-              normal: {
-                label: {
-                  show: true,
-                  formatter: function(params) {
-                    var name = params.name; //名字
-                    var percent = params.percent; //占比
-                    var value = params.value; //数量
-                    if (name.length > 8) {
-                      return (
-                        name.slice(0, 7) +
-                        "..." +
-                        "\n" +
-                        "(" +
-                        value +
-                        "道)" +
-                        percent +
-                        "%"
-                      );
-                    } else {
-                      return name + "\n" + "(" + value + "道)" + percent + "%";
-                    }
-                  }
-                },
-                labelLine: {
-                  show: true
-                }
-              },
-              emphasis: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: "rgba(0, 0, 0, 0.5)"
-              }
-            }
-          }
-        ],
-        color: [
-          "rgb(187,140,238)",
-          "rgb(134,146,243)",
-          "rgb(60,184,255)",
-          "rgb(113,171,246)",
-          "rgb(255,193,134)"
-        ]
-      },
-      classifyChartOption: {
-        title: {
-          text: "管线分类",
-          subtext: "",
-          x: "left",
-          textStyle: {
-            color: "#222",
-            fontStyle: "normal",
-            fontWeight: "600",
-            fontFamily: "san-serif",
-            fontSize: 16
-          }
-        },
-        tooltip: {
-          trigger: "item",
-          formatter: "{a} {b} : ({c}道) {d}%"
-        },
-        legend: {
-          x: "70%",
-          y: "25%",
-          orient: "vertical",
-          left: "left",
-          itemWidth: 10,
-          itemHeight: 10,
-          selectedMode: false, //禁止点击
-          textStyle: {
-            fontSize: 12,
-            color: "#999"
-          },
-          formatter: function(name) {
-            return name.length > 4 ? name.slice(0, 4) + "..." : name;
-          },
-          data: []
-        },
-        series: [
-          {
-            name: "",
-            type: "pie",
-            radius: "75%",
-            center: ["60%", "54%"],
-            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
-            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
-            selectedOffset: 5, //选中扇区的偏移距离
-            data: [],
-            itemStyle: {
-              normal: {
-                label: {
-                  show: true,
-                  formatter: function(params) {
-                    var name = params.name; //名字
-                    var percent = params.percent; //占比
-                    var value = params.value; //数量
-                    if (name.length > 8) {
-                      return (
-                        name.slice(0, 7) +
-                        "..." +
-                        "\n" +
-                        "(" +
-                        value +
-                        "道)" +
-                        percent +
-                        "%"
-                      );
-                    } else {
-                      return name + "\n" + "(" + value + "道)" + percent + "%";
-                    }
-                  }
-                },
-                labelLine: {
-                  show: true
-                }
-              },
-              emphasis: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: "rgba(0, 0, 0, 0.5)"
-              }
-            }
-          }
-        ],
-        color: [
-          "rgb(187,140,238)",
-          "rgb(134,146,243)",
-          "rgb(60,184,255)",
-          "rgb(113,171,246)",
-          "rgb(255,193,134)"
-        ]
-      },
+    
 
       echartBtn: true,
       echartOn: true,
@@ -1423,61 +1066,11 @@ export default {
             this.companyDefectFix.legend.data.push(element.name);
           });
 
-          // /*****************岗位统计****************/
-          // this.postChartOption.series[0].data = [
-          //   { name: "不可接受", value: 2 },
-          //   { name: "可接受", value: 263 }
-          // ];
-          // this.postChartOption.legend.data = ["不可接受", "可接受"];
-
-          // /*****************人员统计****************/
-          // this.personnelChartOption.series[0].data = [
-          //   { value: 10, name: "打磨" },
-          //   { value: 30, name: "复检" },
-          //   { value: 12, name: "套筒或复合材料修复" },
-          //   { value: 12, name: "B套修复或换管处理" }
-          // ];
-          // this.personnelChartOption.legend.data = [
-          //   "打磨",
-          //   "复检",
-          //   "套筒或复合材料修复",
-          //   "B套修复或换管处理"
-          // ];
-          // /*****************课程分类****************/
-          // this.classifyChartOption.series[0].data = [
-          //   { value: 10, name: "打磨" },
-          //   { value: 30, name: "复检" },
-          //   { value: 12, name: "套筒或复合材料修复" },
-          //   { value: 12, name: "B套修复或换管处理" },
-          //   { value: 201, name: "按普通焊缝管处理" }
-          // ];
-          // this.classifyChartOption.legend.data = [
-          //   "打磨",
-          //   "复检",
-          //   "套筒或复合材料修复",
-          //   "B套修复或换管处理",
-          //   "按普通焊缝管处理"
-          // ];
-          /*****************文件类型****************/
-          // this.fileTypeChartOption.series[0].data = [1, 2, 3, 4, 5];
-          // this.fileTypeChartOption.legend.data = [1, 2, 3, 4, 5];
-
           //初始化
           this.drawLine();
         }
       });
-      /*****************部门统计****************/
-      // this.departmentOption.series[0].data = [
-      //   { value: 5, name: "独山子" },
-      //   { value: 30, name: "乌输" },
-      //   { value: 23, name: "新疆" },
-      //   { value: 13, name: "塔输" },
-      //   { value: 154, name: "酒泉" },
-      //   { value: 1, name: "甘肃" },
-      //   { value: 15, name: "兰州" }
-      // ];
-      // console.log(this.datas[0])
-
+     
       // this.getRequest(
       // 	this.api.queryCoursePieChart, {
       // 		params:{
@@ -1532,87 +1125,86 @@ export default {
       let self = this;
 
       pipelineDefect.on("click", function(params) {
-        console.log(params.data);
-        let s = params.data.query.split("=")[2]
+        let s = params.data.query.split("=")[2];
         self.$router.push({
           path: "/sys/init",
-          query: { defectId: 1,pipelineName: s}
+          query: { defectId: 1, pipelineName: s }
         });
       });
 
       pipelineDefectNo.setOption(this.pipelineDefectNo);
       pipelineDefectNo.on("click", function(params) {
-        console.log(params);
+        let s = params.data.query.split("=")[3];
+
         self.$router.push({
           path: "/sys/init",
-          query: { departmentId: 1 }
+          query: { defectId: 1, evaluationResultId: 2, pipelineName: s }
         });
       });
       pipelineDefectFix.setOption(this.pipelineDefectFix);
       pipelineDefectFix.on("click", function(params) {
-        console.log(params);
+        let s = params.data.query.split("=")[3];
         self.$router.push({
           path: "/sys/init",
-          query: { departmentId: 1 }
+          query: { defectId: 1, disposalAdviceIdNo: 1, pipelineName: s }
         });
       });
       totalResult.setOption(this.totalResult);
       totalResult.on("click", function(params) {
-        console.log(params);
+        let s = params.data.query.split("=")[1];
         self.$router.push({
           path: "/sys/init",
-          query: { departmentId: 1 }
+          query: { evaluationResultId: s }
         });
       });
       totalAdvices.setOption(this.totalAdvices);
       totalAdvices.on("click", function(params) {
-        console.log(params);
-        self.$router.push({
-          path: "/sys/init",
-          query: { departmentId: 1 }
-        });
+        let s = params.data.query.split("=")[1];
+        let q = params.data.query.split("=")[0].split("&")[1];
+        if (q == "disposalAdviceId") {
+          self.$router.push({
+            path: "/sys/init",
+            query: { disposalAdviceId: s }
+          });
+        }
+        if (q == "disposalAdviceIdNo") {
+          self.$router.push({
+            path: "/sys/init",
+            query: { disposalAdviceIdNo: s }
+          });
+        }
       });
-      let a = [
-        pipelineDefect,
-        pipelineDefectNo,
-        pipelineDefectFix,
-        totalResult,
-        totalAdvices,
-        totalAdvice,
-        companyDefect,
-        companyDefectNo,
-        companyDefectFix
-      ];
+
       totalAdvice.setOption(this.totalAdvice);
       totalAdvice.on("click", function(params) {
-        console.log(params);
+        let s = params.data.query.split("=")[1];
         self.$router.push({
           path: "/sys/init",
-          query: { departmentId: 1 }
+          query: { disposalAdviceId: s }
         });
       });
       companyDefect.setOption(this.companyDefect);
       companyDefect.on("click", function(params) {
-        console.log(params);
+        let s = params.data.query.split("=")[2];
         self.$router.push({
           path: "/sys/init",
-          query: { departmentId: 1 }
+          query: { defectId: 1, departmentId: s }
         });
       });
       companyDefectNo.setOption(this.companyDefectNo);
       companyDefectNo.on("click", function(params) {
-        console.log(params);
+        let s = params.data.query.split("=")[3];
         self.$router.push({
           path: "/sys/init",
-          query: { departmentId: 1 }
+          query: { defectId: 1, evaluationResultId: 2, departmentId: s }
         });
       });
       companyDefectFix.setOption(this.companyDefectFix);
       companyDefectFix.on("click", function(params) {
-        console.log(params);
+        let s = params.data.query.split("=")[3];
         self.$router.push({
           path: "/sys/init",
-          query: { departmentId: 1 }
+          query: { defectId: 1, disposalAdviceIdNo: 1, departmentId: s }
         });
       });
     },

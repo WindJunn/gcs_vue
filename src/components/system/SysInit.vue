@@ -36,8 +36,8 @@
       <div style="margin-left: 5px;margin-right: 20px;display: inline">
         <el-upload
           :show-file-list="false"
-          accept="application/vnd.ms-excel"
-          action="/student/basic/importEmp"
+          accept=".xlsx"
+          action="/girth/importGirthWeld"
           :on-success="fileUploadSuccess"
           :on-error="fileUploadError"
           :disabled="fileUploadBtnText=='正在导入'"
@@ -383,10 +383,8 @@
             </div>
           </el-col>
         </el-row>
-        <!-- 补口带电火花检测: 电压: {{weld.patchVoltage}} 结果: {{weld.patchVoltageResult}}
-        补口带剥离强度测试: 温度: {{weld.patchTemperature}} 结果: {{weld.patchTemperatureResult}}-->
+        
         环焊缝外观检测结果:
-        <!-- <div v-for="o in 4" :key="o" class="text item">{{'列表内容 ' + o }}</div> -->
         <el-row :gutter="20">
           <el-col :offset="2" :span="6">
             <div class="grid-content bg-purple">钟点位置</div>

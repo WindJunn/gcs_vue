@@ -1,40 +1,20 @@
 <template>
   <div>
-    <el-header
-      style="padding: 0px;display:flex;justify-content:space-between;align-items: center;height:5px"
-    ></el-header>
-
-    <div
-      style="width: 100%;height: 1px;background-color: #20a0ff;margin-top: 8px;margin-bottom: 0px;"
-    ></div>
-    <div style="width: 100%;height: 50px;margin-top: 8px;margin-bottom: 0px;">
-      <div>
-        <el-row>
-          <el-col :span="8">
-            身份证号:
-            <el-input
-              v-model="idCard"
-              size="mini"
-              placeholder="请输入身份证号"
-              style="width: 70%"
-            ></el-input>
-          </el-col>
-          
-          <el-col :span="7">
-            角色权限选择:
-            <el-select v-model="rid" placeholder="请选择" size="mini" style="width: 60%">
-              <el-option label="管理员" value="1"></el-option>
-              <el-option label="超级管理员" value="2"></el-option>
-            </el-select>
-          </el-col>
-          <el-button size="mini" type="primary" @click="addBusServer()">增加管理员</el-button>
-        </el-row>
+    <el-header style="padding: 0px;display:flex;justify-content:space-between;align-items: center">
+      <div style="margin-left: 5px;margin-right: 20px;display: inline">
+        <el-button
+          style="margin-right: 5px"
+          type="primary"
+          size="mini"
+          icon="el-icon-plus"
+          @click="showAddAdvView"
+        >添加数据</el-button>
       </div>
-    </div>
+    </el-header>
 
     <el-table
       ref="multipleTable"
-      :data="iusers"
+      :data="advertisements"
       tooltip-effect="dark"
       border
       stripe
@@ -44,26 +24,30 @@
       v-loading="loading"
     >
       <el-table-column type="selection" align="left" width="30"></el-table-column>
-       <el-table-column prop="name" align="left" fixed label="姓名" width="100"></el-table-column>
+      <el-table-column prop="name" align="left" fixed label="名称" width="200"></el-table-column>
 
-            <!-- <el-table-column prop="gender" label="性别" width="50"></el-table-column> -->
-
-            <el-table-column prop="idCard" width="250" align="left" label="身份证号码"></el-table-column>
-
-<el-table-column prop="roles[0].nameZh" label="角色" width="250"></el-table-column>
-
-
-      <el-table-column fixed="right" label="操作" width="100">
+      <el-table-column label="是否启用" width="80">
         <template slot-scope="scope">
-          <!-- <el-button size="mini" @click="showEditEmpView(scope.row)">编辑</el-button> -->
+          <el-switch
+            v-model="scope.row.enable"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="changeSwith($event,scope.row)"
+          >></el-switch>
+        </template>
+      </el-table-column>
+
+      <el-table-column prop="imageUrl" width="350" align="left" label="图片地址"></el-table-column>
+      <el-table-column prop="skipUrl" label="跳转地址" width="350"></el-table-column>
+      <el-table-column fixed="right" label="操作" width="200">
+        <template slot-scope="scope">
+          <el-button size="mini" @click="showEditAdv(scope.row)">编辑</el-button>
           <!-- <el-button size="mini" type="primary" @click="updateTop(scope.row)">置顶</el-button> -->
           <el-button size="mini" type="danger" @click="deleteServer(scope.row)">删除</el-button>
-
-          
         </template>
       </el-table-column>
     </el-table>
-    <!-- <div style="display: flex;justify-content: space-between;margin: 2px;">
+    <div style="display: flex;justify-content: space-between;margin: 2px;">
       <el-pagination
         background
         @size-change="handleSizeChange"
@@ -74,62 +58,136 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="totalCount"
       ></el-pagination>
-    </div> -->
+    </div>
+
+    <el-form :model="advertisement" ref="editUserForm" style="margin: 0px;padding: 0px;">
+      <div style="text-align: left">
+        <el-dialog
+          :title="dialogTitle"
+          style="padding: 0px;"
+          :close-on-click-modal="false"
+          :visible.sync="dialogVisible"
+          width="60%"
+        >
+          <el-row>
+            <el-col :span="10">
+              <div>
+                <el-form-item label="名称:" prop="name">
+                  <el-input
+                    prefix-icon="el-icon-edit"
+                    v-model="advertisement.name"
+                    size="mini"
+                    style="width: 80%"
+                    placeholder="请输入名称"
+                  ></el-input>
+                </el-form-item>
+              </div>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="18">
+              <div>
+                <el-form-item label="图片地址:" prop="phone">
+                  <el-input
+                    prefix-icon="el-icon-phone"
+                    v-model="advertisement.imageUrl"
+                    size="mini"
+                    style="width: 80%"
+                    placeholder="图片链接地址..."
+                  ></el-input>
+                </el-form-item>
+              </div>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="18">
+              <div>
+                <el-form-item label="跳转地址:" prop="phone">
+                  <el-input
+                    prefix-icon="el-icon-phone"
+                    v-model="advertisement.skipUrl"
+                    size="mini"
+                    style="width: 80%"
+                    placeholder="跳转地址..."
+                  ></el-input>
+                </el-form-item>
+              </div>
+            </el-col>
+          </el-row>
+
+          <span slot="footer" class="dialog-footer">
+            <el-button size="mini" @click="cancelEidt">取 消</el-button>
+            <el-button size="mini" type="primary" @click="addAdv('editUserForm')">确 定</el-button>
+          </span>
+        </el-dialog>
+      </div>
+    </el-form>
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
-      articles: [],
       selItems: [],
       loading: false,
       keywords: "",
+
+      dialogTitle: "",
+
       dialogVisible: false,
       dustbinData: [],
-      bus: [],
-      busId: "",
-      bustime: "",
-      route: "",
+      advertisements: [],
       totalCount: -1,
       currentPage: 1,
       pageSize: 10,
-      // activeName: "post",
-      idCard:"",
-      rid:"",
-      server: {
-        id: "",
-        busId: "",
-        bustime: "",
-        depart: 0,
-        number: "",
-        route: "",
-        audit: ""
+      advertisement: {
+        name: "",
+        imageUrl: "",
+        skipUrl: "",
+        enable: false
       },
-      busServer: []
+      adv: {
+        id:'',
+        name: "",
+        imageUrl: "",
+        skipUrl: "",
+        enable: ''
+      }
     };
   },
 
   mounted: function() {
     var _this = this;
-    this.loading = true;
     this.loadTableData();
-    // this.getAllBus();
-    // this.getbusconfig();
-
   },
   methods: {
-    getbusconfig() {
-      var _this = this;
-      this.getRequest("/busconfig/").then(resp => {
-        _this.loading = false;
+    changeSwith(vaule, row) {
+      this.adv.id = row.id;
+      this.adv.name = row.name;
+      this.adv.imageUrl = row.imageUrl;
+      this.adv.skipUrl = row.skipUrl;
+      this.adv.enable = row.enable;
+
+      this.putRequest("/advertisement/", this.adv).then(resp => {
         if (resp && resp.status == 200) {
-          _this.config = resp.data.config;
-          _this.checkeda = _this.config.buson == 1;
-          _this.checkedb = _this.config.busoff == 1;
+          this.emptyData();
+          this.loadTableData();
         }
       });
     },
+    loadTableData() {
+      var _this = this;
+      this.loading = true;
+      this.getRequest("/advertisement/all").then(resp => {
+        _this.loading = false;
+        if (resp && resp.status == 200) {
+          _this.advertisements = resp.data.obj.advertisement;
+          _this.totalCount = resp.data.obj.count;
+        }
+      });
+    },
+
     handleSizeChange(pageSize) {
       this.pageSize = pageSize;
       this.loadTableData();
@@ -138,38 +196,80 @@ export default {
       this.currentPage = currentChange;
       this.loadTableData();
     },
-    addBusServer() {
-      var _this = this;
-      this.tableLoading = true;
-      this.putRequest(
-        "/system/iuser/role?idCard=" +
-          this.idCard +
-          "&rid=" +
-          this.rid 
-      ).then(resp => {
-        _this.tableLoading = false;
-        if (resp && resp.status == 200) {
-          var data = resp.data;
-          _this.dialogVisible = false;
-          this.loadTableData();
-        }
-      });
-    },
-
-    showEditEmpView(row) {
-      // console.log(row);
-      this.dialogTitle = "编辑学员";
-      this.bus = row;
-      // this.bus.bustime = this.formatDate(row.bustime);
-      // this.bus.bustime = this.bus.bustime;
-
-      // this.bus.firstNumber = "";
-      // this.bus.lastNumber = "";
+    showEditAdv(row) {
+      this.dialogTitle = "编辑数据";
+      this.advertisement = row;
       this.dialogVisible = true;
+    },
+    showAddAdvView() {
+      this.emptyData();
+      this.dialogTitle = "添加数据";
+      this.dialogVisible = true;
+      var _this = this;
+      _this.user.enabled = true;
     },
     cancelEidt() {
       this.dialogVisible = false;
     },
+    deleteAdv(id) {
+      var _this = this;
+      this.deleteRequest("/advertisement/" + id).then(resp => {
+        if (resp && resp.status == 200) {
+          var data = resp.data;
+          this.loadTableData();
+        }
+      });
+    },
+    addAdv(formName) {
+      var _this = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          if (this.advertisement.id) {
+            //更新
+            this.tableLoading = true;
+            this.putRequest("/advertisement/", this.advertisement).then(
+              resp => {
+                _this.tableLoading = false;
+                if (resp && resp.status == 200) {
+                  var data = resp.data;
+
+                  _this.dialogVisible = false;
+                  this.emptyData();
+                  this.loadTableData();
+                }
+              }
+            );
+          } else {
+            //添加
+            this.tableLoading = true;
+            this.postRequest("/advertisement/", this.advertisement).then(
+              resp => {
+                _this.tableLoading = false;
+                if (resp && resp.status == 200) {
+                  var data = resp.data;
+
+                  _this.dialogVisible = false;
+                  _this.emptyData();
+                  _this.loadTableData();
+                }
+              }
+            );
+          }
+        } else {
+          return false;
+        }
+      });
+    },
+    emptyData() {
+      this.advertisement = {
+        id: "",
+        name: "",
+        imageUrl: "",
+        skipUrl: "",
+        enable: false
+      };
+    },
+
     searchClick() {
       this.loadBlogs(1, this.pageSize);
     },
@@ -182,18 +282,6 @@ export default {
       this.deleteToDustBin(selItems[0].state);
     },
 
-    loadTableData() {
-      var _this = this;
-      this.loading = true;
-      this.getRequest(
-        "/system/iuser/byrole").then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          _this.iusers = resp.data.iusers;
-          // _this.totalCount = resp.data.count;
-        }
-      });
-    },
     getAllBus() {
       var _this = this;
       this.getRequest("/iuser/bus/all").then(resp => {
@@ -207,70 +295,18 @@ export default {
       this.selItems = val;
     },
 
-    updateTop(row) {
-      var _this = this;
-      this.putRequest("/top/aid", {
-        aid: row.id
-      }).then(resp => {
-        if (resp && resp.status == 200) {
-        }
-      });
-    },
-    shield(row) {
-      var _this = this;
-
-      if (_this.checkeda) {
-        this.putRequest("/busServer/audit", {
-          audit: 1,
-          id: row.id,
-          status: 0
-        }).then(resp => {
-          if (resp && resp.status == 200) {
-            this.loadTableData();
-          }
-        });
-      } else {
-        this.putRequest("/busServer/shield", {
-          enable: 1,
-          id: row.id
-        }).then(resp => {
-          if (resp && resp.status == 200) {
-            this.loadTableData();
-          }
-        });
-      }
-    },
-    reshield(row) {
-      var _this = this;
-      if (_this.checkedb) {
-        this.putRequest("/busServer/audit", {
-          audit: 1,
-          id: row.id,
-          status: 0
-        }).then(resp => {
-          if (resp && resp.status == 200) {
-            this.loadTableData();
-          }
-        });
-      } else {
-        this.putRequest("/busServer/shield", {
-          enable: 0,
-          id: row.id
-        }).then(resp => {
-          if (resp && resp.status == 200) {
-            this.loadTableData();
-          }
-        });
-      }
-    },
     deleteServer(row) {
-      this.$confirm("此操作将删除[" + row.name + "]的管理员身份, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
+      this.$confirm(
+        "此操作将删除名称为[" + row.name + "]的数据, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
         .then(() => {
-          this.doDelete(row.id);
+          this.deleteAdv(row.id);
         })
         .catch(() => {});
     },
@@ -288,56 +324,6 @@ export default {
     handleDelete(index, row) {
       this.dustbinData.push(row.id);
       this.deleteToDustBin(row.state);
-    },
-    deleteToDustBin(state) {
-      var _this = this;
-      this.$confirm(
-        state != 2
-          ? "将该文件放入回收站，是否继续?"
-          : "永久删除该文件, 是否继续?",
-        "提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }
-      )
-        .then(() => {
-          _this.loading = true;
-          var url = "";
-          if (_this.state == -2) {
-            url = "/admin/article/dustbin";
-          } else {
-            url = "/article/dustbin";
-          }
-          putRequest(url, { aids: _this.dustbinData, state: state }).then(
-            resp => {
-              if (resp.status == 200) {
-                var data = resp.data;
-                _this.$message({ type: data.status, message: data.msg });
-                if (data.status == "success") {
-                  window.bus.$emit("blogTableReload"); //通过选项卡都重新加载数据
-                }
-              } else {
-                _this.$message({ type: "error", message: "删除失败!" });
-              }
-              _this.loading = false;
-              _this.dustbinData = [];
-            },
-            resp => {
-              _this.loading = false;
-              _this.$message({ type: "error", message: "删除失败!" });
-              _this.dustbinData = [];
-            }
-          );
-        })
-        .catch(() => {
-          _this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-          _this.dustbinData = [];
-        });
     }
   }
 };

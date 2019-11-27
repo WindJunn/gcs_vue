@@ -1,15 +1,29 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
+import store from '../store'
+
 axios.interceptors.request.use(config => {
   return config;
 }, err => {
   Message.error({ message: '请求超时!' });
   // return Promise.resolve(err);
 })
+
 axios.interceptors.response.use(data => {
+
+  let self = this;
   if (data.status && data.status == 200 && data.data.status == 500) {
     Message.error({ message: data.data.msg });
     return;
+  }
+  if (data.data.status == 501) {
+    // console.log(data.data)
+    // self.$router.replace({
+    //   path: "/"
+    // });
+
+    // 未登录，跳转到登录页
+    window.location.href = '/'
   }
   if (data.data.msg) {
     Message.success({ message: data.data.msg });
@@ -55,7 +69,7 @@ export const postsRequest = (url, params) => {
     method: 'post',
     url: `${base}${url}`,
     data: params,
-   
+
     headers: {
       'Content-Type': 'application/json'
     }

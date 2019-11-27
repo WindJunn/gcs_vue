@@ -187,26 +187,26 @@ export default {
         _this.loading = false;
         if (resp && resp.status == 200) {
           var data = resp.data;
-          if (data.obj.user.departmentId != 1) {
-            _this.$message({
-              type: "info",
-              message: "权限不足，已阻止登陆"
-            });
-            _this.getRequest("/logout");
-            _this.$store.commit("logout");
-            _this.$router.replace({ path: "/" });
-          } else {
-            _this.$store.commit("login", data.obj.user);
-            var path = _this.$route.query.redirect;
-            _this.$router.replace({
-              path: path == "/" || path == undefined ? "/home" : path
-            });
-          }
-          //  _this.$store.commit("login", data.obj.user);
+          // if (data.obj.user.departmentId != 1) {
+          //   _this.$message({
+          //     type: "info",
+          //     message: "权限不足，已退出登陆"
+          //   });
+          //   _this.getRequest("/logout");
+          //   _this.$store.commit("logout");
+          //   _this.$router.replace({ path: "/" });
+          // } else {
+          //   _this.$store.commit("login", data.obj.user);
           //   var path = _this.$route.query.redirect;
           //   _this.$router.replace({
           //     path: path == "/" || path == undefined ? "/home" : path
           //   });
+          // }
+           _this.$store.commit("login", data.obj.user);
+            var path = _this.$route.query.redirect;
+            _this.$router.replace({
+              path: path == "/" || path == undefined ? "/home" : path
+            });
         }
       });
     },
