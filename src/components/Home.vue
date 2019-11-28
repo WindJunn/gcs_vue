@@ -30,13 +30,13 @@
               style="background: #ececec;width: 180px ;"
               unique-opened
               router
-              default-active="/sys/iuser"
+              default-active="/sys/chart"
             >
               <template v-for="(item,index) in this.routes" v-if="!item.hidden">
                 <el-submenu :key="index" :index="index+''">
                   <template slot="title">
                     <i :class="item.iconCls" style="width: 14px;"></i>
-                    <span slot="title" >{{item.name}}</span>
+                    <span slot="title">{{item.name}}</span>
                   </template>
                   <el-menu-item
                     width="180px"
@@ -52,7 +52,7 @@
         </el-aside>
         <el-main>
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/sys/chart' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item v-text="this.$router.currentRoute.name"></el-breadcrumb-item>
           </el-breadcrumb>
           <keep-alive>
@@ -97,7 +97,7 @@ export default {
     goChat() {
       this.$router.push({ path: "/chat" });
     },
-   
+
     handleCommand(cmd) {
       var _this = this;
       if (cmd == "logout") {

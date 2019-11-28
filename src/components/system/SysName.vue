@@ -27,9 +27,9 @@
         <el-select v-model="evaluation.defectLocation" placeholder="请选择" style="margin-left:10px;">
           <el-option label="焊缝" value="1.0"></el-option>
           <el-option label="母材" value="0.0"></el-option>
-        </el-select> -->
+        </el-select>-->
 
-        <el-tag style="margin-left:20px;">测量裂纹半长度(c测量)</el-tag>
+        <el-tag style="margin-left:20px;">{{param[0].name}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
@@ -37,7 +37,7 @@
           clearable
         ></el-input>
 
-        <el-tag style="margin-left:20px;">测量裂纹半深度(a测量)</el-tag>
+        <el-tag style="margin-left:20px;">{{param[1].name}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
@@ -45,7 +45,7 @@
           clearable
         ></el-input>
 
-           <el-tag style="margin-left:20px;">计算裂纹半深度</el-tag>
+        <el-tag style="margin-left:20px;">{{param[10].name}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
@@ -55,12 +55,12 @@
       </div>
 
       <div style="display:flex;align-items: center;margin: 20px;">
-        <el-tag style="margin-left:20px;">是否返修</el-tag>
+        <el-tag style="margin-left:20px;">{{param[3].name}}</el-tag>
         <el-select v-model="evaluation.repairFactor" placeholder="请选择" style="margin-left:10px;">
           <el-option label="未返修" value="1.0"></el-option>
           <el-option label="返修" value="1.25"></el-option>
         </el-select>
-        <el-tag style="margin-left:20px;">材料屈服强度(σy)</el-tag>
+        <el-tag style="margin-left:20px;">{{param[2].name}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
@@ -68,7 +68,7 @@
           clearable
         ></el-input>
 
-        <el-tag style="margin-left:20px;">冲击功(CVN)</el-tag>
+        <el-tag style="margin-left:20px;">{{param[4].name}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
@@ -77,21 +77,21 @@
         ></el-input>
       </div>
       <div style="display:flex;align-items: center;margin: 20px;">
-        <el-tag style="margin-left:20px;">服役压力(P)</el-tag>
+        <el-tag style="margin-left:20px;">{{param[5].name}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
           v-model="evaluation.servicePressure"
           clearable
         ></el-input>
-        <el-tag style="margin-left:20px;">管外直径(D)</el-tag>
+        <el-tag style="margin-left:20px;">{{param[6].name}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
           v-model="evaluation.outsideDiameter"
           clearable
         ></el-input>
-        <el-tag style="margin-left:20px;">管壁厚(t)</el-tag>
+        <el-tag style="margin-left:20px;">{{param[7].name}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
@@ -100,21 +100,20 @@
         ></el-input>
       </div>
       <div style="display:flex;align-items: center;margin: 20px;">
-        <el-tag style="margin-left:20px;">错边因内压引起弯曲系数(e)</el-tag>
+        <el-tag style="margin-left:20px;">{{param[8].name}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
           v-model="evaluation.bendingCoefficients"
           clearable
         ></el-input>
-        <el-tag style="margin-left:20px;">地区等级</el-tag>
+        <el-tag style="margin-left:20px;">{{param[9].name}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
           v-model="evaluation.areaLevel"
           clearable
         ></el-input>
-     
       </div>
 
       <div>
@@ -152,6 +151,7 @@ export default {
       statusList: [],
       month: "",
       input: "",
+      param: [],
       evaluation: {
         // defectLocation: "1.0",
         measuringCrackLength: 16.5,
@@ -164,7 +164,7 @@ export default {
         wallThickness: 7.0,
         bendingCoefficients: 0.0,
         areaLevel: 4.0,
-        calculationCrackDepth:-1
+        calculationCrackDepth: -1
       },
       result: ""
     };
@@ -175,6 +175,7 @@ export default {
     // this.getImageUrls('');
     // this.getDevStatus();
     // this.getMonth();
+    this.loadTableData();
     var _this = this;
   },
   methods: {
@@ -182,7 +183,12 @@ export default {
       this.postsRequest("/evaluation/", this.evaluation).then(resp => {
         if (resp && resp.status == 200) {
           this.result =
-            "【Kr: " + resp.data.obj.Kr + " 】【Lr: " + resp.data.obj.Lr + "】"+resp.data.obj.result;
+            "【Kr: " +
+            resp.data.obj.Kr +
+            " 】【Lr: " +
+            resp.data.obj.Lr +
+            "】" +
+            resp.data.obj.result;
         }
         // console.log(resp);
       });
@@ -223,10 +229,13 @@ export default {
     loadTableData() {
       var _this = this;
       this.loading = true;
-      this.getRequest("/chart/").then(resp => {
+      this.getRequest("/evaluation/").then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {
-          _this.charts = resp.data;
+          console.log(resp.data);
+
+          _this.param = resp.data.obj;
+          console.log(_this.param);
         }
       });
     },

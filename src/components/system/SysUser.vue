@@ -174,27 +174,27 @@
           width="60%"
         >
           <el-row>
-            <el-col :span="7">
+            <el-col :span="8">
               <div>
                 <el-form-item label="姓名:" prop="name">
                   <el-input
                     prefix-icon="el-icon-edit"
                     v-model="user.name"
                     size="mini"
-                    style="width: 250px"
+                    style="width: 70%"
                     placeholder="请输入用户姓名"
                   ></el-input>
                 </el-form-item>
               </div>
             </el-col>
-            <el-col :span="7">
+            <el-col :span="10">
               <div>
                 <el-form-item label="电话号码:" prop="phone">
                   <el-input
                     prefix-icon="el-icon-phone"
                     v-model="user.phone"
                     size="mini"
-                    style="width: 200px"
+                    style="width: 70%"
                     placeholder="电话号码..."
                   ></el-input>
                 </el-form-item>
@@ -205,21 +205,20 @@
           <el-row>
            
 
-             <el-col :span="7">
+             <el-col :span="8">
               <div>
-                <el-form-item label="邮箱:" prop="phone">
+                <el-form-item label="邮箱:" >
                   <el-input
-                    prefix-icon="el-icon-phone"
                     v-model="user.email"
                     size="mini"
-                    style="width: 250px"
+                    style="width: 70%"
                     placeholder="邮箱..."
                   ></el-input>
                 </el-form-item>
               </div>
             </el-col>
 
-            <el-col :span="7">
+            <el-col :span="10">
               <div>
                 <el-form-item label="所属公司:" prop="departmentId">
                   <el-popover
@@ -237,7 +236,7 @@
                     ></el-tree>
                     <div
                       slot="reference"
-                      style="width: 200px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
+                      style="width: 70%;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
                       @click.left="showDepTree"
                       v-bind:style="{color: depTextColor}"
                     >{{user.departmentName}}</div>

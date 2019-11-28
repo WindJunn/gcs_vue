@@ -50,12 +50,12 @@
           </el-button>
         </el-upload>
         <el-button type="success" size="mini" @click="exportUsers">
-          <i class="fa fa-lg fa-level-down" style="margin-right: 5px"></i>导入评价数据
+          <i class="fa fa-lg fa-level-up" style="margin-right: 5px"></i>导入评价数据
         </el-button>
 
-        <el-button type="success" size="mini" @click="exportUsers">
+        <!-- <el-button type="success" size="mini" @click="exportUsers">
           <i class="fa fa-lg fa-level-down" style="margin-right: 5px"></i>导出数据
-        </el-button>
+        </el-button> -->
         <!-- <el-button type="primary" size="mini" icon="el-icon-plus" @click="showAddEmpView">添加记录</el-button> -->
       </div>
     </el-header>
@@ -78,8 +78,8 @@
       <el-table-column fixed prop="number" align="left" label="环焊缝编号" width="180"></el-table-column>
 
       <el-table-column prop="nondestructiveTestingResult" align="left" label="无损检测结果" width="280"></el-table-column>
-      <el-table-column width="150" label="检测时间">
-        <template slot-scope="scope">{{ scope.row.testTime | formatDate}}</template>
+      <el-table-column prop="testTime" width="150" label="检测时间">
+        <!-- <template slot-scope="scope">{{ scope.row.testTime | formatDate}}</template> -->
       </el-table-column>
       <el-table-column prop="applicabilityEvaluationResult" width="150" label="适用性评价结果"></el-table-column>
       <el-table-column prop="disposalAdvice" width="200" label="处置建议"></el-table-column>
@@ -95,8 +95,8 @@
       <el-table-column prop="poleLaying" width="90" label="钢管铺设"></el-table-column>
       <el-table-column prop="landscape" width="90" label="地貌"></el-table-column>-->
 
-      <el-table-column align="left" label="评价时间" width="150">
-        <template slot-scope="scope">{{ scope.row.createTime | formatDate}}</template>
+      <el-table-column prop="evaluateTime" align="left" label="评价时间" width="150">
+        <!-- <template slot-scope="scope">{{ scope.row.evaluateTime | formatDate}}</template> -->
       </el-table-column>
 
       <el-table-column fixed="right" label="操作" width="270">
@@ -764,7 +764,6 @@ export default {
       pipelineName: "",
       fileUploadBtnText: "导入检测数据",
 
-      fileUploadBtnText: "导入数据",
       faangledoubleup: "fa-angle-double-up",
       faangledoubledown: "fa-angle-double-down",
       multipleSelection: [],

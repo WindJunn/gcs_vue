@@ -205,7 +205,7 @@ export default {
            _this.$store.commit("login", data.obj.user);
             var path = _this.$route.query.redirect;
             _this.$router.replace({
-              path: path == "/" || path == undefined ? "/home" : path
+              path: path == "/" || path == undefined ? "/sys/chart" : path
             });
         }
       });
@@ -226,7 +226,7 @@ export default {
           _this.$store.commit("login", data.obj.user);
           var path = _this.$route.query.redirect;
           _this.$router.replace({
-            path: path == "/" || path == undefined ? "/home" : path
+            path: path == "/" || path == undefined ? "/sys/chart" : path
           });
         }
       });
