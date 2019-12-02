@@ -7,7 +7,7 @@
     <div
       style="width:80%;margin-left:10%;margin-top:20px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;"
     >
-      <div style="display:flex;align-items: center;margin-top:10px">
+      <!-- <div style="display:flex;align-items: center;margin-top:10px">
         <el-tag>是否开启期刊栏目</el-tag>
         <el-switch
           style="margin: 10px;"
@@ -15,7 +15,7 @@
           active-color="#13ce66"
           inactive-color="#ff4949"
         ></el-switch>
-      </div>
+      </div> -->
 
       <div style="display:flex;align-items: center;margin-top:30px">
         <el-tag>期刊链接修改</el-tag>

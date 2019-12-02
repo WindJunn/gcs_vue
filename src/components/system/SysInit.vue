@@ -49,13 +49,25 @@
             {{fileUploadBtnText}}
           </el-button>
         </el-upload>
-        <el-button type="success" size="mini" @click="exportUsers">
-          <i class="fa fa-lg fa-level-up" style="margin-right: 5px"></i>导入评价数据
-        </el-button>
+
+        <el-upload
+          :show-file-list="false"
+          accept=".xlsx"
+          action="/girth/importGirthWeldEvaluation"
+          :on-success="fileUploadSuccess"
+          :on-error="fileUploadError"
+          :disabled="fileUploadBtnText=='正在导入'"
+          :before-upload="beforeFileUpload"
+          style="display: inline"
+        >
+          <el-button type="success" size="mini" @click="exportUsers">
+            <i class="fa fa-lg fa-level-up" style="margin-right: 5px"></i>导入评价数据
+          </el-button>
+        </el-upload>
 
         <!-- <el-button type="success" size="mini" @click="exportUsers">
           <i class="fa fa-lg fa-level-down" style="margin-right: 5px"></i>导出数据
-        </el-button> -->
+        </el-button>-->
         <!-- <el-button type="primary" size="mini" icon="el-icon-plus" @click="showAddEmpView">添加记录</el-button> -->
       </div>
     </el-header>
@@ -133,564 +145,28 @@
         style="padding: 0px;"
         :close-on-click-modal="true"
         :visible.sync="dialogVisible"
-        width="77%"
+        width="90%"
       >
-        <el-row :gutter="20">
-          <el-col :span="4">
-            <div class="grid-content bg-purple">
-              管线名称:
-              <el-tag style="margin-left:20px;">{{weld.pipelineName}}</el-tag>
-            </div>
-          </el-col>
-          <el-col :span="4">
-            <div class="grid-content bg-purple">
-              <el-form-item label="环焊缝编号:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.number"
-                  size="mini"
-                  style="width: 60%"
-                  placeholder="请输入环焊缝编号"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="4">
-            <div class="grid-content bg-purple">
-              <el-form-item label="检测里程:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.checkMileage"
-                  size="mini"
-                  style="width: 60%"
-                  placeholder="请输入检测里程"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="4">
-            <div class="grid-content bg-purple">
-              <el-form-item label="钢级:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.steelGrade"
-                  size="mini"
-                  style="width: 60%"
-                  placeholder="请输入钢级"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="4">
-            <div class="grid-content bg-purple">
-              <el-form-item label="外径(mm):" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.diameter"
-                  size="mini"
-                  style="width: 60%"
-                  placeholder="请输入外径"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="4">
-            <div class="grid-content bg-purple">
-              <el-form-item label="设计壁厚(mm):" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.designWallThickness"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder="请输入设计壁厚"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :span="4">
-            <div class="grid-content bg-purple">
-              <el-form-item label="线路地区级别:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.lineAreaLevel"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder="请输入线路地区级别"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="4">
-            <div class="grid-content bg-purple">
-              <el-form-item label="设计压力(MPa):" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.designPressure"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder="请输入设计压力"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="4">
-            <div class="grid-content bg-purple">
-              <el-form-item label="高后果区:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.highConsequenceAreas"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder="请输入高后果区"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="4">
-            <div class="grid-content bg-purple">
-              <el-form-item label="钢管铺设:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.poleLaying"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder="请输入钢管铺设"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="4">
-            <div class="grid-content bg-purple">
-              <el-form-item label="地貌:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.landscape"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder="请输入地貌"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="4">
-            <div class="grid-content bg-purple">
-              <el-form-item label="是否为连头口:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.connector"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder="请输入是否为连头口"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <div class="grid-content bg-purple">
-              <el-form-item label="环焊缝上下游管节长度:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.upstreamPipe"
-                  size="mini"
-                  style="width: 30%"
-                  placeholder="请输入上游管节长度"
-                ></el-input>
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.downstreamPipe"
-                  size="mini"
-                  style="width: 30%"
-                  placeholder="请输入下游管节长度"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="12">
-            <div class="grid-content bg-purple">
-              <el-form-item label="补口带外观检查:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.patchOutwardTest"
-                  size="mini"
-                  style="width: 80%"
-                  placeholder="请输入补口带外观检查"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="4">
-            <div class="grid-content bg-purple">
-              <el-form-item label="补口带厚度mm:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.patchThickness"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder="请输入补口带厚度"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <div class="grid-content bg-purple">
-              <el-form-item label="补口带电火花检测:" prop="name">
-                电压:
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.patchVoltage"
-                  size="mini"
-                  style="width: 30%"
-                  placeholder="请输入电压"
-                ></el-input>结果:
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.patchVoltageResult"
-                  size="mini"
-                  style="width: 30%"
-                  placeholder="请输入结果"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="12">
-            <div class="grid-content bg-purple">
-              <el-form-item label="补口带剥离强度测试:" prop="name">
-                温度:
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.patchTemperature"
-                  size="mini"
-                  style="width: 30%"
-                  placeholder="请输入温度"
-                ></el-input>结果:
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.patchTemperatureResult"
-                  size="mini"
-                  style="width:30%"
-                  placeholder="请输入结果"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-        </el-row>
-        
-        环焊缝外观检测结果:
-        <el-row :gutter="20">
-          <el-col :offset="2" :span="6">
-            <div class="grid-content bg-purple">钟点位置</div>
-          </el-col>
-          <el-col :span="1">
-            <div class="grid-content bg-purple">0点</div>
-          </el-col>
-          <el-col :span="1">
-            <div class="grid-content bg-purple">1点</div>
-          </el-col>
-          <el-col :span="1">
-            <div class="grid-content bg-purple">2点</div>
-          </el-col>
-          <el-col :span="1">
-            <div class="grid-content bg-purple">3点</div>
-          </el-col>
-          <el-col :span="1">
-            <div class="grid-content bg-purple">4点</div>
-          </el-col>
-          <el-col :span="1">
-            <div class="grid-content bg-purple">5点</div>
-          </el-col>
-          <el-col :span="1">
-            <div class="grid-content bg-purple">6点</div>
-          </el-col>
-          <el-col :span="1">
-            <div class="grid-content bg-purple">7点</div>
-          </el-col>
-          <el-col :span="1">
-            <div class="grid-content bg-purple">8点</div>
-          </el-col>
-          <el-col :span="1">
-            <div class="grid-content bg-purple">9点</div>
-          </el-col>
-          <el-col :span="1">
-            <div class="grid-content bg-purple">10点</div>
-          </el-col>
-          <el-col :span="1">
-            <div class="grid-content bg-purple">11点</div>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :offset="2" :span="6">
-            <div class="grid-content bg-purple">上游管壁测厚mm</div>
-          </el-col>
-          <div v-for="o in upstreamPipe" :key="o" class="text item">
-            <el-col :span="1">
-              <div class="grid-content bg-purple">{{o}}</div>
-            </el-col>
-          </div>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :offset="2" :span="6">
-            <div class="grid-content bg-purple">下游管壁测厚mm</div>
-          </el-col>
-          <div v-for="o in downstreamPipe" :key="o" class="text item">
-            <el-col :span="1">
-              <div class="grid-content bg-purple">{{o}}</div>
-            </el-col>
-          </div>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :offset="2" :span="6">
-            <div class="grid-content bg-purple">焊缝宽度mm</div>
-          </el-col>
-          <div v-for="o in weldWidth" :key="o" class="text item">
-            <el-col :span="1">
-              <div class="grid-content bg-purple">{{o}}</div>
-            </el-col>
-          </div>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :offset="2" :span="6">
-            <div class="grid-content bg-purple">焊缝余高mm</div>
-          </el-col>
-          <div v-for="o in weldHight" :key="o" class="text item">
-            <el-col :span="1">
-              <div class="grid-content bg-purple">{{o }}</div>
-            </el-col>
-          </div>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :offset="2" :span="6">
-            <div class="grid-content bg-purple">错边量mm</div>
-          </el-col>
-          <div v-for="o in cuoBian" :key="o" class="text item">
-            <el-col :span="1">
-              <div class="grid-content bg-purple">{{o}}</div>
-            </el-col>
-          </div>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :offset="1" :span="5">
-            <div class="grid-content bg-purple">
-              <el-form-item label="上下游钢管焊缝错开间距:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.staggerSpacing"
-                  size="mini"
-                  style="width: 30%"
-                  placeholder="请输入"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="16">
-            <div class="grid-content bg-purple">
-              <el-form-item label="外观检测:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.outwardResult"
-                  size="mini"
-                  style="width: 90%"
-                  placeholder="请输入外观检测"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :offset="1" :span="21">
-            <div class="grid-content bg-purple">
-              <el-form-item label="内检测异常点钟及尺寸:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.abnormalPoints"
-                  size="mini"
-                  style="width: 80%"
-                  placeholder="请输入内检测异常点钟及尺寸"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-        </el-row>环焊缝无损检测结果:
+        环焊缝安全评价结果:
         <el-row :gutter="20">
           <el-col :offset="1" :span="4">
-            <div class="grid-content bg-purple">磁粉/渗透</div>
-          </el-col>
-          <el-col :span="8">
-            <div class="grid-content bg-purple">
-              <el-input
-                prefix-icon="el-icon-edit"
-                v-model="weld.magneticParticleStandard"
-                size="mini"
-                style="width:100%"
-                placeholder="请输入标准"
-              ></el-input>
-            </div>
-          </el-col>
-          <el-col :span="10">
-            <div class="grid-content bg-purple">
-              <el-input
-                prefix-icon="el-icon-edit"
-                v-model="weld.magneticParticleTest"
-                size="mini"
-                style="width:100%"
-                placeholder="请输入结果"
-              ></el-input>
-            </div>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :offset="1" :span="4">
-            <div class="grid-content bg-purple">超声</div>
-          </el-col>
-          <el-col :span="8">
-            <div class="grid-content bg-purple">
-              <el-input
-                prefix-icon="el-icon-edit"
-                v-model="weld.magneticParticleStandard"
-                size="mini"
-                style="width:100%"
-                placeholder="请输入标准"
-              ></el-input>
-            </div>
-          </el-col>
-          <el-col :span="10">
-            <div class="grid-content bg-purple">
-              <el-input
-                prefix-icon="el-icon-edit"
-                v-model="weld.magneticParticleTest"
-                size="mini"
-                style="width:100%"
-                placeholder="请输入结果"
-              ></el-input>
-            </div>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :offset="1" :span="4">
-            <div class="grid-content bg-purple">相控阵</div>
-          </el-col>
-          <el-col :span="8">
-            <div class="grid-content bg-purple">
-              <el-input
-                prefix-icon="el-icon-edit"
-                v-model="weld.magneticParticleStandard"
-                size="mini"
-                style="width:100%"
-                placeholder="请输入标准"
-              ></el-input>
-            </div>
-          </el-col>
-          <el-col :span="10">
-            <div class="grid-content bg-purple">
-              <el-input
-                prefix-icon="el-icon-edit"
-                v-model="weld.magneticParticleTest"
-                size="mini"
-                style="width:100%"
-                placeholder="请输入结果"
-              ></el-input>
-            </div>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :offset="1" :span="4">
-            <div class="grid-content bg-purple">射线</div>
-          </el-col>
-          <el-col :span="8">
-            <div class="grid-content bg-purple">
-              <el-input
-                prefix-icon="el-icon-edit"
-                v-model="weld.magneticParticleStandard"
-                size="mini"
-                style="width:100%"
-                placeholder="请输入标准"
-              ></el-input>
-            </div>
-          </el-col>
-          <el-col :span="10">
-            <div class="grid-content bg-purple">
-              <el-input
-                prefix-icon="el-icon-edit"
-                v-model="weld.magneticParticleTest"
-                size="mini"
-                style="width:100%"
-                placeholder="请输入结果"
-              ></el-input>
-            </div>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :offset="1" :span="4">
-            <div class="grid-content bg-purple">TOFD</div>
-          </el-col>
-          <el-col :span="8">
-            <div class="grid-content bg-purple">
-              <el-input
-                prefix-icon="el-icon-edit"
-                v-model="weld.magneticParticleStandard"
-                size="mini"
-                style="width:100%"
-                placeholder="请输入标准"
-              ></el-input>
-            </div>
-          </el-col>
-          <el-col :span="10">
-            <div class="grid-content bg-purple">
-              <el-input
-                prefix-icon="el-icon-edit"
-                v-model="weld.magneticParticleTest"
-                size="mini"
-                style="width:100%"
-                placeholder="请输入结果"
-              ></el-input>
-            </div>
-          </el-col>
-        </el-row>环焊缝安全评价结果:
-        <el-row :gutter="20">
-          <el-col :offset="1" :span="4">
-            <div class="grid-content bg-purple">
+            <div class="grid-content">
               <el-form-item label="Kr:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.kr"
-                  size="mini"
-                  style="width: 50%"
-                  placeholder="请输入Kr"
-                ></el-input>
+                <el-input v-model="weld.kr" size="mini" style="width: 50%" placeholder="请输入Kr"></el-input>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="4">
-            <div class="grid-content bg-purple">
+            <div class="grid-content">
               <el-form-item label="Lr:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.lr"
-                  size="mini"
-                  style="width: 50%"
-                  placeholder="请输入Lr"
-                ></el-input>
+                <el-input v-model="weld.lr" size="mini" style="width: 50%" placeholder="请输入Lr"></el-input>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="6">
-            <div class="grid-content bg-purple">
+            <div class="grid-content">
               <el-form-item label="评价结果:" prop="name">
                 <el-input
-                  prefix-icon="el-icon-edit"
                   v-model="weld.applicabilityEvaluationResult"
                   size="mini"
                   style="width: 70%"
@@ -701,15 +177,9 @@
           </el-col>
 
           <el-col :span="6">
-            <div class="grid-content bg-purple">
+            <div class="grid-content">
               <el-form-item label="评价日期:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.evaluateTime"
-                  size="mini"
-                  style="width: 70%"
-                  placeholder="请输入评价日期"
-                ></el-input>
+                <el-input v-model="weld.evaluateTime" size="mini" style="width: 70%" placeholder></el-input>
               </el-form-item>
             </div>
           </el-col>
@@ -717,32 +187,481 @@
 
         <el-row :gutter="20">
           <el-col :offset="1" :span="10">
-            <div class="grid-content bg-purple">
+            <div class="grid-content">
               <el-form-item label="结论:" prop="name">
-                <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.conclusion"
-                  size="mini"
-                  style="width: 80%"
-                  placeholder="请输入结论"
-                ></el-input>
+                <el-input v-model="weld.conclusion" size="mini" style="width: 80%" placeholder></el-input>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="10">
-            <div class="grid-content bg-purple">
+            <div class="grid-content">
               <el-form-item label="处置建议:" prop="name">
+                <el-input v-model="weld.disposalAdvice" size="mini" style="width: 80%" placeholder></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <hr />环焊缝基础信息
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <div class="grid-content">
+              管线名称:
+              <el-tag style="margin-left:20px;">{{weld.pipelineName}}</el-tag>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-form-item label="环焊缝编号:" prop="name">
+                <el-tag>{{weld.number}}</el-tag>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-form-item label="检测里程:" prop="name">
+                <el-input v-model="weld.checkMileage" size="mini" style="width: 60%" placeholder></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-form-item label="钢级:" prop="name">
                 <el-input
-                  prefix-icon="el-icon-edit"
-                  v-model="weld.disposalAdvice"
+                  v-model="weld.steelGrade"
                   size="mini"
-                  style="width: 80%"
-                  placeholder="请输入处置建议"
+                  style="width: 60%"
+                  placeholder="请输入钢级"
                 ></el-input>
               </el-form-item>
             </div>
           </el-col>
         </el-row>
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-form-item label="外径(mm):" prop="name">
+                <el-input
+                  v-model="weld.diameter"
+                  size="mini"
+                  style="width: 60%"
+                  placeholder="请输入外径"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-form-item label="设计壁厚(mm):" prop="name">
+                <el-input
+                  v-model="weld.designWallThickness"
+                  size="mini"
+                  style="width: 40%"
+                  placeholder="请输入设计壁厚"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-form-item label="线路地区级别:" prop="name">
+                <el-input
+                  v-model="weld.lineAreaLevel"
+                  size="mini"
+                  style="width: 40%"
+                  placeholder="请输入线路地区级别"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-form-item label="设计压力(MPa):" prop="name">
+                <el-input
+                  v-model="weld.designPressure"
+                  size="mini"
+                  style="width: 40%"
+                  placeholder="请输入设计压力"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-form-item label="高后果区:" prop="name">
+                <el-input
+                  v-model="weld.highConsequenceAreas"
+                  size="mini"
+                  style="width: 40%"
+                  placeholder="请输入高后果区"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-form-item label="钢管铺设:" prop="name">
+                <el-input
+                  v-model="weld.poleLaying"
+                  size="mini"
+                  style="width: 40%"
+                  placeholder="请输入钢管铺设"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-form-item label="地貌:" prop="name">
+                <el-input
+                  v-model="weld.landscape"
+                  size="mini"
+                  style="width: 40%"
+                  placeholder="请输入地貌"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-form-item label="是否为连头口:" prop="name">
+                <el-input v-model="weld.connector" size="mini" style="width: 40%" placeholder></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <div class="grid-content">
+              <el-form-item label="环焊缝上下游管节长度:" prop="name">
+                <el-input v-model="weld.upstreamPipe" size="mini" style="width: 30%" placeholder></el-input>
+                <el-input v-model="weld.downstreamPipe" size="mini" style="width: 30%" placeholder></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="grid-content">
+              <el-form-item label="补口带厚度mm:" prop="name">
+                <el-input v-model="weld.patchThickness" size="mini" style="width: 50%" placeholder></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="20">
+            <div>
+              <el-form-item label="补口带外观检查:" prop="name">
+                <el-input
+                  v-model="weld.patchOutwardTest"
+                  size="mini"
+                  style="width: 80%"
+                  placeholder
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <div class="grid-content">
+              <el-form-item label="补口带电火花检测:" prop="name">
+                电压:
+                <el-input v-model="weld.patchVoltage" size="mini" style="width: 25%" placeholder></el-input>结果:
+                <el-input
+                  v-model="weld.patchVoltageResult"
+                  size="mini"
+                  style="width: 25%"
+                  placeholder
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="grid-content">
+              <el-form-item label="补口带剥离强度测试:" prop="name">
+                温度:
+                <el-input
+                  v-model="weld.patchTemperature"
+                  size="mini"
+                  style="width: 25%"
+                  placeholder
+                ></el-input>结果:
+                <el-input
+                  v-model="weld.patchTemperatureResult"
+                  size="mini"
+                  style="width:25%"
+                  placeholder
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <hr />环焊缝外观检测结果:
+        <el-row :gutter="20">
+          <el-col :offset="2" :span="6">
+            <div class="grid-content">钟点位置</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">0点</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">1点</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">2点</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">3点</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">4点</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">5点</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">6点</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">7点</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">8点</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">9点</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">10点</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">11点</div>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :offset="2" :span="6">
+            <div class="grid-content">上游管壁测厚mm</div>
+          </el-col>
+          <div v-for="(o,index) in upstreamPipe" :key="index" class="text item">
+            <el-col :span="1">
+              <div class="grid-content">{{o}}</div>
+            </el-col>
+          </div>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :offset="2" :span="6">
+            <div class="grid-content">下游管壁测厚mm</div>
+          </el-col>
+          <div v-for="(o,index) in downstreamPipe" :key="index" class="text item">
+            <el-col :span="1">
+              <div class="grid-content">{{o}}</div>
+            </el-col>
+          </div>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :offset="2" :span="6">
+            <div class="grid-content">焊缝宽度mm</div>
+          </el-col>
+          <div v-for="(o,index) in weldWidth" :key="index" class="text item">
+            <el-col :span="1">
+              <div class="grid-content">{{o}}</div>
+            </el-col>
+          </div>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :offset="2" :span="6">
+            <div class="grid-content">焊缝余高mm</div>
+          </el-col>
+          <div v-for="(o,index) in weldHight" :key="index" class="text item">
+            <el-col :span="1">
+              <div class="grid-content">{{o }}</div>
+            </el-col>
+          </div>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :offset="2" :span="6">
+            <div class="grid-content">错边量mm</div>
+          </el-col>
+          <div v-for="(o,index) in cuoBian" :key="index" class="text item">
+            <el-col :span="1">
+              <div class="grid-content">{{o}}</div>
+            </el-col>
+          </div>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :offset="1" :span="7">
+            <div class="grid-content">
+              <el-form-item label="上下游钢管焊缝错开间距:" prop="name">
+                <el-input
+                  v-model="weld.staggerSpacing"
+                  size="mini"
+                  style="width: 35%"
+                  placeholder="请输入"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="14">
+            <div class="grid-content">
+              <el-form-item label="外观检测:" prop="name">
+                <el-input
+                  v-model="weld.outwardResult"
+                  size="mini"
+                  style="width: 70%"
+                  placeholder="请输入外观检测"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :offset="1" :span="21">
+            <div class="grid-content">
+              <el-form-item label="内检测异常点钟及尺寸:" prop="name">
+                <el-input
+                  v-model="weld.abnormalPoints"
+                  size="mini"
+                  style="width: 80%"
+                  placeholder=""
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>环焊缝无损检测结果:
+        <el-row :gutter="20">
+          <el-col :offset="1" :span="4">
+            <div class="grid-content">磁粉/渗透</div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-input
+                v-model="weld.magneticParticleStandard"
+                size="mini"
+                style="width:100%"
+                placeholder
+              ></el-input>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="grid-content">
+              <el-input
+                type="textarea"
+                v-model="weld.magneticParticleTest"
+                size="mini"
+                style="width:100%"
+                placeholder
+              ></el-input>
+            </div>
+          </el-col>
+        </el-row>
+
+                
+        <el-row :gutter="20" style="margin-top:15px">
+          <el-col :offset="1" :span="4">
+            <div class="grid-content">超声</div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-input
+                v-model="weld.ultrasonicStandard"
+                size="mini"
+                style="width:100%"
+                placeholder
+              ></el-input>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="grid-content">
+              <el-input
+                type="textarea"
+                v-model="weld.ultrasonicTest"
+                size="mini"
+                style="width:100%"
+                placeholder
+              ></el-input>
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top:15px">
+          <el-col :offset="1" :span="4">
+            <div class="grid-content">相控阵</div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-input
+                v-model="weld.xiangkongzhenStandard"
+                size="mini"
+                style="width:100%"
+                placeholder
+              ></el-input>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="grid-content">
+              <el-input
+                type="textarea"
+                v-model="weld.xiangkongzhenTest"
+                size="mini"
+                style="width:100%"
+                placeholder
+              ></el-input>
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top:15px">
+          <el-col :offset="1" :span="4">
+            <div class="grid-content">射线</div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-input
+                v-model="weld.radiographicStandard"
+                size="mini"
+                style="width:100%"
+                placeholder
+              ></el-input>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="grid-content">
+              <el-input
+                type="textarea"
+                v-model="weld.radiographicTest"
+                size="mini"
+                style="width:100%"
+                placeholder
+              ></el-input>
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top:15px">
+          <el-col :offset="1" :span="4">
+            <div class="grid-content">TOFD</div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-input v-model="weld.tofdStandard" size="mini" style="width:100%" placeholder></el-input>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="grid-content">
+              <el-input
+                type="textarea"
+                v-model="weld.tofdTest"
+                size="mini"
+                style="width:100%"
+                placeholder
+              ></el-input>
+            </div>
+          </el-col>
+        </el-row>
+        <hr />
       </el-dialog>
     </el-form>
   </div>
@@ -830,12 +749,13 @@ export default {
       if (response) {
         this.$message({ type: response.status, message: response.msg });
       }
-      // this.loadEmps();
-      this.fileUploadBtnText = "导入数据";
+      this.loadTableData();
+
+      this.fileUploadBtnText = "导入检测数据";
     },
     fileUploadError(err, file, fileList) {
       this.$message({ type: "error", message: "导入失败!" });
-      this.fileUploadBtnText = "导入数据";
+      this.fileUploadBtnText = "导入检测数据";
     },
     beforeFileUpload(file) {
       this.fileUploadBtnText = "正在导入";
@@ -1059,7 +979,7 @@ export default {
     doDelete(id) {
       this.tableLoading = true;
       var _this = this;
-      this.deleteRequest("/busServer/" + id).then(resp => {
+      this.deleteRequest("/girth/" + id).then(resp => {
         _this.tableLoading = false;
         if (resp && resp.status == 200) {
           var data = resp.data;
@@ -1149,7 +1069,7 @@ export default {
   color: #09c0f6;
 }
 .el-row {
-  margin-bottom: 20px;
+  margin-bottom: 1px;
   &:last-child {
     margin-bottom: 0;
   }
@@ -1157,13 +1077,13 @@ export default {
 .el-col {
   border-radius: 4px;
 }
-.bg-purple-dark {
+.-dark {
   background: #99a9bf;
 }
-.bg-purple {
+. {
   background: #d3dce6;
 }
-.bg-purple-light {
+.-light {
   background: #e5e9f2;
 }
 .grid-content {

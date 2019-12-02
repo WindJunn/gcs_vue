@@ -425,7 +425,7 @@ export default {
       var _this = this;
       this.dialogVisible3 = false;
       this.treeLoading = true;
-      this.putRequest("/system/iuser/roles", {
+      this.putRequest("/system/user/roles", {
         hrId: _this.hrId,
         rids: [rid]
       }).then(resp => {
@@ -459,7 +459,7 @@ export default {
       this.fileUploadBtnText = "正在导入";
     },
     exportUsers() {
-      window.open("/system/iuser/exportUsers", "_parent");
+      window.open("/system/user/exportUsers", "_parent");
     },
     exportData() {
       var _this = this;
@@ -520,7 +520,7 @@ export default {
     doDelete(ids) {
       this.tableLoading = true;
       var _this = this;
-      this.deleteRequest("/system/iuser/" + ids).then(resp => {
+      this.deleteRequest("/system/user/" + ids).then(resp => {
         _this.tableLoading = false;
         if (resp && resp.status == 200) {
           var data = resp.data;
@@ -532,7 +532,7 @@ export default {
     doDeleteRelation(ids) {
       this.tableLoading = true;
       var _this = this;
-      this.deleteRequest("/system/iuser/" + ids).then(resp => {
+      this.deleteRequest("/system/user/" + ids).then(resp => {
         _this.tableLoading = false;
         if (resp && resp.status == 200) {
           var data = resp.data;
@@ -632,7 +632,7 @@ export default {
     addUser() {
       var _this = this;
       this.tableLoading = true;
-      this.postRequest("/system/iuser/", this.iuser).then(resp => {
+      this.postRequest("/system/user/", this.user).then(resp => {
         _this.tableLoading = false;
         if (resp && resp.status == 200) {
           var data = resp.data;
@@ -645,7 +645,7 @@ export default {
     },
 
     resetPassword(row) {
-      this.postRequest("/system/iuser/password", {
+      this.postRequest("/system/user/password", {
         username: row.username,
         password: "123"
       }).then(resp => {
@@ -703,7 +703,7 @@ export default {
           return;
         }
       }
-      this.putRequest("/system/iuser/roles", {
+      this.putRequest("/system/user/roles", {
         hrId: hrId,
         rids: this.selRoles
       }).then(resp => {
@@ -744,8 +744,8 @@ export default {
       var _this = this;
       this.dialogVisible4 = true;
       _this.getRelationsByParentId(row.id);
-      this.iuser.parentId = row.id;
-      this.iuser.enabled = row.enabled;
+      this.user.parentId = row.id;
+      this.user.enabled = row.enabled;
     },
 
     cancelEidt() {
@@ -785,27 +785,22 @@ export default {
 
     showEditEmpView(row) {
       console.log(row);
-      this.dialogTitle = "编辑用户";
-      this.user = row;
-      // this.user.birthday = this.formatDate(row.birthday);
-
-      // this.user.posId = row.nation.id;
-      // this.user.posId = row.position.id;
-      this.user.departmentId = row.department.id;
-      this.user.departmentName = row.department.name;
-
       this.dialogVisible = true;
 
+      this.dialogTitle = "编辑用户";
+      // this.user = row;
+      this.user.departmentId = row.department.id;
+      this.user.departmentName = row.department.name;
       this.user.id = row.id;
-      // this.user.name = this.user.name;
+      this.user.name = row.name;
       // this.user.gender = this.user.gender;
-      // this.user.phone = this.user.phone;
+      this.user.phone = row.phone;
       // this.user.address = this.user.address;
       // this.user.departmentId = this.user.departmentId;
       // this.user.departmentName = this.user.departmentName;
       // this.user.enabled = this.user.enabled;
       // this.user.idCard = this.user.idCard;
-      // this.user.email = this.user.email;
+      this.user.email = row.email;
       // this.user.birthday = this.user.birthday;
       // this.user.posId = this.user.posId;
       // this.user.username = this.user.idCard;

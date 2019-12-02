@@ -37,7 +37,7 @@
     <div id="pipelineDefectNo" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
     <div
       id="pipelineDefectFix"
-      :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"
+      :style="{width: '48%', height: '45%',borderRight:'1px solid #e4e4e4'}"
     ></div>
     <div id="totalResult" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
     <div id="totalAdvices" :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"></div>
@@ -55,7 +55,7 @@
  */
 .echarts {
   width: 40%;
-  height: 25%;
+  height: 35%;
 }
 .echarts-content {
   width: 100%;
@@ -171,24 +171,24 @@ export default {
           /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
           formatter: "{a} {b} : ({c}道) {d}%"
         },
-        legend: {
-          x: "70%",
-          y: "25%",
-          orient: "vertical",
-          left: "left",
-          itemWidth: 10,
-          itemHeight: 10,
-          selectedMode: false, //禁止点击
-          textStyle: {
-            fontSize: 12,
-            color: "#999"
-          },
-          formatter: function(name) {
-            //避免文字太长做省略处理
-            return name.length > 4 ? name.slice(0, 4) + "..." : name;
-          },
-          data: []
-        },
+        // legend: {
+        //   x: "70%",
+        //   y: "25%",
+        //   orient: "vertical",
+        //   left: "left",
+        //   itemWidth: 10,
+        //   itemHeight: 10,
+        //   selectedMode: false, //禁止点击
+        //   textStyle: {
+        //     fontSize: 12,
+        //     color: "#999"
+        //   },
+        //   formatter: function(name) {
+        //     //避免文字太长做省略处理
+        //     return name.length > 4 ? name.slice(0, 4) + "..." : name;
+        //   },
+        //   data: []
+        // },
         series: [
           {
             name: "",
@@ -1030,7 +1030,7 @@ export default {
 
           this.pipelineDefect.series[0].data = d;
           d.forEach(element => {
-            this.pipelineDefect.legend.data.push(element.name);
+            // this.pipelineDefect.legend.data.push(element.name);
           });
 
           this.pipelineDefectNo.series[0].data = d1;
@@ -1125,28 +1125,28 @@ export default {
       let self = this;
 
       pipelineDefect.on("click", function(params) {
-        let s = params.data.query.split("=")[2];
+        let s = params.data.query.split("=")[1];
         self.$router.push({
           path: "/sys/init",
-          query: { defectId: 1, pipelineName: s }
+          query: {  pipelineName: s }
         });
       });
 
       pipelineDefectNo.setOption(this.pipelineDefectNo);
       pipelineDefectNo.on("click", function(params) {
-        let s = params.data.query.split("=")[3];
+        let s = params.data.query.split("=")[2];
 
         self.$router.push({
           path: "/sys/init",
-          query: { defectId: 1, evaluationResultId: 2, pipelineName: s }
+          query: {  evaluationResultId: 2, pipelineName: s }
         });
       });
       pipelineDefectFix.setOption(this.pipelineDefectFix);
       pipelineDefectFix.on("click", function(params) {
-        let s = params.data.query.split("=")[3];
+        let s = params.data.query.split("=")[2];
         self.$router.push({
           path: "/sys/init",
-          query: { defectId: 1, disposalAdviceIdNo: 1, pipelineName: s }
+          query: {  disposalAdviceIdNo: 1, pipelineName: s }
         });
       });
       totalResult.setOption(this.totalResult);
@@ -1185,26 +1185,26 @@ export default {
       });
       companyDefect.setOption(this.companyDefect);
       companyDefect.on("click", function(params) {
-        let s = params.data.query.split("=")[2];
+        let s = params.data.query.split("=")[1];
         self.$router.push({
           path: "/sys/init",
-          query: { defectId: 1, departmentId: s }
+          query: {  departmentId: s }
         });
       });
       companyDefectNo.setOption(this.companyDefectNo);
       companyDefectNo.on("click", function(params) {
-        let s = params.data.query.split("=")[3];
+        let s = params.data.query.split("=")[2];
         self.$router.push({
           path: "/sys/init",
-          query: { defectId: 1, evaluationResultId: 2, departmentId: s }
+          query: {  evaluationResultId: 2, departmentId: s }
         });
       });
       companyDefectFix.setOption(this.companyDefectFix);
       companyDefectFix.on("click", function(params) {
-        let s = params.data.query.split("=")[3];
+        let s = params.data.query.split("=")[2];
         self.$router.push({
           path: "/sys/init",
-          query: { defectId: 1, disposalAdviceIdNo: 1, departmentId: s }
+          query: { disposalAdviceIdNo: 1, departmentId: s }
         });
       });
     },
