@@ -18,6 +18,8 @@ import { isNotNullORBlank } from './utils/utils'
 import './utils/filter_utils'
 import 'font-awesome/css/font-awesome.min.css'
 
+// import './components/bg.styl'
+
 
 import VueRouter from 'vue-router'
 

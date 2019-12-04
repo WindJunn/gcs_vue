@@ -29,15 +29,40 @@
           <span :class="{spanActive:echartNum==3}" @click="echartIsShow('3')"></span>
         </el-tooltip>
   </div>-->
-  <div
-    style="width:100%;height: 100%; margin-top:30px;   display: flex;
-    justify-content: center; flex-wrap: wrap;"
-  >
+
+  <div style="width:100%;height: 100%; margin-top:30px;display: flex; justify-content: center; flex-wrap: wrap;">
+    <div :style="{width: '48%', height: '300px',marginLeft:'30px'}">
+      <div>
+        
+        <el-tag>所属公司:</el-tag>
+        <el-popover
+          v-model="showOrHidePop2"
+          placement="right"
+          title="请选择公司"
+          trigger="manual"
+          style="width:250px"
+        >
+          <el-tree
+            :data="deps"
+            :default-expand-all="false"
+            :props="defaultProps"
+            :expand-on-click-node="false"
+            @node-click="handleNodeClick2"
+          ></el-tree>
+          <div
+            slot="reference"
+            style="width: 250px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
+            @click="showDepTree2"
+            v-bind:style="{color: depTextColor}"
+          >{{departmetn.departmentName}}</div>
+        </el-popover>
+      </div>
+    </div>
     <div id="pipelineDefect" :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"></div>
     <div id="pipelineDefectNo" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
     <div
       id="pipelineDefectFix"
-      :style="{width: '48%', height: '45%',borderRight:'1px solid #e4e4e4'}"
+      :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"
     ></div>
     <div id="totalResult" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
     <div id="totalAdvices" :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"></div>
@@ -152,12 +177,11 @@ require("echarts/lib/component/legendScroll");
 export default {
   data() {
     return {
-      
       pipelineDefect: {
         title: {
-          text: "不同管线超标缺陷",
+          text: "(按管线分类)不同管线环焊缝数量",
           subtext: "",
-          x: "left",
+          x: "top",
           textStyle: {
             color: "#222",
             fontStyle: "normal",
@@ -170,6 +194,9 @@ export default {
           trigger: "item",
           /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
           formatter: "{a} {b} : ({c}道) {d}%"
+        },
+        grid:{
+          top:"100px"
         },
         // legend: {
         //   x: "70%",
@@ -250,7 +277,7 @@ export default {
       },
       pipelineDefectNo: {
         title: {
-          text: "不同管线缺陷评价不可接受",
+          text: "(按管线分类)不同管线环焊缝不可接受数量",
           subtext: "",
           x: "left",
           textStyle: {
@@ -338,7 +365,7 @@ export default {
       },
       pipelineDefectFix: {
         title: {
-          text: "不同管线缺陷评价需处置",
+          text: "(按管线分类)不同管线环焊缝需处置数量",
           subtext: "",
           x: "left",
           textStyle: {
@@ -433,7 +460,7 @@ export default {
       },
       totalResult: {
         title: {
-          text: "适用性评价结果",
+          text: "(按评价总数分类)适用性评价结果数量",
           subtext: "",
           x: "left",
           textStyle: {
@@ -528,7 +555,7 @@ export default {
       },
       totalAdvices: {
         title: {
-          text: "是否需处置",
+          text: "(按评价总数分类)是否需处置数量",
           subtext: "",
           x: "left",
           textStyle: {
@@ -623,7 +650,7 @@ export default {
       },
       totalAdvice: {
         title: {
-          text: "处置详情",
+          text: "(按评价总数分类)处置详情数量",
           subtext: "",
           x: "left",
           textStyle: {
@@ -718,7 +745,7 @@ export default {
       },
       companyDefect: {
         title: {
-          text: "各公司超标缺陷",
+          text: "(按公司分类)各公司环焊缝数量",
           subtext: "",
           x: "left",
           textStyle: {
@@ -813,7 +840,7 @@ export default {
       },
       companyDefectNo: {
         title: {
-          text: "各公司缺陷评价不可接受",
+          text: "(按公司分类)各公司环焊缝不可接受数量",
           subtext: "",
           x: "left",
           textStyle: {
@@ -908,7 +935,7 @@ export default {
       },
       companyDefectFix: {
         title: {
-          text: "各公司缺陷评价需处置",
+          text: "(按公司分类)各公司环焊缝需处置数量",
           subtext: "",
           x: "left",
           textStyle: {
@@ -1001,18 +1028,44 @@ export default {
         //   "rgb(255,193,134)"
         // ] //饼图分块颜色设置
       },
-    
+
+      showOrHidePop2: false,
+      depTextColor: "#c0c4cc",
 
       echartBtn: true,
       echartOn: true,
       echartNum: 1,
-      datas: []
+      datas: [],
+      deps: [],
+      departmetn: {
+        id: "",
+        departmentName: ""
+      }
     };
   },
   mounted: function() {
     this.queryCoursePieChart();
+    this.initData();
   },
   methods: {
+    initData() {
+      var _this = this;
+      this.getRequest("/system/user/basicdata").then(resp => {
+        if (resp && resp.status == 200) {
+          var data = resp.data;
+          _this.deps = data.deps;
+        }
+      });
+    },
+    handleNodeClick2(data) {
+      this.departmetn.departmentName = data.name;
+      this.departmetn.departmentId = data.id;
+      this.showOrHidePop2 = false;
+      this.depTextColor = "#606266";
+    },
+    showDepTree2() {
+      this.showOrHidePop2 = !this.showOrHidePop2;
+    },
     queryCoursePieChart: function() {
       var _this = this;
       this.getRequest("/data/").then(resp => {
@@ -1070,7 +1123,7 @@ export default {
           this.drawLine();
         }
       });
-     
+
       // this.getRequest(
       // 	this.api.queryCoursePieChart, {
       // 		params:{
@@ -1128,7 +1181,7 @@ export default {
         let s = params.data.query.split("=")[1];
         self.$router.push({
           path: "/sys/init",
-          query: {  pipelineName: s }
+          query: { pipelineName: s }
         });
       });
 
@@ -1138,7 +1191,7 @@ export default {
 
         self.$router.push({
           path: "/sys/init",
-          query: {  evaluationResultId: 2, pipelineName: s }
+          query: { evaluationResultId: 2, pipelineName: s }
         });
       });
       pipelineDefectFix.setOption(this.pipelineDefectFix);
@@ -1146,7 +1199,7 @@ export default {
         let s = params.data.query.split("=")[2];
         self.$router.push({
           path: "/sys/init",
-          query: {  disposalAdviceIdNo: 1, pipelineName: s }
+          query: { disposalAdviceIdNo: 1, pipelineName: s }
         });
       });
       totalResult.setOption(this.totalResult);
@@ -1188,7 +1241,7 @@ export default {
         let s = params.data.query.split("=")[1];
         self.$router.push({
           path: "/sys/init",
-          query: {  departmentId: s }
+          query: { departmentId: s }
         });
       });
       companyDefectNo.setOption(this.companyDefectNo);
@@ -1196,7 +1249,7 @@ export default {
         let s = params.data.query.split("=")[2];
         self.$router.push({
           path: "/sys/init",
-          query: {  evaluationResultId: 2, departmentId: s }
+          query: { evaluationResultId: 2, departmentId: s }
         });
       });
       companyDefectFix.setOption(this.companyDefectFix);

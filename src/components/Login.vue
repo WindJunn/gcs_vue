@@ -1,41 +1,49 @@
 <template>
-  <el-form
-    :rules="rules"
-    class="login-container"
-    label-position="left"
-    label-width="0px"
-    v-loading="loading"
-  >
-    <h3 class="login_title">系统登录</h3>
-    <div v-show="mode">
-      <el-form-item prop="account">
-        <el-input type="text" v-model="loginForm.username"  placeholder="请输入手机号"></el-input>
-      </el-form-item>
-      <el-form-item prop="checkPass">
-        <el-input type="password" v-model="loginForm.password"  placeholder="请输入密码"></el-input>
-      </el-form-item>
-      <!-- <el-checkbox class="login_remember" v-model="checked" label-position="left">记住密码</el-checkbox> -->
-      <el-form-item style="width: 100%">
-        <el-button type="primary" style="width: 100%" @click="submitClick">登录</el-button>
-        <el-button
-          type="primary"
-          style="width: 100%;margin-left:-1px;margin-top:5px"
-          @click="changeLoginMode(false)"
-        >手机验证码登录--></el-button>
-      </el-form-item>
-    </div>
-
-    <div v-show="!mode">
-      <el-form-item prop="account">
-        <el-input type="text" v-model="loginForm.username" autocomplete="off" placeholder="请输入手机号"></el-input>
-      </el-form-item>
-      <el-form-item class="phoneVerification">
-        <div class="phoneVerificationCode">
-          <el-input v-model="smsCode" placeholder="请输入收到的验证码"></el-input>
-          <div class="phoneVerficationImage" @click="smsCodes()">{{codeText}}</div>
+  <div >
+    <div class="logo"  style="display:flex;margin-top:-60px">
+      <el-form
+        :rules="rules"
+        class="login-container"
+        label-position="left"
+        label-width="0px"
+        v-loading="loading"
+        :style="note"
+      >
+        <h3 class="login_title">系统登录</h3>
+        <div v-show="mode">
+          <el-form-item prop="account">
+            <el-input type="text" v-model="loginForm.username" placeholder="请输入手机号"></el-input>
+          </el-form-item>
+          <el-form-item prop="checkPass">
+            <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"></el-input>
+          </el-form-item>
+          <!-- <el-checkbox class="login_remember" v-model="checked" label-position="left">记住密码</el-checkbox> -->
+          <el-form-item style="width: 100%">
+            <el-button type="primary" style="width: 100%" @click="submitClick">登录</el-button>
+            <el-button
+              type="primary"
+              style="width: 100%;margin-left:-1px;margin-top:5px"
+              @click="changeLoginMode(false)"
+            >手机验证码登录--></el-button>
+          </el-form-item>
         </div>
-      </el-form-item>
-      <!-- <el-form-item>
+
+        <div v-show="!mode">
+          <el-form-item prop="account">
+            <el-input
+              type="text"
+              v-model="loginForm.username"
+              autocomplete="off"
+              placeholder="请输入手机号"
+            ></el-input>
+          </el-form-item>
+          <el-form-item class="phoneVerification">
+            <div class="phoneVerificationCode">
+              <el-input v-model="smsCode" placeholder="请输入收到的验证码"></el-input>
+              <div class="phoneVerficationImage" @click="smsCodes()">{{codeText}}</div>
+            </div>
+          </el-form-item>
+          <!-- <el-form-item>
         <el-input
           type="text"
           style="width:50%;margin-left:-30px;"
@@ -44,18 +52,20 @@
           placeholder="验证码"
         ></el-input>
         <el-button type="primary" :disabled="buttonVisible" @click="smsCodes()">{{codeText}}</el-button>
-      </el-form-item> -->
-      <!-- <el-checkbox class="login_remember" v-model="checked" label-position="left">记住密码</el-checkbox> -->
-      <el-form-item style="width: 100%">
-        <el-button type="primary" style="width: 100%" @click="submitClickSmsCode">登录</el-button>
-        <el-button
-          type="primary"
-          style="width: 100%;margin-left:-1px;margin-top:5px"
-          @click="changeLoginMode(true)"
-        >密码登录--></el-button>
-      </el-form-item>
+          </el-form-item>-->
+          <!-- <el-checkbox class="login_remember" v-model="checked" label-position="left">记住密码</el-checkbox> -->
+          <el-form-item style="width: 100%">
+            <el-button type="primary" style="width: 100%" @click="submitClickSmsCode">登录</el-button>
+            <el-button
+              type="primary"
+              style="width: 100%;margin-left:-1px;margin-top:5px"
+              @click="changeLoginMode(true)"
+            >密码登录--></el-button>
+          </el-form-item>
+        </div>
+      </el-form>
     </div>
-  </el-form>
+  </div>
 </template>
 <script>
 let countDown = 60;
@@ -71,6 +81,19 @@ export default {
   },
   data() {
     return {
+      note: {
+        backgroundImage: "url(" + require("../../static/bg.jpg") + ") ",
+        backgroundPosition: "center center",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        backgroundAttachment: "fixed"
+        // backgroundSize: "100% 100%",
+        // height: "100%",
+        // position: fixed,
+        // width: "100%"
+      },
+      windowHeight: "",
+      topHeight: "",
       isDot: false,
       dialogVisible: true,
       buttonVisible: false,
@@ -87,6 +110,22 @@ export default {
       loading: false
     };
   },
+  mounted() {
+    this.windowHeight = window.innerHeight; // 浏览器可见区域高度
+    this.topHeight = (this.windowHeight - 600) / 2 + "px"; // 浏览器可见区域高度 - 600为背景图高度 / 2 = 平均上下高度
+    window.onresize = () => {
+      return (() => {
+        this.windowHeight = window.innerHeight;
+        this.topHeight = (this.windowHeight - 600) / 2 + "px";
+      })();
+    };
+  },
+  // 使用vue的watch事件监听
+  watch: {
+    topHeight(val) {
+      this.topHeight = val;
+    }
+  },
   methods: {
     smsCodes() {
       let _this = this;
@@ -100,17 +139,16 @@ export default {
         });
       } else {
         if (countDown >= 60) {
-          this.getRequest("/nologin/code/sms?mobile=" + this.loginForm.username).then(
-            resp => {
-              
-              // _this.$message({
-              //   message: "resp.data.msg",
-              //   type: "sucess"
-              // });
+          this.getRequest(
+            "/nologin/code/sms?mobile=" + this.loginForm.username
+          ).then(resp => {
+            // _this.$message({
+            //   message: "resp.data.msg",
+            //   type: "sucess"
+            // });
 
-              this.setTimeDown();
-            }
-          );
+            this.setTimeDown();
+          });
         }
       }
     },
@@ -178,10 +216,10 @@ export default {
     submitClick: function() {
       var _this = this;
       this.loading = true;
-     
+
       this.postRequest("/login", {
         username: this.loginForm.username,
-        password: this.loginForm.password,
+        password: this.loginForm.password
         // 'remember-me':'on'
       }).then(resp => {
         _this.loading = false;
@@ -202,23 +240,22 @@ export default {
           //     path: path == "/" || path == undefined ? "/home" : path
           //   });
           // }
-           _this.$store.commit("login", data.obj.user);
-            var path = _this.$route.query.redirect;
-            _this.$router.replace({
-              path: path == "/" || path == undefined ? "/sys/chart" : path
-            });
+          _this.$store.commit("login", data.obj.user);
+          var path = _this.$route.query.redirect;
+          _this.$router.replace({
+            path: path == "/" || path == undefined ? "/sys/chart" : path
+          });
         }
       });
     },
     submitClickSmsCode: function() {
       var _this = this;
       this.loading = true;
-     
+
       this.postRequest("/authentication/mobile", {
         mobile: this.loginForm.username,
         smsCode: this.smsCode,
-        'remember-me':'on'
-
+        "remember-me": "on"
       }).then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {
@@ -235,6 +272,17 @@ export default {
 };
 </script>
 <style>
+.logo {
+  background: url("../../static/bg.jpg");
+  background-size: 100% 100%;
+  height: 100%;
+  /* background:rgba(0,0,0,0.1) none repeat scroll !important; */
+  /* opacity:0.2 ; */
+
+  position: repe;
+  width: 100%;
+}
+
 .phoneVerification .phoneVerificationCode {
   display: flex;
 }

@@ -90,6 +90,7 @@
       <el-table-column fixed prop="number" align="left" label="环焊缝编号" width="180"></el-table-column>
 
       <el-table-column prop="nondestructiveTestingResult" align="left" label="无损检测结果" width="280"></el-table-column>
+      <el-table-column prop="stagger" align="left" label="错边量" width="280"></el-table-column>
       <el-table-column prop="testTime" width="150" label="检测时间">
         <!-- <template slot-scope="scope">{{ scope.row.testTime | formatDate}}</template> -->
       </el-table-column>
@@ -152,14 +153,14 @@
           <el-col :offset="1" :span="4">
             <div class="grid-content">
               <el-form-item label="Kr:" prop="name">
-                <el-input v-model="weld.kr" size="mini" style="width: 50%" placeholder="请输入Kr"></el-input>
+                <el-input v-model="weld.kr" size="mini" style="width: 50%" placeholder=""></el-input>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="4">
             <div class="grid-content">
               <el-form-item label="Lr:" prop="name">
-                <el-input v-model="weld.lr" size="mini" style="width: 50%" placeholder="请输入Lr"></el-input>
+                <el-input v-model="weld.lr" size="mini" style="width: 50%" placeholder=""></el-input>
               </el-form-item>
             </div>
           </el-col>
@@ -170,7 +171,7 @@
                   v-model="weld.applicabilityEvaluationResult"
                   size="mini"
                   style="width: 70%"
-                  placeholder="请输入评价结果"
+                  placeholder=""
                 ></el-input>
               </el-form-item>
             </div>
@@ -230,7 +231,7 @@
                   v-model="weld.steelGrade"
                   size="mini"
                   style="width: 60%"
-                  placeholder="请输入钢级"
+                  placeholder=""
                 ></el-input>
               </el-form-item>
             </div>
@@ -244,7 +245,7 @@
                   v-model="weld.diameter"
                   size="mini"
                   style="width: 60%"
-                  placeholder="请输入外径"
+                  placeholder=""
                 ></el-input>
               </el-form-item>
             </div>
@@ -256,7 +257,7 @@
                   v-model="weld.designWallThickness"
                   size="mini"
                   style="width: 40%"
-                  placeholder="请输入设计壁厚"
+                  placeholder=""
                 ></el-input>
               </el-form-item>
             </div>
@@ -268,7 +269,7 @@
                   v-model="weld.lineAreaLevel"
                   size="mini"
                   style="width: 40%"
-                  placeholder="请输入线路地区级别"
+                  placeholder=""
                 ></el-input>
               </el-form-item>
             </div>
@@ -280,7 +281,7 @@
                   v-model="weld.designPressure"
                   size="mini"
                   style="width: 40%"
-                  placeholder="请输入设计压力"
+                  placeholder=""
                 ></el-input>
               </el-form-item>
             </div>
@@ -294,7 +295,7 @@
                   v-model="weld.highConsequenceAreas"
                   size="mini"
                   style="width: 40%"
-                  placeholder="请输入高后果区"
+                  placeholder=""
                 ></el-input>
               </el-form-item>
             </div>
@@ -306,7 +307,7 @@
                   v-model="weld.poleLaying"
                   size="mini"
                   style="width: 40%"
-                  placeholder="请输入钢管铺设"
+                  placeholder=""
                 ></el-input>
               </el-form-item>
             </div>
@@ -318,7 +319,7 @@
                   v-model="weld.landscape"
                   size="mini"
                   style="width: 40%"
-                  placeholder="请输入地貌"
+                  placeholder=""
                 ></el-input>
               </el-form-item>
             </div>
@@ -499,7 +500,7 @@
                   v-model="weld.staggerSpacing"
                   size="mini"
                   style="width: 35%"
-                  placeholder="请输入"
+                  placeholder=""
                 ></el-input>
               </el-form-item>
             </div>
@@ -511,7 +512,7 @@
                   v-model="weld.outwardResult"
                   size="mini"
                   style="width: 70%"
-                  placeholder="请输入外观检测"
+                  placeholder=""
                 ></el-input>
               </el-form-item>
             </div>
