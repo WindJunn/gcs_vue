@@ -9,6 +9,8 @@ import store from './store'
 import { getRequest } from './utils/api'
 import { postRequest } from './utils/api'
 import { postsRequest } from './utils/api'
+import { uploadFileRequest } from './utils/api'
+
 import { deleteRequest } from './utils/api'
 import { putRequest } from './utils/api'
 import { putsRequest } from './utils/api'
@@ -34,6 +36,7 @@ Vue.use(ElementUI)
 Vue.prototype.getRequest = getRequest;
 Vue.prototype.postRequest = postRequest;
 Vue.prototype.postsRequest = postsRequest;
+Vue.prototype.uploadFileRequest = uploadFileRequest;
 
 Vue.prototype.deleteRequest = deleteRequest;
 Vue.prototype.putRequest = putRequest;

@@ -7,15 +7,15 @@
     <div
       style="width: 100%;height: 1px;background-color: #20a0ff;margin-top: 8px;margin-bottom: 0px;"
     ></div>
-    <div style="width: 100%;height: 50px;margin-top: 8px;margin-bottom: 0px;">
+    <div style="width: 90%;height: 50px;margin-top: 18px;margin-bottom: 0px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;">
       <div>
-        <el-row>
+        <el-row style="margin-top: 8px;"> 
           <el-col :span="6">
             手机号:
             <el-input v-model="phone" size="mini" placeholder="请输入手机号" style="width: 70%"></el-input>
           </el-col>
 
-          <el-col :span="10 ">
+          <!-- <el-col :span="10 ">
             公司选择:
             <el-popover
               v-model="showOrHidePop"
@@ -38,9 +38,12 @@
                 v-bind:style="{color: depTextColor}"
               >{{departmentName}}</div>
             </el-popover>
-          </el-col>
+          </el-col> -->
           <el-col :span="4">
             <el-button size="mini" type="primary" @click="addAdm()">添加管理员</el-button>
+          </el-col>
+           <el-col :span="4">
+             <el-tag>此管理员负责注册用户的审核工作</el-tag>
           </el-col>
         </el-row>
       </div>
@@ -53,7 +56,7 @@
       border
       stripe
       size="mini"
-      style="width: 100%"
+      style="width: 100%;margin-top:20px"
       @selection-change="handleSelectionChange"
       v-loading="loading"
     >
@@ -63,7 +66,7 @@
       <el-table-column prop="phone" width="250" align="left" label="手机号"></el-table-column>
 
       <el-table-column prop="department.name" label="所在公司" width="250"></el-table-column>
-      <el-table-column prop="administrator.departmentName" label="被管理公司" width="250"></el-table-column>
+      <!-- <el-table-column prop="administrator.departmentName" label="被管理公司" width="250"></el-table-column> -->
 
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">

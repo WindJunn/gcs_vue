@@ -19,7 +19,7 @@
           icon="el-icon-search"
           @click="searchData"
         >搜索</el-button>
-        <el-button
+        <!-- <el-button
           slot="reference"
           type="primary"
           size="mini"
@@ -31,17 +31,17 @@
             v-bind:class="[advanceSearchViewVisible ? faangledoubleup:faangledoubledown]"
             style="margin-right: 5px"
           ></i>高级搜索
-        </el-button>
+        </el-button>-->
       </div>
       <div style="margin-left: 5px;margin-right: 20px;display: inline">
         <el-upload
           :show-file-list="false"
           accept=".xlsx"
           action="/girth/importGirthWeld"
+          :before-upload="beforeUpload"
           :on-success="fileUploadSuccess"
           :on-error="fileUploadError"
           :disabled="fileUploadBtnText=='正在导入'"
-          :before-upload="beforeFileUpload"
           style="display: inline"
         >
           <el-button size="mini" type="success" :loading="fileUploadBtnText=='正在导入'">
@@ -60,14 +60,17 @@
           :before-upload="beforeFileUpload"
           style="display: inline"
         >
-          <el-button type="success" size="mini" @click="exportUsers">
+          <el-button class="success1" type="success" size="mini">
             <i class="fa fa-lg fa-level-up" style="margin-right: 5px"></i>导入评价数据
           </el-button>
         </el-upload>
-
-        <!-- <el-button type="success" size="mini" @click="exportUsers">
-          <i class="fa fa-lg fa-level-down" style="margin-right: 5px"></i>导出数据
+        <!-- <el-button class="success2" type="success" size="mini">
+          <i class="fa fa-lg fa-level-up" style="margin-right: 5px"></i>导入评价数据
         </el-button>-->
+
+        <el-button type="success" size="mini" @click="exportData">
+          <i class="fa fa-lg fa-level-down" style="margin-right: 5px"></i>导出评价数据
+        </el-button>
         <!-- <el-button type="primary" size="mini" icon="el-icon-plus" @click="showAddEmpView">添加记录</el-button> -->
       </div>
     </el-header>
@@ -88,34 +91,18 @@
 
       <el-table-column fixed prop="pipelineName" align="left" label="管线名称" width="100"></el-table-column>
       <el-table-column fixed prop="number" align="left" label="环焊缝编号" width="180"></el-table-column>
-
-      <el-table-column prop="nondestructiveTestingResult" align="left" label="无损检测结果" width="280"></el-table-column>
-      <el-table-column prop="stagger" align="left" label="错边量" width="280"></el-table-column>
-      <el-table-column prop="testTime" width="150" label="检测时间">
-        <!-- <template slot-scope="scope">{{ scope.row.testTime | formatDate}}</template> -->
-      </el-table-column>
+      <el-table-column prop="evaluateTime" align="left" label="评价时间" width="150"></el-table-column>
       <el-table-column prop="applicabilityEvaluationResult" width="150" label="适用性评价结果"></el-table-column>
       <el-table-column prop="disposalAdvice" width="200" label="处置建议"></el-table-column>
 
-      <!-- <el-table-column prop="checkMileage" width="90" label="检测里程"></el-table-column>
-      <el-table-column prop="steelGrade" width="90" label="钢级"></el-table-column>
-      <el-table-column prop="diameter" width="90" label="外径"></el-table-column>
-      <el-table-column prop="designWallThickness" width="90" label="设计壁厚"></el-table-column>
-      <el-table-column prop="pipeLength" width="200" label="上下游管节长度"></el-table-column>
-      <el-table-column prop="lineAreaLevel" width="90" label="线路地区级别"></el-table-column>
-      <el-table-column prop="designPressure" width="90" label="设计压力MPa"></el-table-column>
-      <el-table-column prop="highConsequenceAreas" width="90" label="高后果区"></el-table-column>
-      <el-table-column prop="poleLaying" width="90" label="钢管铺设"></el-table-column>
-      <el-table-column prop="landscape" width="90" label="地貌"></el-table-column>-->
-
-      <el-table-column prop="evaluateTime" align="left" label="评价时间" width="150">
-        <!-- <template slot-scope="scope">{{ scope.row.evaluateTime | formatDate}}</template> -->
-      </el-table-column>
+      <el-table-column prop="nondestructiveTestingResult" align="left" label="无损检测结果" width="280"></el-table-column>
+      <el-table-column prop="stagger" align="left" label="错边量" width="200"></el-table-column>
+      <el-table-column prop="testTime" width="150" label="检测时间"></el-table-column>
 
       <el-table-column fixed="right" label="操作" width="270">
         <template slot-scope="scope">
           <!-- <el-button size="mini" @click="showEditEmpView(scope.row)">编辑</el-button> -->
-          <el-button size="mini" type="primary" @click="showDetailed(scope.row)">详细信息</el-button>
+          <el-button  size="mini" type="primary" @click="showDetailed(scope.row)">详细信息</el-button>
           <el-button size="mini" type="danger" @click="deleteServer(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -140,6 +127,14 @@
       ></el-pagination>
     </div>
 
+    <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
+      <span>需要注意的是内容是默认不居中的</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
     <el-form :model="weld" ref="editUserForm" style="margin: 0px;padding: 0px;">
       <el-dialog
         title="环焊缝详情"
@@ -148,19 +143,19 @@
         :visible.sync="dialogVisible"
         width="90%"
       >
-        环焊缝安全评价结果:
+        <h4 class="del-title">环焊缝安全评价结果:</h4>
         <el-row :gutter="20">
           <el-col :offset="1" :span="4">
             <div class="grid-content">
               <el-form-item label="Kr:" prop="name">
-                <el-input v-model="weld.kr" size="mini" style="width: 50%" placeholder=""></el-input>
+                <el-input v-model="weld.kr" size="mini" style="width: 50%" placeholder></el-input>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="4">
             <div class="grid-content">
               <el-form-item label="Lr:" prop="name">
-                <el-input v-model="weld.lr" size="mini" style="width: 50%" placeholder=""></el-input>
+                <el-input v-model="weld.lr" size="mini" style="width: 50%" placeholder></el-input>
               </el-form-item>
             </div>
           </el-col>
@@ -171,7 +166,7 @@
                   v-model="weld.applicabilityEvaluationResult"
                   size="mini"
                   style="width: 70%"
-                  placeholder=""
+                  placeholder
                 ></el-input>
               </el-form-item>
             </div>
@@ -202,12 +197,14 @@
             </div>
           </el-col>
         </el-row>
-        <hr />环焊缝基础信息
+        <h4 class="del-title">环焊缝基础信息</h4>
         <el-row :gutter="20">
           <el-col :span="6">
             <div class="grid-content">
-              管线名称:
-              <el-tag style="margin-left:20px;">{{weld.pipelineName}}</el-tag>
+              <!-- 管线名称: -->
+              <el-form-item label="管线名称:" prop="name">
+                <el-tag>{{weld.pipelineName}}</el-tag>
+              </el-form-item>
             </div>
           </el-col>
           <el-col :span="6">
@@ -220,19 +217,14 @@
           <el-col :span="6">
             <div class="grid-content">
               <el-form-item label="检测里程:" prop="name">
-                <el-input v-model="weld.checkMileage" size="mini" style="width: 60%" placeholder></el-input>
+                <el-tag>{{weld.checkMileage}}</el-tag>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="6">
             <div class="grid-content">
               <el-form-item label="钢级:" prop="name">
-                <el-input
-                  v-model="weld.steelGrade"
-                  size="mini"
-                  style="width: 60%"
-                  placeholder=""
-                ></el-input>
+                <el-tag>{{weld.steelGrade}}</el-tag>
               </el-form-item>
             </div>
           </el-col>
@@ -241,48 +233,28 @@
           <el-col :span="6">
             <div class="grid-content">
               <el-form-item label="外径(mm):" prop="name">
-                <el-input
-                  v-model="weld.diameter"
-                  size="mini"
-                  style="width: 60%"
-                  placeholder=""
-                ></el-input>
+                <el-tag>{{weld.diameter}}</el-tag>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="6">
             <div class="grid-content">
               <el-form-item label="设计壁厚(mm):" prop="name">
-                <el-input
-                  v-model="weld.designWallThickness"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder=""
-                ></el-input>
+                <el-tag>{{weld.designWallThickness}}</el-tag>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="6">
             <div class="grid-content">
               <el-form-item label="线路地区级别:" prop="name">
-                <el-input
-                  v-model="weld.lineAreaLevel"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder=""
-                ></el-input>
+                <el-tag>{{weld.lineAreaLevel}}</el-tag>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="6">
             <div class="grid-content">
               <el-form-item label="设计压力(MPa):" prop="name">
-                <el-input
-                  v-model="weld.designPressure"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder=""
-                ></el-input>
+                <el-tag>{{weld.designPressure}}</el-tag>
               </el-form-item>
             </div>
           </el-col>
@@ -291,43 +263,28 @@
           <el-col :span="6">
             <div class="grid-content">
               <el-form-item label="高后果区:" prop="name">
-                <el-input
-                  v-model="weld.highConsequenceAreas"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder=""
-                ></el-input>
+                <el-tag>{{weld.highConsequenceAreas}}</el-tag>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="6">
             <div class="grid-content">
               <el-form-item label="钢管铺设:" prop="name">
-                <el-input
-                  v-model="weld.poleLaying"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder=""
-                ></el-input>
+                <el-tag>{{weld.poleLaying}}</el-tag>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="6">
             <div class="grid-content">
               <el-form-item label="地貌:" prop="name">
-                <el-input
-                  v-model="weld.landscape"
-                  size="mini"
-                  style="width: 40%"
-                  placeholder=""
-                ></el-input>
+                <el-tag>{{weld.landscape}}</el-tag>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="6">
             <div class="grid-content">
               <el-form-item label="是否为连头口:" prop="name">
-                <el-input v-model="weld.connector" size="mini" style="width: 40%" placeholder></el-input>
+                <el-tag>{{weld.connector}}</el-tag>
               </el-form-item>
             </div>
           </el-col>
@@ -345,7 +302,7 @@
           <el-col :span="8">
             <div class="grid-content">
               <el-form-item label="补口带厚度mm:" prop="name">
-                <el-input v-model="weld.patchThickness" size="mini" style="width: 50%" placeholder></el-input>
+                <el-tag>{{weld.patchThickness}}</el-tag>
               </el-form-item>
             </div>
           </el-col>
@@ -399,7 +356,7 @@
             </div>
           </el-col>
         </el-row>
-        <hr />环焊缝外观检测结果:
+        <h4 class="del-title">环焊缝外观检测结果:</h4>
         <el-row :gutter="20">
           <el-col :offset="2" :span="6">
             <div class="grid-content">钟点位置</div>
@@ -496,24 +453,14 @@
           <el-col :offset="1" :span="7">
             <div class="grid-content">
               <el-form-item label="上下游钢管焊缝错开间距:" prop="name">
-                <el-input
-                  v-model="weld.staggerSpacing"
-                  size="mini"
-                  style="width: 35%"
-                  placeholder=""
-                ></el-input>
+                <el-input v-model="weld.staggerSpacing" size="mini" style="width: 35%" placeholder></el-input>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="14">
             <div class="grid-content">
               <el-form-item label="外观检测:" prop="name">
-                <el-input
-                  v-model="weld.outwardResult"
-                  size="mini"
-                  style="width: 70%"
-                  placeholder=""
-                ></el-input>
+                <el-input v-model="weld.outwardResult" size="mini" style="width: 70%" placeholder></el-input>
               </el-form-item>
             </div>
           </el-col>
@@ -522,16 +469,12 @@
           <el-col :offset="1" :span="21">
             <div class="grid-content">
               <el-form-item label="内检测异常点钟及尺寸:" prop="name">
-                <el-input
-                  v-model="weld.abnormalPoints"
-                  size="mini"
-                  style="width: 80%"
-                  placeholder=""
-                ></el-input>
+                <el-input v-model="weld.abnormalPoints" size="mini" style="width: 80%" placeholder></el-input>
               </el-form-item>
             </div>
           </el-col>
-        </el-row>环焊缝无损检测结果:
+        </el-row>
+        <h4 class="del-title">环焊缝无损检测结果:</h4>
         <el-row :gutter="20">
           <el-col :offset="1" :span="4">
             <div class="grid-content">磁粉/渗透</div>
@@ -559,7 +502,6 @@
           </el-col>
         </el-row>
 
-                
         <el-row :gutter="20" style="margin-top:15px">
           <el-col :offset="1" :span="4">
             <div class="grid-content">超声</div>
@@ -662,7 +604,6 @@
             </div>
           </el-col>
         </el-row>
-        <hr />
       </el-dialog>
     </el-form>
   </div>
@@ -687,7 +628,7 @@ export default {
       faangledoubleup: "fa-angle-double-up",
       faangledoubledown: "fa-angle-double-down",
       multipleSelection: [],
-
+      centerDialogVisible: false,
       dialogVisible: false,
       dustbinData: [],
       totalCount: -1,
@@ -708,6 +649,7 @@ export default {
       cuoBian: [],
 
       weld: {},
+      bools: "",
       girth: {
         id: "",
         departmentId: "",
@@ -748,21 +690,213 @@ export default {
     },
     fileUploadSuccess(response, file, fileList) {
       if (response) {
-        this.$message({ type: response.status, message: response.msg });
+        this.$message({ type: "success", message: response.msg });
       }
       this.loadTableData();
 
       this.fileUploadBtnText = "导入检测数据";
     },
     fileUploadError(err, file, fileList) {
-      this.$message({ type: "error", message: "导入失败!" });
+      console.log(err);
+      // this.$message({ type: "error", message: "导入失败!" });
       this.fileUploadBtnText = "导入检测数据";
     },
-    beforeFileUpload(file) {
-      this.fileUploadBtnText = "正在导入";
+
+    upload(file) {
+      let formData = new FormData();
+      formData.append("file", file);
+      let _this = this;
+      this.uploadFileRequest("/girth/findLetter", formData).then(resp => {
+        if (resp && resp.status == 200) {
+          let list = resp.data.obj;
+          // console.log(list);
+          if (list.length == 0) {
+            this.bools = true;
+            _this.fileUploadBtnText = "正在导入";
+            // return _this.bools;
+          } else {
+            let datas = list[0];
+            this.$confirm(
+              "确定下列数据中的英文字母 “I” 或 “V” 不表达罗马字母Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ,  \n " +
+                datas.number +
+                " \n " +
+                datas.magneticParticleTest +
+                " \n " +
+                datas.ultrasonicTest +
+                " \n " +
+                datas.xiangkongzhenTest +
+                " \n " +
+                datas.radiographicTest +
+                " \n " +
+                datas.tofdTest +
+                " \n " +
+                "是否继续?",
+              "提示",
+              {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning"
+              }
+            )
+              .then(() => {
+                this.bools = true;
+                console.log(this.bools + "确定执行");
+                let formData1 = new FormData();
+                formData1.append("file", file);
+                this.uploadFileRequest("/girth/importGirthWeld", formData1);
+                // return _this.bools;
+              })
+              .catch(() => {
+                this.bools = false;
+                console.log(this.bools + "取消执行");
+                this.$message({ type: success, message: "已取消上传" });
+              });
+          }
+        }
+      });
     },
+    beforeUpload(file) {
+      const _self = this;
+      return new Promise((resolve, reject) => {
+        let formData = new FormData();
+        formData.append("file", file);
+        this.uploadFileRequest("/girth/findLetter", formData)
+          .then(resp => {
+            if (resp && resp.status == 200) {
+              let list = resp.data.obj;
+              // console.log(list);
+              if (list.length == 0) {
+                this.bools = true;
+                resolve(true);
+                _self.fileUploadBtnText = "正在导入";
+              } else {
+                let datas = list[0];
+                let s = [];
+                if (datas.number != null) {
+                  s.push(datas.number);
+                }
+                if (datas.magneticParticleTest != null) {
+                  s.push(datas.magneticParticleTest);
+                }
+                if (datas.ultrasonicTest != null) {
+                  s.push(datas.ultrasonicTest);
+                }
+                if (datas.xiangkongzhenTest != null) {
+                  s.push(datas.xiangkongzhenTest);
+                }
+                if (datas.radiographicTest != null) {
+                  s.push(datas.radiographicTest);
+                }
+                if (datas.tofdTest != null) {
+                  s.push(datas.tofdTest);
+                }
+                let reminder =
+                  "确定下列数据中的英文字母 “I”或“V”或阿拉伯数字“1”，不表达罗马数字Ⅰ、Ⅱ、Ⅲ、Ⅳ、Ⅴ。若是，则点击取消修改后再次上传；否则点击继续上传。 <hr> ";
+                s.forEach(v => {
+                  v=v.replace(/I/g,"<span style='color: #f50a0a;'>I</span>").replace(/V/g,"<span style='color: #f50a0a;'>V</span>").replace(/1/g,"<span style='color: #f50a0a;'>1</span>")
+                  console.log(v)
+                  reminder = reminder + v + "<hr>";
+                });
+                this.$confirm(reminder, "提示", {
+                  confirmButtonText: "继续上传",
+                  cancelButtonText: "取消",
+                  type: "warning",
+                  dangerouslyUseHTMLString: true
+                })
+                  .then(() => {
+                    _self.bools = true;
+                    resolve(true);
+                    console.log(_self.bools + "确定执行");
+                  })
+                  .catch(() => {
+                    this.bools = false;
+                    console.log(this.bools + "取消执行");
+                    reject(false);
+                    this.$message({ type: "info", message: "已取消上传" });
+                  });
+              }
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            reject(false);
+          });
+      });
+    },
+    beforeFileUpload(file) {
+       const _self = this;
+      return new Promise((resolve, reject) => {
+        let formData = new FormData();
+        formData.append("file", file);
+        this.uploadFileRequest("/girth/findLetterEvaluation", formData)
+          .then(resp => {
+            if (resp && resp.status == 200) {
+              let list = resp.data.obj;
+              if (list.length == 0) {
+                resolve(true);
+                _self.fileUploadBtnText = "正在导入";
+              } else {
+                let s = [];
+                list.forEach(v=>{
+                  s.push(v.number)
+                })
+                
+                let reminder =
+                  "确定下列数据中的英文字母 “I”或“V”或阿拉伯数字“1”，不表示罗马数字Ⅰ、Ⅱ、Ⅲ、Ⅳ、Ⅴ。若是，则点击取消修改后再上传；否则点击继续上传。 <hr> ";
+                s.forEach(v => {
+                  v=v.replace(/I/g,"<span style='color: #f50a0a;'>I</span>").replace(/V/g,"<span style='color: #f50a0a;'>V</span>").replace(/1/g,"<span style='color: #f50a0a;'>1</span>")
+                  reminder = reminder + v + "<hr>";
+                });
+                this.$confirm(reminder, "提示", {
+                  confirmButtonText: "继续上传",
+                  cancelButtonText: "取消",
+                  type: "warning",
+                  // style:"width:80%",
+                  dangerouslyUseHTMLString: true
+                })
+                  .then(() => {
+                    _self.bools = true;
+                    resolve(true);
+                    console.log(_self.bools + "确定执行");
+                  })
+                  .catch(() => {
+                    this.bools = false;
+                    console.log(this.bools + "取消执行");
+                    reject(false);
+                    this.$message({ type: "info", message: "已取消上传" });
+                  });
+              }
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            reject(false);
+          });
+      });
+    },
+    
     keywordsChange() {},
-    exportUsers() {},
+    exportData() {
+      window.open(
+        "/girth/exportGirthWeld?keywords=" +
+          this.keywords +
+          "&departmentId=" +
+          this.departmentId +
+          "&testingResultId=" +
+          this.testingResultId +
+          "&evaluationResultId=" +
+          this.evaluationResultId +
+          "&disposalAdviceId=" +
+          this.disposalAdviceId +
+          "&defectId=" +
+          this.defectId +
+          "&disposalAdviceIdNo=" +
+          this.disposalAdviceIdNo +
+          "&pipelineName=" +
+          this.pipelineName,
+        "_parent"
+      );
+    },
     showDetailed(row) {
       this.weld = row;
       console.log(this.weld);
@@ -1046,12 +1180,29 @@ export default {
   }
 };
 </script>
-<style>
-.el-dialog__body {
-  padding-top: 0px;
-  padding-bottom: 0px;
+<style scoped>
+.el-message-box {
+    display: inline-block;
+    width: 50%;
+    padding-bottom: 10px;
+    vertical-align: middle;
+    background-color: #FFF;
+    border-radius: 4px;
+    border: 1px solid #EBEEF5;
+    font-size: 18px;
+    -webkit-box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    text-align: left;
+    overflow-x: hidden;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
-
+.el-scrollbar {
+  height: 90%;
+}
+.scrollbar-wrap {
+  overflow-x: hidden;
+}
 .slide-fade-enter-active {
   transition: all 0.8s ease;
 }
@@ -1071,18 +1222,15 @@ export default {
 }
 .el-row {
   margin-bottom: 1px;
-  &:last-child {
-    margin-bottom: 0;
-  }
+}
+.el-row:last-child {
+  margin-bottom: 0;
 }
 .el-col {
   border-radius: 4px;
 }
 .-dark {
   background: #99a9bf;
-}
-. {
-  background: #d3dce6;
 }
 .-light {
   background: #e5e9f2;
@@ -1094,5 +1242,18 @@ export default {
 .row-bg {
   padding: 10px 0;
   background-color: #f9fafc;
+}
+.el-form .el-tag {
+  width: 100%;
+}
+.el-form .el-form-item__content {
+  width: 65%;
+  float: left;
+}
+.del-title {
+  font-weight: 500;
+  padding-bottom: 10px;
+  margin-top: 10px;
+  border-bottom: 1px solid #eee;
 }
 </style>

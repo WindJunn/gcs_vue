@@ -1,46 +1,18 @@
 <template>
-  <!-- <div style="width:100%;height: 100%;    display: flex;
-    justify-content: center; flex-wrap: wrap;">
-    <v-chart :options="polar" />
-    <v-chart :options="polar" />
-
-    <v-chart :options="polar" />
-
-    <v-chart :options="polar" />
-  </div>-->
-  <!-- <div class="echarts-content"> -->
-  <!-- <div class="chart-head">
-      <p @click="echartShow">
-        <strong id="strong">课程分布图</strong>
-        <em v-if="echartBtn==false">（部门统计，岗位统计，人员统计，分类统计，类型统计）</em>
-        <i :class="{'el-icon-arrow-down':echartBtn==false,'el-icon-arrow-up':echartBtn}"></i>
-      </p>
-  </div>-->
-  <!-- <div class="chart-main" id="chart-main"> -->
-  <!-- <div id="fileTypeChart" :style="{width: '48%', height: '215px'}"></div> -->
-  <!-- <div class="chart-main-right">
-        <el-tooltip class="item" effect="dark" content="部门，岗位" placement="right">
-          <span :class="{spanActive:echartNum==1}" @click="echartIsShow('1')"></span>
-        </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="人员，分类" placement="right">
-          <span :class="{spanActive:echartNum==2}" @click="echartIsShow('2')"></span>
-        </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="类型" placement="right">
-          <span :class="{spanActive:echartNum==3}" @click="echartIsShow('3')"></span>
-        </el-tooltip>
-  </div>-->
-
-  <div style="width:100%;height: 100%; margin-top:30px;display: flex; justify-content: center; flex-wrap: wrap;">
-    <div :style="{width: '48%', height: '30%',marginLeft:'30px'}">
-      <div>
-        
+  <el-row>
+    <div class="echarts-input">
+      <el-col :span="4">
+        <el-input v-model="startYear" size="mini"></el-input>&nbsp;&nbsp;至&nbsp;&nbsp;
+        <el-input v-model="endYear" size="mini"></el-input>
+      </el-col>
+      <el-col :span="12">
         <el-tag>所属公司:</el-tag>
         <el-popover
           v-model="showOrHidePop2"
           placement="right"
           title="请选择公司"
           trigger="manual"
-          style="width:250px"
+          style="width:200px"
         >
           <el-tree
             :data="deps"
@@ -51,113 +23,121 @@
           ></el-tree>
           <div
             slot="reference"
-            style="width: 250px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
+            style="width: 200px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
             @click="showDepTree2"
             v-bind:style="{color: depTextColor}"
-          >{{departmetn.departmentName}}</div>
+          >{{department.departmentName}}</div>
         </el-popover>
-      </div>
+      </el-col>
+      <el-col :span="4">
+        <el-button
+          type="primary"
+          size="mini"
+          style="margin-left: 5px"
+          icon="el-icon-search"
+          @click="queryCoursePieChart()"
+        >搜索</el-button>
+      </el-col>
     </div>
-    <div id="pipelineDefect" :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"></div>
-    <div id="pipelineDefectNo" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
-    <div
-      id="pipelineDefectFix"
-      :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"
-    ></div>
-    <div id="totalResult" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
-    <div id="totalAdvices" :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"></div>
-    <div id="totalAdvice" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
-    <div id="companyDefect" :style="{width: '48%', height: '30%',borderRight:'1px solid #e4e4e4'}"></div>
-    <div id="companyDefectNo" :style="{width: '48%', height: '30%',marginLeft:'30px'}"></div>
-    <div id="companyDefectFix" :style="{width: '48%', height: '30%'}"></div>
-  </div>
+
+    <el-col :span="24">
+      <div class="echarts-box1">
+        <div id="pipelineDefect" class="echarts"></div>
+      </div>
+    </el-col>
+    <el-col :span="12">
+      <div class="echarts-box">
+        <div id="pipelineDefectNo" class="echarts"></div>
+      </div>
+    </el-col>
+    <el-col :span="12">
+      <div class="echarts-box">
+        <div id="pipelineDefectFix" class="echarts"></div>
+      </div>
+    </el-col>
+    <el-col :span="12">
+      <div class="echarts-box">
+        <div id="totalResult" class="echarts"></div>
+      </div>
+    </el-col>
+    <el-col :span="12">
+      <div class="echarts-box">
+        <div id="totalAdvices" class="echarts"></div>
+      </div>
+    </el-col>
+    <el-col :span="12">
+      <div class="echarts-box">
+        <div id="totalAdvice" class="echarts"></div>
+      </div>
+    </el-col>
+    <el-col :span="12">
+      <div class="echarts-box">
+        <div id="companyDefect" class="echarts"></div>
+      </div>
+    </el-col>
+    <el-col :span="12">
+      <div class="echarts-box">
+        <div id="companyDefectNo" class="echarts"></div>
+      </div>
+    </el-col>
+    <el-col :span="12">
+      <div class="echarts-box">
+        <div id="companyDefectFix" class="echarts"></div>
+      </div>
+    </el-col>
+    <!-- <div id="totalResult" :style="{width: '48%', height: '160px',marginLeft:'30px'}"></div> -->
+    <!-- <div id="totalAdvices" :style="{width: '48%', height: '160px',borderRight:'1px solid #e4e4e4'}"></div> -->
+    <!-- <div id="totalAdvice" :style="{width: '48%', height: '160px',marginLeft:'30px'}"></div> -->
+    <!-- <div
+      id="companyDefect"
+      :style="{width: '48%', height: '160px',borderRight:'1px solid #e4e4e4'}"
+    ></div>-->
+    <!-- <div id="companyDefectNo" :style="{width: '48%', height: '160px',marginLeft:'30px'}"></div> -->
+    <!-- <div id="companyDefectFix" :style="{width: '48%', height: '160px'}"></div> -->
+  </el-row>
 </template>
 
 <style>
+.echarts-content {
+  width: 100%;
+  height: 100%;
+  margin-top: 30px;
+  /* display: flex; 
+  justify-content: center; 
+  flex-wrap: wrap; */
+}
+.echarts-input {
+  width: 95%;
+  height: 40px;
+  margin: 30px 0;
+  box-shadow: 1px 1px 10px #6d83f1;
+  padding: 10px 15px 10px 10px;
+  border-radius: 15px;
+}
+.echarts-input .el-col-4 {
+  display: flex;
+}
+.echarts-input .el-col-12 span {
+  vertical-align: middle;
+}
 /**
  * 默认尺寸为 600px×400px，如果想让图表响应尺寸变化，可以像下面这样
  * 把尺寸设为百分比值（同时请记得为容器设置尺寸）。
  */
+.echarts-box,
+.echarts-box1 {
+  height: 300px;
+  margin-right: 20px;
+}
+.echarts-box1 .echarts,
+.el-col-12:nth-of-type(2n) .echarts-box .echarts {
+  border-right: 0;
+  margin-right: 0;
+}
 .echarts {
-  width: 40%;
-  height: 35%;
-}
-.echarts-content {
   width: 100%;
-  min-height: 78px;
-  max-height: 300px;
-  background: #fff;
-  -webkit-box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-  -moz-box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-  padding: 0 30px;
-}
-.echarts-content .chart-head {
-  height: 78px;
-  width: 100%;
-  padding-top: 30px;
-}
-.echarts-content .chart-head p {
-  display: inline-block;
-  height: 21px;
-  width: 100%;
-  cursor: pointer;
-  text-align: center;
-}
-.echarts-content .chart-head p strong {
-  font-weight: normal;
-  font-size: 16px;
-  color: #999;
-}
-.echarts-content .chart-head p em {
-  display: inline-block;
-  font-style: normal;
-  font-size: 14px;
-  color: #999;
-}
-.echarts-content .chart-head p i {
-  display: inline-block;
-  color: #e4e4e4;
-  font-size: 14px;
-  margin-left: 10px;
-}
-
-.echarts-content .chart-main {
-  width: 100%;
-  height: 222px;
-  position: relative;
-  overflow: hidden;
-  -webkit-transition: height 0.6s;
-  -moz-transition: height 0.6s;
-  -o-transition: height 0.6s;
-  transition: height 0.6s;
-}
-.echarts-content .chart-main .chart-main-left {
-  width: calc(100% - 20px);
   height: 100%;
-  float: left;
-}
-.echarts-content .chart-main .chart-main-right {
-  width: 20px;
-  height: 100%;
-  float: right;
-  padding-top: 50px;
-}
-.echarts-content .chart-main .chart-main-right span {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  background: #e4e4e4;
-  border-radius: 100%;
-  -moz-border-radius: 100%;
-  -webkit-border-radius: 100%;
-  cursor: pointer;
-}
-.echarts-content .chart-main .chart-main-right span:hover {
-  background: #0188fd;
-}
-.echarts-content .chart-main .chart-main-right .spanActive {
-  background: #0188fd;
+  border-right: 1px solid #e4e4e4;
 }
 </style>
 
@@ -177,11 +157,16 @@ require("echarts/lib/component/legendScroll");
 export default {
   data() {
     return {
+      defaultProps: {
+        label: "name",
+        isLeaf: "leaf",
+        children: "children"
+      },
       pipelineDefect: {
         title: {
-          text: "(按管线分类)不同管线环焊缝数量",
-          subtext: "",
-          x: "center",
+          text: "不同管线环焊缝数量",
+          subtext: "按管线分类",
+          y: "0",
           textStyle: {
             color: "#222",
             fontStyle: "normal",
@@ -194,9 +179,6 @@ export default {
           trigger: "item",
           /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
           formatter: "{a} {b} : ({c}道) {d}%"
-        },
-        grid:{
-          top:"100px"
         },
         // legend: {
         //   x: "70%",
@@ -220,8 +202,8 @@ export default {
           {
             name: "",
             type: "pie",
-            radius: "75%",
-            center: ["60%", "54%"],
+            radius: "30%",
+            center: ["50%", "70%"],
             hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
             selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
             selectedOffset: 5, //选中扇区的偏移距离
@@ -277,8 +259,8 @@ export default {
       },
       pipelineDefectNo: {
         title: {
-          text: "(按管线分类)不同管线环焊缝不可接受数量",
-          subtext: "",
+          text: "不同管线环焊缝不可接受数量",
+          subtext: "按管线分类",
           x: "left",
           textStyle: {
             color: "#222",
@@ -315,8 +297,8 @@ export default {
           {
             name: "",
             type: "pie",
-            radius: "75%",
-            center: ["60%", "54%"],
+            radius: "50%",
+            center: ["55%", "60%"],
             hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
             selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
             selectedOffset: 5, //选中扇区的偏移距离
@@ -365,8 +347,8 @@ export default {
       },
       pipelineDefectFix: {
         title: {
-          text: "(按管线分类)不同管线环焊缝需处置数量",
-          subtext: "",
+          text: "不同管线环焊缝需处置数量",
+          subtext: "按管线分类",
           x: "left",
           textStyle: {
             color: "#222",
@@ -403,8 +385,8 @@ export default {
           {
             name: "",
             type: "pie",
-            radius: "75%",
-            center: ["60%", "54%"],
+            radius: "50%",
+            center: ["55%", "60%"],
             hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
             selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
             selectedOffset: 5, //选中扇区的偏移距离
@@ -460,8 +442,8 @@ export default {
       },
       totalResult: {
         title: {
-          text: "(按评价总数分类)适用性评价结果数量",
-          subtext: "",
+          text: "适用性评价结果数量",
+          subtext: "按评价总数分类",
           x: "left",
           textStyle: {
             color: "#222",
@@ -498,8 +480,8 @@ export default {
           {
             name: "",
             type: "pie",
-            radius: "75%",
-            center: ["60%", "54%"],
+            radius: "50%",
+            center: ["55%", "60%"],
             hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
             selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
             selectedOffset: 5, //选中扇区的偏移距离
@@ -555,8 +537,8 @@ export default {
       },
       totalAdvices: {
         title: {
-          text: "(按评价总数分类)是否需处置数量",
-          subtext: "",
+          text: "是否需处置数量",
+          subtext: "按评价总数分类",
           x: "left",
           textStyle: {
             color: "#222",
@@ -593,8 +575,8 @@ export default {
           {
             name: "",
             type: "pie",
-            radius: "75%",
-            center: ["60%", "54%"],
+            radius: "50%",
+            center: ["55%", "60%"],
             hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
             selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
             selectedOffset: 5, //选中扇区的偏移距离
@@ -650,8 +632,8 @@ export default {
       },
       totalAdvice: {
         title: {
-          text: "(按评价总数分类)处置详情数量",
-          subtext: "",
+          text: "处置详情数量",
+          subtext: "按评价总数分类",
           x: "left",
           textStyle: {
             color: "#222",
@@ -688,8 +670,8 @@ export default {
           {
             name: "",
             type: "pie",
-            radius: "75%",
-            center: ["60%", "54%"],
+            radius: "50%",
+            center: ["55%", "60%"],
             hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
             selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
             selectedOffset: 5, //选中扇区的偏移距离
@@ -745,8 +727,8 @@ export default {
       },
       companyDefect: {
         title: {
-          text: "(按公司分类)各公司环焊缝数量",
-          subtext: "",
+          text: "各公司环焊缝数量",
+          subtext: "按公司分类",
           x: "left",
           textStyle: {
             color: "#222",
@@ -783,8 +765,8 @@ export default {
           {
             name: "",
             type: "pie",
-            radius: "75%",
-            center: ["60%", "54%"],
+            radius: "50%",
+            center: ["55%", "60%"],
             hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
             selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
             selectedOffset: 5, //选中扇区的偏移距离
@@ -840,8 +822,8 @@ export default {
       },
       companyDefectNo: {
         title: {
-          text: "(按公司分类)各公司环焊缝评价不可接受数量",
-          subtext: "",
+          text: "各公司环焊缝不可接受数量",
+          subtext: "按公司分类",
           x: "left",
           textStyle: {
             color: "#222",
@@ -878,8 +860,8 @@ export default {
           {
             name: "",
             type: "pie",
-            radius: "75%",
-            center: ["60%", "54%"],
+            radius: "50%",
+            center: ["55%", "60%"],
             hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
             selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
             selectedOffset: 5, //选中扇区的偏移距离
@@ -935,8 +917,8 @@ export default {
       },
       companyDefectFix: {
         title: {
-          text: "(按公司分类)各公司环焊缝需处置数量",
-          subtext: "",
+          text: "各公司环焊缝需处置数量",
+          subtext: "按公司分类",
           x: "left",
           textStyle: {
             color: "#222",
@@ -973,8 +955,8 @@ export default {
           {
             name: "",
             type: "pie",
-            radius: "75%",
-            center: ["60%", "54%"],
+            radius: "50%",
+            center: ["55%", "60%"],
             hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
             selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
             selectedOffset: 5, //选中扇区的偏移距离
@@ -1037,15 +1019,13 @@ export default {
       echartNum: 1,
       datas: [],
       deps: [],
-        defaultProps: {
-        label: "name",
-        isLeaf: "leaf",
-        children: "children"
-      },
-      departmetn: {
+      department: {
         id: "",
         departmentName: ""
-      }
+      },
+      startYear: "",
+      endYear: "",
+      departmentId: ""
     };
   },
   mounted: function() {
@@ -1063,8 +1043,8 @@ export default {
       });
     },
     handleNodeClick2(data) {
-      this.departmetn.departmentName = data.name;
-      this.departmetn.departmentId = data.id;
+      this.department.departmentName = data.name;
+      this.departmentId = data.id;
       this.showOrHidePop2 = false;
       this.depTextColor = "#606266";
     },
@@ -1073,33 +1053,27 @@ export default {
     },
     queryCoursePieChart: function() {
       var _this = this;
-      this.getRequest("/data/").then(resp => {
+      this.getRequest(
+        "/data/?startYear=" +
+          this.startYear +
+          "&endYear=" +
+          this.endYear +
+          "&departmentId=" +
+          this.departmentId
+      ).then(resp => {
         if (resp && resp.status == 200) {
           this.datas = resp.data.obj;
+          console.log(this.datas);
           let d = this.datas[0].data;
           let d1 = this.datas[1].data;
           let d2 = this.datas[2].data;
           let d3 = this.datas[3].data;
           let d4 = this.datas[4].data;
           let d5 = this.datas[5].data;
-          let d6 = this.datas[6].data;
-          let d7 = this.datas[7].data;
-          let d8 = this.datas[8].data;
+          
+          console.log(JSON.stringify(d));
 
           this.pipelineDefect.series[0].data = d;
-          console.log(JSON.stringify(d));
-          console.log(JSON.stringify(d1));
-          console.log(JSON.stringify(d2));
-          console.log("======");
-
-          console.log(JSON.stringify(d3));
-          console.log(JSON.stringify(d4));
-          console.log(JSON.stringify(d5));
-          console.log("======");
-
-          console.log(JSON.stringify(d6));
-          console.log(JSON.stringify(d7));
-          console.log(JSON.stringify(d8));
           d.forEach(element => {
             // this.pipelineDefect.legend.data.push(element.name);
           });
@@ -1124,18 +1098,26 @@ export default {
           d5.forEach(element => {
             this.totalAdvice.legend.data.push(element.name);
           });
-          this.companyDefect.series[0].data = d6;
-          d6.forEach(element => {
-            this.companyDefect.legend.data.push(element.name);
-          });
-          this.companyDefectNo.series[0].data = d7;
-          d7.forEach(element => {
-            this.companyDefectNo.legend.data.push(element.name);
-          });
-          this.companyDefectFix.series[0].data = d8;
-          d8.forEach(element => {
-            this.companyDefectFix.legend.data.push(element.name);
-          });
+
+
+          if (this.datas.length > 6) {
+            let d6 = this.datas[6].data;
+            let d7 = this.datas[7].data;
+            let d8 = this.datas[8].data;
+
+            this.companyDefect.series[0].data = d6;
+            d6.forEach(element => {
+              this.companyDefect.legend.data.push(element.name);
+            });
+            this.companyDefectNo.series[0].data = d7;
+            d7.forEach(element => {
+              this.companyDefectNo.legend.data.push(element.name);
+            });
+            this.companyDefectFix.series[0].data = d8;
+            d8.forEach(element => {
+              this.companyDefectFix.legend.data.push(element.name);
+            });
+          }
 
           //初始化
           this.drawLine();

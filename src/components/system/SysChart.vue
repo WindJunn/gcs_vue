@@ -1,18 +1,20 @@
 <template>
+  <!-- <div class="echarts-content"> -->
   <el-row>
     <div class="echarts-input">
-      <el-col :span="4">
-        <el-input v-model="startYear" size="mini"></el-input>&nbsp;&nbsp;至&nbsp;&nbsp;
+      <el-col :span="5">
+        <el-tag>年份:</el-tag>
+        <el-input v-model="startYear" style="margin-left:5px" size="mini"></el-input>&nbsp;&nbsp;至&nbsp;&nbsp;
         <el-input v-model="endYear" size="mini"></el-input>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="10">
         <el-tag>所属公司:</el-tag>
         <el-popover
           v-model="showOrHidePop2"
           placement="right"
           title="请选择公司"
           trigger="manual"
-          style="width:200px"
+          style="width:250px"
         >
           <el-tree
             :data="deps"
@@ -23,7 +25,7 @@
           ></el-tree>
           <div
             slot="reference"
-            style="width: 200px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
+            style="width: 250px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
             @click="showDepTree2"
             v-bind:style="{color: depTextColor}"
           >{{department.departmentName}}</div>
@@ -97,7 +99,7 @@
   </el-row>
 </template>
 
-<style>
+<style scoped>
 .echarts-content {
   width: 100%;
   height: 100%;
@@ -107,17 +109,17 @@
   flex-wrap: wrap; */
 }
 .echarts-input {
-  width: 95%;
+  width: 100%;
   height: 40px;
   margin: 30px 0;
   box-shadow: 1px 1px 10px #6d83f1;
-  padding: 10px 15px 10px 10px;
+  padding: 10px 10px 10px 10px;
   border-radius: 15px;
 }
-.echarts-input .el-col-4 {
+.echarts-input .el-col-5 {
   display: flex;
 }
-.echarts-input .el-col-12 span {
+.echarts-input .el-col-10 span {
   vertical-align: middle;
 }
 /**
@@ -180,30 +182,62 @@ export default {
           /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
           formatter: "{a} {b} : ({c}道) {d}%"
         },
-        legend: {
-          x: "70%",
-          y: "25%",
-          orient: "vertical",
-          left: "left",
-          itemWidth: 10,
-          itemHeight: 10,
-          selectedMode: false, //禁止点击
-          textStyle: {
-            fontSize: 12,
-            color: "#999"
-          },
-          formatter: function(name) {
-            //避免文字太长做省略处理
-            return name.length > 4 ? name.slice(0, 4) + "..." : name;
-          },
-          data: []
+        toolbox: {
+          show: true,
+          feature: {
+            mark: { show: true },
+            dataView: { show: true, readOnly: false },
+            magicType: {
+              show: true,
+              type: ["pie", "funnel"]
+            },
+            restore: { show: true },
+            saveAsImage: { show: true }
+          }
         },
+        // toolbox: {//工具栏,内置有导出图片，数据视图，动态类型切换，数据区域缩放，重置五个工具。
+        //     feature: {//各工具配置项。
+        //         dataView: {//数据视图工具，可以展现当前图表所用的数据，编辑后可以动态更新。
+        //             show: true,//是否显示组件。
+        //             readOnly: false
+        //         },
+        //         magicType:{//动态类型切换 示例：feature: { magicType: {type: ['line', 'bar', 'stack', 'tiled']}}
+        //             show:true,
+        //             type:['line','bar']
+        //         },
+        //         restore: {//配置项还原。
+        //             show: true
+        //         },
+        //         saveAsImage: {//保存为图片。
+        //             show: true,
+        //             type:["jpg","png"]
+        //         }
+        //     }
+        // },
+        // legend: {
+        //   x: "70%",
+        //   y: "25%",
+        //   orient: "vertical",
+        //   left: "left",
+        //   itemWidth: 10,
+        //   itemHeight: 10,
+        //   selectedMode: false, //禁止点击
+        //   textStyle: {
+        //     fontSize: 12,
+        //     color: "#999"
+        //   },
+        //   formatter: function(name) {
+        //     //避免文字太长做省略处理
+        //     return name.length > 4 ? name.slice(0, 4) + "..." : name;
+        //   },
+        //   data: []
+        // },
         series: [
           {
             name: "",
             type: "pie",
             radius: "30%",
-            center: ["50%", "70%"],
+            center: ["50%", "50%"],
             hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
             selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
             selectedOffset: 5, //选中扇区的偏移距离
@@ -233,7 +267,7 @@ export default {
                         "%"
                       );
                     } else {
-                      return name + "\n" + "(" + value + "道)" + percent + "%";
+                      return name + "" + "(" + value + "道)" + percent + "%";
                     }
                   }
                 },
@@ -292,6 +326,19 @@ export default {
             return name.length > 4 ? name.slice(0, 4) + "..." : name;
           },
           data: []
+        },
+        toolbox: {
+          show: true,
+          feature: {
+            mark: { show: true },
+            dataView: { show: true, readOnly: false },
+            magicType: {
+              show: true,
+              type: ["pie", "funnel"]
+            },
+            restore: { show: true },
+            saveAsImage: { show: true }
+          }
         },
         series: [
           {
@@ -1043,7 +1090,7 @@ export default {
       });
     },
     handleNodeClick2(data) {
-      this.department.departmentName = data.name;
+     this.department.departmentName = data.name;
       this.departmentId = data.id;
       this.showOrHidePop2 = false;
       this.depTextColor = "#606266";
@@ -1063,18 +1110,20 @@ export default {
       ).then(resp => {
         if (resp && resp.status == 200) {
           this.datas = resp.data.obj;
-          console.log(this.datas);
           let d = this.datas[0].data;
           let d1 = this.datas[1].data;
           let d2 = this.datas[2].data;
           let d3 = this.datas[3].data;
           let d4 = this.datas[4].data;
           let d5 = this.datas[5].data;
-          
+          let d6 = this.datas[6].data;
+          let d7 = this.datas[7].data;
+          let d8 = this.datas[8].data;
+          console.log(JSON.stringify(d))
 
           this.pipelineDefect.series[0].data = d;
           d.forEach(element => {
-            this.pipelineDefect.legend.data.push(element.name);
+            // this.pipelineDefect.legend.data.push(element.name);
           });
 
           this.pipelineDefectNo.series[0].data = d1;
@@ -1097,26 +1146,18 @@ export default {
           d5.forEach(element => {
             this.totalAdvice.legend.data.push(element.name);
           });
-
-
-          if (this.datas.length > 6) {
-            let d6 = this.datas[6].data;
-            let d7 = this.datas[7].data;
-            let d8 = this.datas[8].data;
-
-            this.companyDefect.series[0].data = d6;
-            d6.forEach(element => {
-              this.companyDefect.legend.data.push(element.name);
-            });
-            this.companyDefectNo.series[0].data = d7;
-            d7.forEach(element => {
-              this.companyDefectNo.legend.data.push(element.name);
-            });
-            this.companyDefectFix.series[0].data = d8;
-            d8.forEach(element => {
-              this.companyDefectFix.legend.data.push(element.name);
-            });
-          }
+          this.companyDefect.series[0].data = d6;
+          d6.forEach(element => {
+            this.companyDefect.legend.data.push(element.name);
+          });
+          this.companyDefectNo.series[0].data = d7;
+          d7.forEach(element => {
+            this.companyDefectNo.legend.data.push(element.name);
+          });
+          this.companyDefectFix.series[0].data = d8;
+          d8.forEach(element => {
+            this.companyDefectFix.legend.data.push(element.name);
+          });
 
           //初始化
           this.drawLine();

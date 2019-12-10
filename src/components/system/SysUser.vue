@@ -2,7 +2,7 @@
   <div>
     <el-container>
       <el-header
-        style="padding: 0px;display:flex;justify-content:space-between;align-items: center"
+        style="padding: 10px;display:flex;flex-wrap: wrap;height:100px"
       >
         <div style="display: inline">
           <el-input
@@ -16,10 +16,8 @@
             prefix-icon="el-icon-search"
             v-model="keywords"
           ></el-input>
-          <el-tag>
-             所属公司:
-          </el-tag>
-         
+          <el-tag>所属公司:</el-tag>
+
           <el-popover
             v-model="showOrHidePop2"
             placement="right"
@@ -49,20 +47,13 @@
             icon="el-icon-search"
             @click="searchEmp"
           >搜索</el-button>
-            <el-button
-            type="primary"
-            size="mini"
-            style="margin-left: 15px"
-            @click="clear"
-          >清空搜索框</el-button>
-          
-     
+          <el-button type="primary" size="mini" style="margin-left: 15px" @click="clear">清空搜索框</el-button>
         </div>
-        <div style="margin-left: 5px;margin-right: 20px;display: inline">
+        <div style="margin-left: 0px;margin-right: 20px;display: inline">
           <el-upload
             :show-file-list="false"
-            accept="application/vnd.ms-excel"
-            action="/student/basic/importEmp"
+            accept=".xlsx"
+            action="/system/user/importUsers"
             :on-success="fileUploadSuccess"
             :on-error="fileUploadError"
             :disabled="fileUploadBtnText=='正在导入'"
@@ -78,13 +69,15 @@
           <el-button type="success" size="mini" @click="exportUsers">
             <i class="fa fa-lg fa-level-down" style="margin-right: 5px"></i>导出数据
           </el-button>
+          <el-button type="success" size="mini" @click="exportUsersTem">
+            <i class="fa fa-lg fa-level-down" style="margin-right: 5px"></i>下载用户模板表
+          </el-button>
           <el-button type="primary" size="mini" icon="el-icon-plus" @click="showAddEmpView">添加用户</el-button>
         </div>
       </el-header>
 
       <el-main style="padding-left: 0px;padding-top: 0px">
         <div>
-         
           <el-table
             :data="users"
             v-loading="tableLoading"
@@ -103,9 +96,8 @@
 
             <el-table-column prop="department.name" align="left" width="150" label="所属公司"></el-table-column>
 
-
             <el-table-column prop="email" width="300" align="left" label="邮箱"></el-table-column>
-            <el-table-column prop="idCard" width="200" align="left" label="角色"></el-table-column>
+            <el-table-column prop="roles[0].nameZh" width="200" align="left" label="角色"></el-table-column>
 
             <el-table-column fixed="right" label="操作" width="300">
               <template slot-scope="scope">
@@ -138,7 +130,7 @@
                   style="padding: 3px 4px 3px 4px;margin: 2px"
                   size="mini"
                   @click="resetPassword(scope.row)"
-                >重置密码</el-button> -->
+                >重置密码</el-button>-->
               </template>
             </el-table-column>
           </el-table>
@@ -200,20 +192,12 @@
                 </el-form-item>
               </div>
             </el-col>
-           
           </el-row>
           <el-row>
-           
-
-             <el-col :span="8">
+            <el-col :span="8">
               <div>
-                <el-form-item label="邮箱:" >
-                  <el-input
-                    v-model="user.email"
-                    size="mini"
-                    style="width: 70%"
-                    placeholder="邮箱..."
-                  ></el-input>
+                <el-form-item label="邮箱:">
+                  <el-input v-model="user.email" size="mini" style="width: 70%" placeholder="邮箱..."></el-input>
                 </el-form-item>
               </div>
             </el-col>
@@ -244,8 +228,6 @@
                 </el-form-item>
               </div>
             </el-col>
-            
-           
           </el-row>
 
           <span slot="footer" class="dialog-footer">
@@ -256,7 +238,6 @@
       </div>
     </el-form>
 
-   
     <div style="text-align: left">
       <el-dialog title="角色管理" :visible.sync="dialogVisible5" width="25%">
         <div class="user-info">
@@ -277,7 +258,7 @@
             :key="role.id"
             trigger="click"
           >
-            <el-select v-model="selRoles" multiple placeholder="请选择角色">
+            <el-select v-model="selRoles" placeholder="请选择角色">
               <el-option v-for="ar in role" :key="ar.id" :label="ar.nameZh" :value="ar.id"></el-option>
             </el-select>
             <el-button
@@ -442,8 +423,6 @@ export default {
       this.loadEmps();
     },
 
-
-
     fileUploadSuccess(response, file, fileList) {
       if (response) {
         this.$message({ type: response.status, message: response.msg });
@@ -460,6 +439,9 @@ export default {
     },
     exportUsers() {
       window.open("/system/user/exportUsers", "_parent");
+    },
+    exportUsersTem() {
+      window.open("/system/user/exportUsersTem", "_parent");
     },
     exportData() {
       var _this = this;
@@ -549,12 +531,10 @@ export default {
     searchEmp() {
       this.loadEmps();
     },
-    clear(){
+    clear() {
       this.keywords = "";
       this.user.departmentId = "";
-      this.user.departmentName="";
-
-
+      this.user.departmentName = "";
     },
     currentChange(currentChange) {
       this.currentPage = currentChange;
@@ -577,7 +557,6 @@ export default {
           this.pageSize +
           "&keywords=" +
           this.keywords +
-        
           "&departmentId=" +
           this.user.departmentId
       ).then(resp => {
@@ -676,7 +655,8 @@ export default {
       var _this = this;
       // this.loadAllDeps();
       this.dialogVisible5 = true;
-      console.log(row);
+      console.log("ssssssssssssssssss");
+      console.log(row.roles);
 
       _this.hrId = row.id;
       this.userId = row.id;
@@ -722,9 +702,10 @@ export default {
       this.selRoles = [];
       this.selRolesBak = [];
       hrRoles.forEach(role => {
-        this.selRoles.push(role.id);
-        this.selRolesBak.push(role.id);
-        // console.log(this.selRoles)
+        this.selRoles.push(role.nameZh);
+        this.selRolesBak.push(role.nameZh);
+        console.log(112222111111);
+        console.log(this.selRoles);
       });
     },
     loadAllRoles() {
@@ -778,7 +759,7 @@ export default {
         if (resp && resp.status == 200) {
           var data = resp.data;
           _this.deps = data.deps;
-          // _this.role = data.roles;
+          _this.role = data.roles;
         }
       });
     },
@@ -833,7 +814,6 @@ export default {
 
         departmentName: "所属公司..."
       };
-    
     }
   }
 };

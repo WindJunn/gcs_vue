@@ -1,70 +1,68 @@
 <template>
-  <div >
-    <div class="logo"  style="display:flex;margin-top:-60px">
-      <el-form
-        :rules="rules"
-        class="login-container"
-        label-position="left"
-        label-width="0px"
-        v-loading="loading"
-        :style="note"
-      >
-        <h3 class="login_title">系统登录</h3>
-        <div v-show="mode">
-          <el-form-item prop="account">
-            <el-input type="text" v-model="loginForm.username" placeholder="请输入手机号"></el-input>
-          </el-form-item>
-          <el-form-item prop="checkPass">
-            <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"></el-input>
-          </el-form-item>
-          <!-- <el-checkbox class="login_remember" v-model="checked" label-position="left">记住密码</el-checkbox> -->
-          <el-form-item style="width: 100%">
-            <el-button type="primary" style="width: 100%" @click="submitClick">登录</el-button>
-            <el-button
-              type="primary"
-              style="width: 100%;margin-left:-1px;margin-top:5px"
-              @click="changeLoginMode(false)"
-            >手机验证码登录--></el-button>
-          </el-form-item>
-        </div>
+  <div class="logo">
+    <el-form
+      :rules="rules"
+      class="login-container"
+      label-position="left"
+      label-width="0px"
+      v-loading="loading"
+      :style="note"
+    >
+      <h3 class="login_title">系统登录</h3>
+      <div v-show="mode">
+        <el-form-item prop="account">
+          <el-input type="text" v-model="loginForm.username" placeholder="请输入手机号"></el-input>
+        </el-form-item>
+        <el-form-item prop="checkPass">
+          <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"></el-input>
+        </el-form-item>
+        <!-- <el-checkbox class="login_remember" v-model="checked" label-position="left">记住密码</el-checkbox> -->
+        <el-form-item style="width: 100%">
+          <el-button type="primary" style="width: 100%" @click="submitClick">登录</el-button>
+          <el-button
+            type="primary"
+            style="width: 100%;margin-left:-1px;margin-top:5px"
+            @click="changeLoginMode(false)"
+          >手机验证码登录--></el-button>
+        </el-form-item>
+      </div>
 
-        <div v-show="!mode">
-          <el-form-item prop="account">
-            <el-input
-              type="text"
-              v-model="loginForm.username"
-              autocomplete="off"
-              placeholder="请输入手机号"
-            ></el-input>
-          </el-form-item>
-          <el-form-item class="phoneVerification">
-            <div class="phoneVerificationCode">
-              <el-input v-model="smsCode" placeholder="请输入收到的验证码"></el-input>
-              <div class="phoneVerficationImage" @click="smsCodes()">{{codeText}}</div>
-            </div>
-          </el-form-item>
-          <!-- <el-form-item>
-        <el-input
-          type="text"
-          style="width:50%;margin-left:-30px;"
-          v-model="smsCode"
-          auto-complete="off"
-          placeholder="验证码"
-        ></el-input>
-        <el-button type="primary" :disabled="buttonVisible" @click="smsCodes()">{{codeText}}</el-button>
-          </el-form-item>-->
-          <!-- <el-checkbox class="login_remember" v-model="checked" label-position="left">记住密码</el-checkbox> -->
-          <el-form-item style="width: 100%">
-            <el-button type="primary" style="width: 100%" @click="submitClickSmsCode">登录</el-button>
-            <el-button
-              type="primary"
-              style="width: 100%;margin-left:-1px;margin-top:5px"
-              @click="changeLoginMode(true)"
-            >密码登录--></el-button>
-          </el-form-item>
-        </div>
-      </el-form>
-    </div>
+      <div v-show="!mode">
+        <el-form-item prop="account">
+          <el-input
+            type="text"
+            v-model="loginForm.username"
+            autocomplete="off"
+            placeholder="请输入手机号"
+          ></el-input>
+        </el-form-item>
+        <el-form-item class="phoneVerification">
+          <div class="phoneVerificationCode">
+            <el-input v-model="smsCode" placeholder="请输入收到的验证码"></el-input>
+            <div class="phoneVerficationImage" @click="smsCodes()">{{codeText}}</div>
+          </div>
+        </el-form-item>
+        <!-- <el-form-item>
+      <el-input
+        type="text"
+        style="width:50%;margin-left:-30px;"
+        v-model="smsCode"
+        auto-complete="off"
+        placeholder="验证码"
+      ></el-input>
+      <el-button type="primary" :disabled="buttonVisible" @click="smsCodes()">{{codeText}}</el-button>
+        </el-form-item>-->
+        <!-- <el-checkbox class="login_remember" v-model="checked" label-position="left">记住密码</el-checkbox> -->
+        <el-form-item style="width: 100%">
+          <el-button type="primary" style="width: 100%" @click="submitClickSmsCode">登录</el-button>
+          <el-button
+            type="primary"
+            style="width: 100%;margin-left:-1px;margin-top:5px"
+            @click="changeLoginMode(true)"
+          >密码登录--></el-button>
+        </el-form-item>
+      </div>
+    </el-form>
   </div>
 </template>
 <script>
@@ -82,11 +80,11 @@ export default {
   data() {
     return {
       note: {
-        backgroundImage: "url(" + require("../../static/bg.jpg") + ") ",
-        backgroundPosition: "center center",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundAttachment: "fixed"
+        // backgroundImage: "url(" + require("../../static/bg.jpg") + ") ",
+        // backgroundPosition: "center center",
+        // backgroundRepeat: "no-repeat",
+        // backgroundSize: "cover",
+        // backgroundAttachment: "fixed"
         // backgroundSize: "100% 100%",
         // height: "100%",
         // position: fixed,
@@ -237,13 +235,13 @@ export default {
           //   _this.$store.commit("login", data.obj.user);
           //   var path = _this.$route.query.redirect;
           //   _this.$router.replace({
-          //     path: path == "/" || path == undefined ? "/home" : path
+          //     path: path == "/" || path == undefined ? "/sys/init" : path
           //   });
           // }
           _this.$store.commit("login", data.obj.user);
           var path = _this.$route.query.redirect;
           _this.$router.replace({
-            path: path == "/" || path == undefined ? "/sys/chart" : path
+            path: path == "/" || path == undefined ? "/sys/init" : path
           });
         }
       });
@@ -263,7 +261,7 @@ export default {
           _this.$store.commit("login", data.obj.user);
           var path = _this.$route.query.redirect;
           _this.$router.replace({
-            path: path == "/" || path == undefined ? "/sys/chart" : path
+            path: path == "/" || path == undefined ? "/sys/init" : path
           });
         }
       });
@@ -272,15 +270,24 @@ export default {
 };
 </script>
 <style>
+html, body{
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+#app{
+  width: 100%;
+  height: 100%;
+  margin-top: 0;
+}
 .logo {
+  height: 100%;
+  width: 100%;
   background: url("../../static/bg.jpg");
   background-size: 100% 100%;
-  height: 100%;
   /* background:rgba(0,0,0,0.1) none repeat scroll !important; */
   /* opacity:0.2 ; */
-
-  position: repe;
-  width: 100%;
 }
 
 .phoneVerification .phoneVerificationCode {
@@ -299,12 +306,17 @@ export default {
 .login-container {
   border-radius: 15px;
   background-clip: padding-box;
-  margin: 180px auto;
+  /* margin: 180px auto; */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -175px;
+  margin-top: -15%;
   width: 350px;
   padding: 35px 35px 15px 35px;
   background: #fff;
   border: 1px solid #eaeaea;
-  box-shadow: 0 0 25px #cac6c6;
+  box-shadow: 0 0 10px #eee;
 }
 .login_title {
   margin: 0px auto 40px auto;
@@ -314,5 +326,8 @@ export default {
 .login_remember {
   margin: 0px 0px 35px 0px;
   text-align: left;
+}
+.el-form .el-form-item__content{
+  width:100%;
 }
 </style>

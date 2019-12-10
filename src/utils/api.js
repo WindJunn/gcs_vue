@@ -3,6 +3,14 @@ import { Message } from 'element-ui'
 import store from '../store'
 
 axios.interceptors.request.use(config => {
+    // config = {
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data'
+    //   },
+    //   transformRequest: [function (data) {
+    //     return data
+    //   }]
+    // };
   return config;
 }, err => {
   Message.error({ message: '请求超时!' });
@@ -82,8 +90,16 @@ export const uploadFileRequest = (url, params) => {
     url: `${base}${url}`,
     data: params,
     headers: {
-      'Content-Type': 'multipart/form-data'
+      'Content-Type': 'multipart/form-data;'
+    },
+    transformRequest: [function (data) {
+      return data
+    }],
+    onUploadProgress: progressEvent => {
+      let complete = (progressEvent.loaded / progressEvent.total * 100 | 0) + '%'
+      console.log('complete: ', complete)
     }
+
   });
 }
 export const putRequest = (url, params) => {

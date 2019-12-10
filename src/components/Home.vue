@@ -30,7 +30,7 @@
               style="background: #ececec;width: 180px ;"
               unique-opened
               router
-              default-active="/sys/chart"
+              default-active="/sys/init"
             >
               <template v-for="(item,index) in this.routes" v-if="!item.hidden">
                 <el-submenu :key="index" :index="index+''">
@@ -52,7 +52,7 @@
         </el-aside>
         <el-main>
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/sys/chart' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/sys/init' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item v-text="this.$router.currentRoute.name"></el-breadcrumb-item>
           </el-breadcrumb>
           <keep-alive>
