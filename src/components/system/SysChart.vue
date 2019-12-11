@@ -2,19 +2,22 @@
   <!-- <div class="echarts-content"> -->
   <el-row>
     <div class="echarts-input">
-      <el-col :span="5">
-        <el-tag>年份:</el-tag>
-        <el-input v-model="startYear" style="margin-left:5px" size="mini"></el-input>&nbsp;&nbsp;至&nbsp;&nbsp;
-        <el-input v-model="endYear" size="mini"></el-input>
+      <el-col :span="8">
+        <!-- <el-tag>年份:</el-tag> -->
+        <el-date-picker v-model="startYear" type="year" placeholder="选择年"></el-date-picker>
+        <div style="margin-top:10px">&nbsp;&nbsp;至&nbsp;&nbsp;</div>
+        <el-date-picker v-model="endYear" type="year" placeholder="选择年"></el-date-picker>
+        <!-- <el-input v-model="startYear" style="margin-left:5px" size="mini"></el-input>&nbsp;&nbsp;至&nbsp;&nbsp; -->
+        <!-- <el-input v-model="endYear" size="mini"></el-input> -->
       </el-col>
       <el-col :span="10">
-        <el-tag>所属公司:</el-tag>
+        <el-tag style="margin-top:5px">所属公司:</el-tag>
         <el-popover
           v-model="showOrHidePop2"
           placement="right"
           title="请选择公司"
           trigger="manual"
-          style="width:250px"
+          style="width:200px;margin-top:5px"
         >
           <el-tree
             :data="deps"
@@ -25,7 +28,7 @@
           ></el-tree>
           <div
             slot="reference"
-            style="width: 250px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
+            style="width: 200px;height: 36px;margin-top:5px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
             @click="showDepTree2"
             v-bind:style="{color: depTextColor}"
           >{{department.departmentName}}</div>
@@ -35,7 +38,7 @@
         <el-button
           type="primary"
           size="mini"
-          style="margin-left: 5px"
+          style="margin-left: 5px;margin-top:5px"
           icon="el-icon-search"
           @click="queryCoursePieChart()"
         >搜索</el-button>
@@ -45,6 +48,11 @@
     <el-col :span="24">
       <div class="echarts-box1">
         <div id="pipelineDefect" class="echarts"></div>
+      </div>
+    </el-col>
+    <el-col :span="24">
+      <div class="echarts-box1">
+        <div id="pipelineOption" class="echarts"></div>
       </div>
     </el-col>
     <el-col :span="12">
@@ -72,30 +80,23 @@
         <div id="totalAdvice" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="12" :v-show="showChart.value">
       <div class="echarts-box">
         <div id="companyDefect" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="12" :v-show="showChart.value">
       <div class="echarts-box">
         <div id="companyDefectNo" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12">
-      <div class="echarts-box">
-        <div id="companyDefectFix" class="echarts"></div>
-      </div>
-    </el-col>
-    <!-- <div id="totalResult" :style="{width: '48%', height: '160px',marginLeft:'30px'}"></div> -->
-    <!-- <div id="totalAdvices" :style="{width: '48%', height: '160px',borderRight:'1px solid #e4e4e4'}"></div> -->
-    <!-- <div id="totalAdvice" :style="{width: '48%', height: '160px',marginLeft:'30px'}"></div> -->
-    <!-- <div
-      id="companyDefect"
-      :style="{width: '48%', height: '160px',borderRight:'1px solid #e4e4e4'}"
-    ></div>-->
-    <!-- <div id="companyDefectNo" :style="{width: '48%', height: '160px',marginLeft:'30px'}"></div> -->
-    <!-- <div id="companyDefectFix" :style="{width: '48%', height: '160px'}"></div> -->
+    <div :v-if="showChart.value">
+      <el-col :span="12">
+        <div class="echarts-box">
+          <div id="companyDefectFix" class="echarts"></div>
+        </div>
+      </el-col>
+    </div>
   </el-row>
 </template>
 
@@ -109,14 +110,14 @@
   flex-wrap: wrap; */
 }
 .echarts-input {
-  width: 100%;
+  width: 90%;
   height: 40px;
   margin: 30px 0;
   box-shadow: 1px 1px 10px #6d83f1;
   padding: 10px 10px 10px 10px;
   border-radius: 15px;
 }
-.echarts-input .el-col-5 {
+.echarts-input .el-col-8 {
   display: flex;
 }
 .echarts-input .el-col-10 span {
@@ -151,6 +152,8 @@ import "echarts/lib/component/polar";
 let echarts = require("echarts/lib/echarts");
 // 引入饼图组件
 require("echarts/lib/chart/pie");
+// 引入柱状图
+require("echarts/lib/chart/bar");
 // 引入提示框和图例组件
 require("echarts/lib/component/title");
 require("echarts/lib/component/tooltip");
@@ -163,6 +166,63 @@ export default {
         label: "name",
         isLeaf: "leaf",
         children: "children"
+      },
+      pipelineOption: {
+        color: ["#3398DB"],
+        tooltip: {
+          trigger: "axis",
+
+          axisPointer: {
+            // 坐标轴指示器，坐标轴触发有效
+            type: "shadow" // 默认为直线，可选为：'line' | 'shadow'
+          }
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          containLabel: true
+        },
+        xAxis: [
+          {
+            type: "category",
+            data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            axisTick: {
+              alignWithLabel: true
+            },
+            axisLabel: {
+              interval: 0,
+              rotate: 40
+            }
+          }
+        ],
+        yAxis: [
+          {
+            type: "value"
+          }
+        ],
+        series: [
+          {
+            // datas:[],
+            name: "数量",
+            type: "bar",
+            barWidth: "40%",
+            data: [10, 52, 200, 334, 390, 330, 220],
+            label: {
+              normal: {
+                show: true,
+                position: "top",
+                formatter: function(params) {
+                  //避免文字太长做省略处理
+                  // var name = params.name; //名字
+                  // var percent = params.percent; //占比
+                  // var value = params.value; //数量
+                  return params.value + "道";
+                }
+              }
+            }
+          }
+        ]
       },
       pipelineDefect: {
         title: {
@@ -236,8 +296,8 @@ export default {
           {
             name: "",
             type: "pie",
-            radius: "30%",
-            center: ["50%", "50%"],
+            radius: "45%",
+            center: ["50%", "70%"],
             hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
             selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
             selectedOffset: 5, //选中扇区的偏移距离
@@ -283,13 +343,7 @@ export default {
             }
           }
         ]
-        // color: [
-        //   "rgb(187,140,238)",
-        //   "rgb(134,146,243)",
-        //   "rgb(60,184,255)",
-        //   "rgb(113,171,246)",
-        //   "rgb(255,193,134)"
-        // ] //饼图分块颜色设置
+       
       },
       pipelineDefectNo: {
         title: {
@@ -1072,7 +1126,11 @@ export default {
       },
       startYear: "",
       endYear: "",
-      departmentId: ""
+      departmentId: "",
+      barData: [],
+      showChart: {
+        value: true
+      }
     };
   },
   mounted: function() {
@@ -1090,7 +1148,7 @@ export default {
       });
     },
     handleNodeClick2(data) {
-     this.department.departmentName = data.name;
+      this.department.departmentName = data.name;
       this.departmentId = data.id;
       this.showOrHidePop2 = false;
       this.depTextColor = "#606266";
@@ -1100,6 +1158,14 @@ export default {
     },
     queryCoursePieChart: function() {
       var _this = this;
+      // this.showChart = 0;
+      this.$set(this.showChart, "value", false);
+      if (this.startYear != "") {
+        this.startYear = this.startYear.getFullYear();
+      }
+      if (this.endYear != "") {
+        this.endYear = this.endYear.getFullYear();
+      }
       this.getRequest(
         "/data/?startYear=" +
           this.startYear +
@@ -1116,10 +1182,18 @@ export default {
           let d3 = this.datas[3].data;
           let d4 = this.datas[4].data;
           let d5 = this.datas[5].data;
-          let d6 = this.datas[6].data;
-          let d7 = this.datas[7].data;
-          let d8 = this.datas[8].data;
-          console.log(JSON.stringify(d))
+          console.log(JSON.stringify(d));
+          console.log(d);
+          this.pipelineOption.xAxis[0].data = [];
+          this.pipelineOption.series[0].data = [];
+          // this.pipelineOption.series[0].datas=d;
+          d.forEach(v => {
+            this.pipelineOption.xAxis[0].data.push(v.name);
+            this.pipelineOption.series[0].data.push(v.value);
+          });
+          this.barData = d;
+
+          // 装数据
 
           this.pipelineDefect.series[0].data = d;
           d.forEach(element => {
@@ -1146,53 +1220,43 @@ export default {
           d5.forEach(element => {
             this.totalAdvice.legend.data.push(element.name);
           });
-          this.companyDefect.series[0].data = d6;
-          d6.forEach(element => {
-            this.companyDefect.legend.data.push(element.name);
-          });
-          this.companyDefectNo.series[0].data = d7;
-          d7.forEach(element => {
-            this.companyDefectNo.legend.data.push(element.name);
-          });
-          this.companyDefectFix.series[0].data = d8;
-          d8.forEach(element => {
-            this.companyDefectFix.legend.data.push(element.name);
-          });
+          // this.$set(this.showChart, "showChart", "0");
 
+          if (this.datas.length > 6) {
+            // this.showChart = 1;
+            this.$set(this.showChart, "value", true);
+
+            let d6 = this.datas[6].data;
+            let d7 = this.datas[7].data;
+            let d8 = this.datas[8].data;
+
+            this.companyDefect.series[0].data = d6;
+            d6.forEach(element => {
+              this.companyDefect.legend.data.push(element.name);
+            });
+            this.companyDefectNo.series[0].data = d7;
+            d7.forEach(element => {
+              this.companyDefectNo.legend.data.push(element.name);
+            });
+            this.companyDefectFix.series[0].data = d8;
+            d8.forEach(element => {
+              this.companyDefectFix.legend.data.push(element.name);
+            });
+          }
+          console.log(this.showChart);
           //初始化
           this.drawLine();
         }
       });
-
-      // this.getRequest(
-      // 	this.api.queryCoursePieChart, {
-      // 		params:{
-      // 			access_token:localStorage.token
-      // 		}
-      // 	}, {
-      // 		emulateJSON: true
-      // 	}
-      // ).then(function(data) {
-      // 	if(data.body.code == 801) {
-      // 		localStorage.token = null
-      // 		this.$router.push({
-      // 			path: '/index-auth-login',
-      // 			query: {
-      // 				'redirect': this.$route.query.fullPath
-      // 			}
-      // 		})
-      // 		return false;
-      // 	}
-
-      // }, function(err) {
-      // 	this.$message.error('网络通讯错误')
-      // });
     },
     drawLine: function() {
       // 初始化echarts实例
       //获取demo元素
       let pipelineDefect = echarts.init(
         document.getElementById("pipelineDefect")
+      );
+      let pipelineOption = echarts.init(
+        document.getElementById("pipelineOption")
       );
       let pipelineDefectNo = echarts.init(
         document.getElementById("pipelineDefectNo")
@@ -1214,6 +1278,7 @@ export default {
       );
 
       //初始化echarts
+
       pipelineDefect.setOption(this.pipelineDefect);
       let self = this;
 
@@ -1224,6 +1289,42 @@ export default {
           query: { pipelineName: s }
         });
       });
+      pipelineOption.setOption(this.pipelineOption);
+
+      /**
+       * 使用getZr添加图表的整个canvas区域的点击事件，并获取params携带的信息：
+       * this.echart.getZr().on('click',params=>{})
+       * 获取到鼠标点击位置：
+       * const pointInPixel= [params.offsetX, params.offsetY];
+       * 使用containPixel API判断点击位置是否在显示图形区域，下面的例子过滤了绘制图形的网格外的点击事件，比如X、Y轴lable、空白位置等的点击事件。
+       * if (this.echart.containPixel('grid',pointInPixel)) {}
+       * 使用API convertFromPixel获取点击位置对应的x轴数据的索引值，我的实现是借助于索引值的，当然可以获取到其它的信息，详细请查看文档。
+       * let xIndex=this.echart.convertFromPixel({seriesIndex:0},[params.offsetX, params.offsetY])[0];
+       * 其实在上一步骤中可以获取到丰富的诸如轴线、索引、ID等信息，可以在自己的事件处理代码中方便的使用。
+       * 这种方法仅响应图表区域的响应事件，通过convertFromPixel获取到可能需要的一些信息，可以很好的实现需求，并且不会有其它的性能影响，完美实现了如题的需求。
+       */
+      pipelineOption.getZr().on("click", params => {
+        const pointInPixel = [params.offsetX, params.offsetY];
+        console.log(pointInPixel);
+        console.log(params);
+
+        if (pipelineOption.containPixel("grid", pointInPixel)) {
+          let xIndex = pipelineOption.convertFromPixel({ seriesIndex: 0 }, [
+            params.offsetX,
+            params.offsetY
+          ])[0];
+          console.log(xIndex);
+          let data = self.barData[xIndex].query;
+          let s = data.split("=")[1];
+          self.$router.push({
+            path: "/sys/init",
+            query: { pipelineName: s }
+          });
+        }
+      });
+      // pipelineOption.on("click", function(params) {
+      //     console.log(params);
+      // });
 
       pipelineDefectNo.setOption(this.pipelineDefectNo);
       pipelineDefectNo.on("click", function(params) {
