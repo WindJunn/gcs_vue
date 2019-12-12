@@ -1175,6 +1175,8 @@ export default {
           this.departmentId
       ).then(resp => {
         if (resp && resp.status == 200) {
+          this.startYear="";
+          this.endYear="";
           this.datas = resp.data.obj;
           let d = this.datas[0].data;
           let d1 = this.datas[1].data;

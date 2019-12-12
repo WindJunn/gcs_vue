@@ -21,9 +21,9 @@
           <el-card class="box-card">
             <div slot="header">
               <span>可访问的资源</span>
-              <el-button type="text"
+              <!-- <el-button type="text"
                          style="color: #f6061b;margin: 0px;float: right; padding: 3px 0;width: 15px;height:15px"
-                         icon="el-icon-delete" @click="deleteRole(item.id,item.nameZh)"></el-button>
+                         icon="el-icon-delete" @click="deleteRole(item.id,item.nameZh)"></el-button> -->
             </div>
             <div>
               <el-tree :props="props"

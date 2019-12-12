@@ -67,7 +67,7 @@
           </el-upload>
 
           <el-button type="success" size="mini" @click="exportUsers">
-            <i class="fa fa-lg fa-level-down" style="margin-right: 5px"></i>导出数据
+            <i class="fa fa-lg fa-level-down" style="margin-right: 5px"></i>导出用户数据
           </el-button>
           <el-button type="success" size="mini" @click="exportUsersTem">
             <i class="fa fa-lg fa-level-down" style="margin-right: 5px"></i>下载用户模板表
@@ -300,7 +300,7 @@ export default {
       users: [],
       relationHr: [],
       keywords: "",
-      fileUploadBtnText: "导入数据",
+      fileUploadBtnText: "导入用户数据",
       beginDateScope: "",
       faangledoubleup: "fa-angle-double-up",
       faangledoubledown: "fa-angle-double-down",
