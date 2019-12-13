@@ -1295,13 +1295,13 @@ export default {
 
       /**
        * 使用getZr添加图表的整个canvas区域的点击事件，并获取params携带的信息：
-       * this.echart.getZr().on('click',params=>{})
+       *    this.echart.getZr().on('click',params=>{})
        * 获取到鼠标点击位置：
-       * const pointInPixel= [params.offsetX, params.offsetY];
+       *    const pointInPixel= [params.offsetX, params.offsetY];
        * 使用containPixel API判断点击位置是否在显示图形区域，下面的例子过滤了绘制图形的网格外的点击事件，比如X、Y轴lable、空白位置等的点击事件。
-       * if (this.echart.containPixel('grid',pointInPixel)) {}
+       *    if (this.echart.containPixel('grid',pointInPixel)) {}
        * 使用API convertFromPixel获取点击位置对应的x轴数据的索引值，我的实现是借助于索引值的，当然可以获取到其它的信息，详细请查看文档。
-       * let xIndex=this.echart.convertFromPixel({seriesIndex:0},[params.offsetX, params.offsetY])[0];
+       *    let xIndex=this.echart.convertFromPixel({seriesIndex:0},[params.offsetX, params.offsetY])[0];
        * 其实在上一步骤中可以获取到丰富的诸如轴线、索引、ID等信息，可以在自己的事件处理代码中方便的使用。
        * 这种方法仅响应图表区域的响应事件，通过convertFromPixel获取到可能需要的一些信息，可以很好的实现需求，并且不会有其它的性能影响，完美实现了如题的需求。
        */

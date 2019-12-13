@@ -217,8 +217,8 @@ export default {
 
       this.postRequest("/login", {
         username: this.loginForm.username,
-        password: this.loginForm.password
-        // 'remember-me':'on'
+        password: this.loginForm.password,
+        "remember-me": "on"
       }).then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {
@@ -270,13 +270,14 @@ export default {
 };
 </script>
 <style>
-html, body{
+html,
+body {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
 }
-#app{
+#app {
   width: 100%;
   height: 100%;
   margin-top: 0;
@@ -327,7 +328,7 @@ html, body{
   margin: 0px 0px 35px 0px;
   text-align: left;
 }
-.el-form .el-form-item__content{
-  width:100%;
+.el-form .el-form-item__content {
+  width: 100%;
 }
 </style>
