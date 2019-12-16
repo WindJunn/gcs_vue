@@ -43,7 +43,7 @@
             <el-button size="mini" type="primary" @click="addAdm()">添加管理员</el-button>
           </el-col>
            <el-col :span="4">
-             <el-tag>此管理员负责注册用户的审核工作</el-tag>
+             <el-tag>此管理员负责注册用户的审核工作，管理员只能审核他所在公司用户的注册操作</el-tag>
           </el-col>
         </el-row>
       </div>

@@ -34,6 +34,7 @@
         </el-button>-->
       </div>
       <div style="margin-left: 5px;margin-right: 20px;display: inline">
+        <el-tag>罗马数字 Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ</el-tag>
         <el-upload
           :show-file-list="false"
           accept=".xlsx"
@@ -99,9 +100,9 @@
       <el-table-column prop="stagger" align="left" label="错边量" width="200"></el-table-column>
       <el-table-column prop="testTime" width="150" label="检测时间"></el-table-column>
 
-      <el-table-column fixed="right" label="操作" width="270">
+      <el-table-column fixed="right" label="操作" width="320">
         <template slot-scope="scope">
-          <!-- <el-button size="mini" @click="showEditEmpView(scope.row)">编辑</el-button> -->
+          <el-button size="mini" type="primary" @click="showEditResult(scope.row)">修改提取结果</el-button>
           <el-button size="mini" type="primary" @click="showDetailed(scope.row)">详细信息</el-button>
           <el-button size="mini" type="danger" @click="deleteServer(scope.row)">删除</el-button>
         </template>
@@ -127,13 +128,191 @@
       ></el-pagination>
     </div>
 
-    <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
-      <span>需要注意的是内容是默认不居中的</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="centerDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
-      </span>
-    </el-dialog>
+    <el-form :model="weld" ref="editResultForm" style="margin: 0px;padding: 0px;">
+      <el-dialog
+        title="检测评价数据提取详情"
+        style="padding: 0px;"
+        :close-on-click-modal="true"
+        :visible.sync="dialogVisible1"
+        width="80%"
+      >
+        <el-row :gutter="20">
+          <el-col :offset="1" :span="8">
+            <div class="grid-content">
+              <el-form-item label="焊缝编号:" prop="name">
+                <el-input v-model="weld.number" size="mini" style="width: 70%" placeholder></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="grid-content">
+              <el-form-item label="管线名称:" prop="name">
+                <el-input v-model="weld.pipelineName" size="mini" style="width: 60%" placeholder></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :offset="1" :span="4">
+            <div class="grid-content">
+              <el-form-item label="Kr:" prop="name">
+                <el-input v-model="weld.kr" size="mini" style="width: 50%" placeholder></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="4">
+            <div class="grid-content">
+              <el-form-item label="Lr:" prop="name">
+                <el-input v-model="weld.lr" size="mini" style="width: 50%" placeholder></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-form-item label="评价结果:" prop="name">
+                <el-input
+                  v-model="weld.applicabilityEvaluationResult"
+                  size="mini"
+                  style="width: 70%"
+                  placeholder
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :offset="1" :span="10">
+            <div class="grid-content">
+              <el-form-item label="结论:" prop="name">
+                <el-input v-model="weld.conclusion" size="mini" style="width: 80%" placeholder></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-form-item label="处置建议:" prop="name">
+                <!-- <el-tag style="width: 80%">{{weld.disposalAdvice}}</el-tag> -->
+                <el-input v-model="weld.disposalAdvice" size="mini" style="width: 80%" placeholder></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :offset="1" :span="6">
+            <div class="grid-content">
+              <el-form-item label="评价日期:" prop="name">
+                <el-date-picker
+                  v-model="weld.evaluateTime"
+                  type="date"
+                  style="width: 70%"
+                  placeholder="选择日期"
+                ></el-date-picker>
+                <!-- <el-input v-model="weld.evaluateTime" size="mini" style="width: 70%" placeholder></el-input> -->
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="grid-content">
+              <el-form-item label="检测日期:" prop="name">
+                <el-date-picker
+                  v-model="weld.testTime"
+                  type="date"
+                  style="width: 70%"
+                  placeholder="选择日期"
+                ></el-date-picker>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+
+        <hr />
+        <!-- <h3>提取数据</h3> -->
+        <h3>下列数据根据所上传Excel表提取，前三个选择框结果决定数据统计结果，若有误，直接修改即可。罗马数字 Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ</h3>
+        <el-row :gutter="20">
+          <el-col :offset="1" :span="8">
+            <div class="grid-content">
+              <el-form-item label="适用性评价结果:" prop="name">
+                <el-select v-model="weld.evaluationResultId" placeholder="请选择">
+                  <el-option
+                    v-for="item in optionsEvaluationResult"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="grid-content">
+              <el-form-item label="处置建议:" prop="name">
+                <el-select v-model="weld.disposalAdviceId" style="width: 70%" placeholder="请选择">
+                  <el-option
+                    v-for="item in optionsDisposalAdvice"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :offset="1" :span="8">
+            <div class="grid-content">
+              <el-form-item label="无损检测结果:" prop="name">
+                <el-select v-model="weld.testingResultId" placeholder="请选择是否合格">
+                  <el-option
+                    v-for="item in optionsTestingResult"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
+
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-form-item label="无损检测结果详情:" prop="name">
+                <el-input
+                  v-model="weld.nondestructiveTestingResult"
+                  style="width: 70%"
+                  placeholder="请输入详细信息"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :offset="1" :span="8">
+            <div class="grid-content">
+              <el-form-item label="错边量:" prop="name">
+                <el-input v-model="weld.stagger" style="width: 70%" placeholder="请输入错边量信息"></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-form-item label="射线检测缺陷性质:" prop="name">
+                <el-input
+                  v-model="weld.defectProperty"
+                  style="width: 70%"
+                  placeholder="请输入射线检测缺陷性质"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <span slot="footer" class="dialog-footer">
+          <el-button size="mini" @click="cancelEidt">取 消</el-button>
+          <el-button size="mini" type="primary" @click="editResult('editResultForm')">确 定</el-button>
+        </span>
+      </el-dialog>
+    </el-form>
 
     <el-form :model="weld" ref="editUserForm" style="margin: 0px;padding: 0px;">
       <el-dialog
@@ -153,26 +332,30 @@
             <el-col :offset="1" :span="4">
               <div class="grid-content">
                 <el-form-item label="Kr:" prop="name">
-                  <el-input v-model="weld.kr" size="mini" style="width: 50%" placeholder></el-input>
+                  <el-tag style="width: 50%">{{weld.kr}}</el-tag>
+
+                  <!-- <el-input v-model="weld.kr" size="mini" style="width: 50%" placeholder></el-input> -->
                 </el-form-item>
               </div>
             </el-col>
             <el-col :span="4">
               <div class="grid-content">
                 <el-form-item label="Lr:" prop="name">
-                  <el-input v-model="weld.lr" size="mini" style="width: 50%" placeholder></el-input>
+                  <el-tag style="width: 50%">{{weld.lr}}</el-tag>
+                  <!-- <el-input v-model="weld.lr" size="mini" style="width: 50%" placeholder></el-input> -->
                 </el-form-item>
               </div>
             </el-col>
             <el-col :span="6">
               <div class="grid-content">
                 <el-form-item label="评价结果:" prop="name">
-                  <el-input
+                  <el-tag style="width: 70%">{{weld.applicabilityEvaluationResult}}</el-tag>
+                  <!-- <el-input
                     v-model="weld.applicabilityEvaluationResult"
                     size="mini"
                     style="width: 70%"
                     placeholder
-                  ></el-input>
+                  ></el-input>-->
                 </el-form-item>
               </div>
             </el-col>
@@ -180,7 +363,9 @@
             <el-col :span="6">
               <div class="grid-content">
                 <el-form-item label="评价日期:" prop="name">
-                  <el-input v-model="weld.evaluateTime" size="mini" style="width: 70%" placeholder></el-input>
+                  <el-tag style="width: 70%">{{weld.evaluateTime}}</el-tag>
+
+                  <!-- <el-input v-model="weld.evaluateTime" size="mini" style="width: 70%" placeholder></el-input> -->
                 </el-form-item>
               </div>
             </el-col>
@@ -190,19 +375,15 @@
             <el-col :offset="1" :span="10">
               <div class="grid-content">
                 <el-form-item label="结论:" prop="name">
-                  <el-input v-model="weld.conclusion" size="mini" style="width: 80%" placeholder></el-input>
+                  <el-tag style="width: 80%">{{weld.conclusion}}</el-tag>
+                  <!-- <el-input v-model="weld.conclusion" size="mini" style="width: 80%" placeholder></el-input> -->
                 </el-form-item>
               </div>
             </el-col>
             <el-col :span="10">
               <div class="grid-content">
                 <el-form-item label="处置建议:" prop="name">
-                  <el-input
-                    v-model="weld.disposalAdvice"
-                    size="mini"
-                    style="width: 80%"
-                    placeholder
-                  ></el-input>
+                  <el-tag style="width: 80%">{{weld.disposalAdvice}}</el-tag>
                 </el-form-item>
               </div>
             </el-col>
@@ -304,20 +485,22 @@
             <el-col :span="12">
               <div class="grid-content">
                 <el-form-item label="环焊缝上下游管节长度:" prop="name">
-                  <el-input v-model="weld.upstreamPipe" size="mini" style="width: 30%" placeholder></el-input>
+                  <el-tag style="width: 30%">{{weld.upstreamPipe}}</el-tag>
+                  <el-tag style="width: 30%">{{weld.downstreamPipe}}</el-tag>
+                  <!-- <el-input v-model="weld.upstreamPipe" size="mini" style="width: 30%" placeholder></el-input>
                   <el-input
                     v-model="weld.downstreamPipe"
                     size="mini"
                     style="width: 30%"
                     placeholder
-                  ></el-input>
+                  ></el-input>-->
                 </el-form-item>
               </div>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="12">
               <div class="grid-content">
                 <el-form-item label="补口带厚度mm:" prop="name">
-                  <el-tag>{{weld.patchThickness}}</el-tag>
+                  <el-tag style="width: 70%">{{weld.patchThickness}}</el-tag>
                 </el-form-item>
               </div>
             </el-col>
@@ -326,12 +509,14 @@
             <el-col :span="20">
               <div>
                 <el-form-item label="补口带外观检查:" prop="name">
-                  <el-input
+                  <el-tag style="width: 80%">{{weld.patchOutwardTest}}</el-tag>
+
+                  <!-- <el-input
                     v-model="weld.patchOutwardTest"
                     size="mini"
-                    style="width: 80%"
+                    style="width: 70%"
                     placeholder
-                  ></el-input>
+                  ></el-input>-->
                 </el-form-item>
               </div>
             </el-col>
@@ -342,13 +527,17 @@
               <div class="grid-content">
                 <el-form-item label="补口带电火花检测:" prop="name">
                   电压:
-                  <el-input v-model="weld.patchVoltage" size="mini" style="width: 25%" placeholder></el-input>结果:
-                  <el-input
+                  <el-tag style="width: 25%">{{weld.patchVoltage}}</el-tag>
+
+                  <!-- <el-input v-model="weld.patchVoltage" size="mini" style="width: 25%" placeholder></el-input> -->
+                  结果:
+                  <el-tag style="width: 25%">{{weld.patchVoltageResult}}</el-tag>
+                  <!-- <el-input
                     v-model="weld.patchVoltageResult"
                     size="mini"
                     style="width: 25%"
                     placeholder
-                  ></el-input>
+                  ></el-input>-->
                 </el-form-item>
               </div>
             </el-col>
@@ -356,18 +545,8 @@
               <div class="grid-content">
                 <el-form-item label="补口带剥离强度测试:" prop="name">
                   温度:
-                  <el-input
-                    v-model="weld.patchTemperature"
-                    size="mini"
-                    style="width: 25%"
-                    placeholder
-                  ></el-input>结果:
-                  <el-input
-                    v-model="weld.patchTemperatureResult"
-                    size="mini"
-                    style="width:25%"
-                    placeholder
-                  ></el-input>
+                  <el-tag style="width: 25%">{{weld.patchTemperature}}</el-tag>结果:
+                  <el-tag style="width: 25%">{{weld.patchTemperatureResult}}</el-tag>
                 </el-form-item>
               </div>
             </el-col>
@@ -469,19 +648,14 @@
             <el-col :offset="1" :span="7">
               <div class="grid-content">
                 <el-form-item label="上下游钢管焊缝错开间距:" prop="name">
-                  <el-input
-                    v-model="weld.staggerSpacing"
-                    size="mini"
-                    style="width: 35%"
-                    placeholder
-                  ></el-input>
+                  <el-tag style="width: 35%">{{weld.staggerSpacing}}</el-tag>
                 </el-form-item>
               </div>
             </el-col>
             <el-col :span="14">
               <div class="grid-content">
                 <el-form-item label="外观检测:" prop="name">
-                  <el-input v-model="weld.outwardResult" size="mini" style="width: 70%" placeholder></el-input>
+                  <el-tag style="width: 70%">{{weld.outwardResult}}</el-tag>
                 </el-form-item>
               </div>
             </el-col>
@@ -490,12 +664,7 @@
             <el-col :offset="1" :span="21">
               <div class="grid-content">
                 <el-form-item label="内检测异常点钟及尺寸:" prop="name">
-                  <el-input
-                    v-model="weld.abnormalPoints"
-                    size="mini"
-                    style="width: 80%"
-                    placeholder
-                  ></el-input>
+                  <el-tag style="width: 80%">{{weld.abnormalPoints}}</el-tag>
                 </el-form-item>
               </div>
             </el-col>
@@ -659,6 +828,7 @@ export default {
       multipleSelection: [],
       centerDialogVisible: false,
       dialogVisible: false,
+      dialogVisible1: false,
       dustbinData: [],
       totalCount: -1,
       currentPage: 1,
@@ -678,6 +848,8 @@ export default {
       cuoBian: [],
 
       weld: {},
+      weldResult: {},
+
       bools: "",
       girth: {
         id: "",
@@ -698,7 +870,53 @@ export default {
         highConsequenceAreas: "",
         poleLaying: "",
         landscape: ""
-      }
+      },
+      optionsTestingResult: [
+        {
+          value: 1,
+          label: "合格"
+        },
+        {
+          value: 2,
+          label: "不合格"
+        }
+      ],
+      optionsEvaluationResult: [
+        {
+          value: 1,
+          label: "可接受"
+        },
+        {
+          value: 2,
+          label: "不可接受"
+        }
+      ],
+      optionsDisposalAdvice: [
+        {
+          value: 1,
+          label: "按普通焊缝管理，严格防腐后回填"
+        },
+        {
+          value: 2,
+          label: "1-2年后复检"
+        },
+        {
+          value: 3,
+          label: "随内检测周期复检"
+        },
+        {
+          value: 4,
+          label: "复合材料修复"
+        },
+        {
+          value: 5,
+          label: "钢制环氧套筒修复"
+        },
+        {
+          value: 6,
+          label: "B型套筒修复或换管处理"
+        }
+      ]
     };
   },
 
@@ -709,6 +927,7 @@ export default {
     this.scrollHeight = window.innerHeight * 0.7 + "px";
   },
   methods: {
+    editResult() {},
     showAdvanceSearchView() {
       this.advanceSearchViewVisible = !this.advanceSearchViewVisible;
       this.keywords = "";
@@ -936,17 +1155,33 @@ export default {
     },
     showDetailed(row) {
       this.weld = row;
-      console.log(this.weld);
       this.getGwOutwardByGwId(row);
 
       this.dialogVisible = true;
     },
-    itemClick(row) {
-      this.$router.push({
-        path: "/sys/name",
-        query: { serverId: row.serverId }
+    showEditResult(row) {
+      // console.log(row);
+
+      this.weld = row;
+      console.log(this.weld);
+
+      // this.dialogTitle = "修改提取结果";
+
+      this.dialogVisible1 = true;
+    },
+    cancelEidt() {
+      this.dialogVisible1 = false;
+    },
+    editResult() {
+      var _this = this;
+      this.postsRequest("/girth/", this.weld).then(resp => {
+        if (resp && resp.status == 200) {
+          this.dialogVisible1 = false;
+          this.loadTableData();
+        }
       });
     },
+
     handleSizeChange(pageSize) {
       this.pageSize = pageSize;
       this.loadTableData();
@@ -1012,15 +1247,6 @@ export default {
       });
     },
 
-    showEditEmpView(row) {
-      // console.log(row);
-      this.dialogTitle = "编辑学员";
-
-      this.dialogVisible = true;
-    },
-    cancelEidt() {
-      this.dialogVisible = false;
-    },
     searchClick() {
       this.loadBlogs(1, this.pageSize);
     },
