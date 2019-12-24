@@ -29,7 +29,29 @@
           <el-option label="母材" value="0.0"></el-option>
         </el-select>-->
 
-        <el-tag style="margin-left:20px;">{{param[0].name}}</el-tag>
+        <el-tag style="margin-left:20px;">{{repairFactorName}}</el-tag>
+        <el-select v-model="evaluation.repairFactor" placeholder="请选择" style="margin-left:10px;">
+          <el-option label="未返修" value="1.0"></el-option>
+          <el-option label="返修" value="1.25"></el-option>
+        </el-select>
+
+        <el-tag style="margin-left:20px;">{{steelLevelName}}</el-tag>
+
+        <el-select v-model="evaluation.calculationCrackDepth" placeholder="请选择" style="margin-left:10px;">
+          <el-option :label="item" :value="index" v-for="(item,index) in array.steel" :key="index"></el-option>
+        </el-select>
+        <el-tag style="margin-left:20px;">{{areaLevelName}}</el-tag>
+
+        <el-select v-model="evaluation.areaLevel" placeholder="请选择" style="margin-left:10px;">
+          <el-option label="一级" value="1.0"></el-option>
+          <el-option label="二级" value="2.0"></el-option>
+          <el-option label="三级" value="3.0"></el-option>
+          <el-option label="四级" value="4.0"></el-option>
+        </el-select>
+      </div>
+
+      <div style="display:flex;align-items: center;margin: 20px;">
+        <el-tag style="margin-left:20px;">{{measuringCrackLengthName}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
@@ -37,81 +59,56 @@
           clearable
         ></el-input>
 
-        <el-tag style="margin-left:20px;">{{param[1].name}}</el-tag>
+        <el-tag style="margin-left:20px;">{{measuringCrackDepthName}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
           v-model="evaluation.measuringCrackDepth"
           clearable
         ></el-input>
-
-        <el-tag style="margin-left:20px;">{{param[10].name}}</el-tag>
-        <el-input
-          style="margin-left:10px;width:15%"
-          placeholder="请输入内容"
-          v-model="evaluation.calculationCrackDepth"
-          clearable
-        ></el-input>
-      </div>
-
-      <div style="display:flex;align-items: center;margin: 20px;">
-        <el-tag style="margin-left:20px;">{{param[3].name}}</el-tag>
-        <el-select v-model="evaluation.repairFactor" placeholder="请选择" style="margin-left:10px;">
-          <el-option label="未返修" value="1.0"></el-option>
-          <el-option label="返修" value="1.25"></el-option>
-        </el-select>
-        <el-tag style="margin-left:20px;">{{param[2].name}}</el-tag>
-        <el-input
-          style="margin-left:10px;width:15%"
-          placeholder="请输入内容"
-          v-model="evaluation.materialYieldStrength"
-          clearable
-        ></el-input>
-
-        <el-tag style="margin-left:20px;">{{param[4].name}}</el-tag>
-        <el-input
-          style="margin-left:10px;width:15%"
-          placeholder="请输入内容"
-          v-model="evaluation.impactPower"
-          clearable
-        ></el-input>
-      </div>
-      <div style="display:flex;align-items: center;margin: 20px;">
-        <el-tag style="margin-left:20px;">{{param[5].name}}</el-tag>
-        <el-input
-          style="margin-left:10px;width:15%"
-          placeholder="请输入内容"
-          v-model="evaluation.servicePressure"
-          clearable
-        ></el-input>
-        <el-tag style="margin-left:20px;">{{param[6].name}}</el-tag>
-        <el-input
-          style="margin-left:10px;width:15%"
-          placeholder="请输入内容"
-          v-model="evaluation.outsideDiameter"
-          clearable
-        ></el-input>
-        <el-tag style="margin-left:20px;">{{param[7].name}}</el-tag>
-        <el-input
-          style="margin-left:10px;width:15%"
-          placeholder="请输入内容"
-          v-model="evaluation.wallThickness"
-          clearable
-        ></el-input>
-      </div>
-      <div style="display:flex;align-items: center;margin: 20px;">
-        <el-tag style="margin-left:20px;">{{param[8].name}}</el-tag>
+        <el-tag style="margin-left:20px;">{{bendingCoefficientsName}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
           v-model="evaluation.bendingCoefficients"
           clearable
         ></el-input>
-        <el-tag style="margin-left:20px;">{{param[9].name}}</el-tag>
+        <!-- <el-tag style="margin-left:20px;">{{param[2].name}}</el-tag>
         <el-input
           style="margin-left:10px;width:15%"
           placeholder="请输入内容"
-          v-model="evaluation.areaLevel"
+          v-model="evaluation.materialYieldStrength"
+          clearable
+        ></el-input>-->
+
+        <!-- <el-tag style="margin-left:20px;">{{param[4].name}}</el-tag>
+        <el-input
+          style="margin-left:10px;width:15%"
+          placeholder="请输入内容"
+          v-model="evaluation.impactPower"
+          clearable
+        ></el-input>-->
+      </div>
+      <div style="display:flex;align-items: center;margin: 20px;">
+        <el-tag style="margin-left:20px;">{{servicePressureName}}</el-tag>
+        <el-input
+          style="margin-left:10px;width:15%"
+          placeholder="请输入内容"
+          v-model="evaluation.servicePressure"
+          clearable
+        ></el-input>
+        <el-tag style="margin-left:20px;">{{outsideDiameterName}}</el-tag>
+        <el-input
+          style="margin-left:10px;width:15%"
+          placeholder="请输入内容"
+          v-model="evaluation.outsideDiameter"
+          clearable
+        ></el-input>
+        <el-tag style="margin-left:20px;">{{wallThicknessName}}</el-tag>
+        <el-input
+          style="margin-left:10px;width:15%"
+          placeholder="请输入内容"
+          v-model="evaluation.wallThickness"
           clearable
         ></el-input>
       </div>
@@ -152,10 +149,19 @@ export default {
       month: "",
       input: "",
       param: [],
+      measuringCrackLengthName: "",
+      measuringCrackDepthName: "",
+      repairFactorName: "",
+      servicePressureName: "",
+      outsideDiameterName: "",
+      wallThicknessName: "",
+      bendingCoefficientsName: "",
+      areaLevelName: "",
+      steelLevelName: "",
       evaluation: {
         // defectLocation: "1.0",
-        measuringCrackLength: 16.5,
-        measuringCrackDepth: 1.5,
+        measuringCrackLength: 33,
+        measuringCrackDepth: 3,
         materialYieldStrength: 245.0,
         repairFactor: "1.0",
         impactPower: 27.0,
@@ -163,10 +169,12 @@ export default {
         outsideDiameter: 210.0,
         wallThickness: 7.0,
         bendingCoefficients: 0.0,
-        areaLevel: 4.0,
-        calculationCrackDepth: -1
+        areaLevel: "",
+        calculationCrackDepth: "",
+        steelLevel: ""
       },
-      result: ""
+      result: "",
+      array: []
     };
   },
   mounted: function() {
@@ -176,10 +184,12 @@ export default {
     // this.getDevStatus();
     // this.getMonth();
     this.loadTableData();
+    this.getArrays();
     var _this = this;
   },
   methods: {
     evaluationOnline() {
+      this.evaluation.steelLevel = parseInt(this.evaluation.calculationCrackDepth);
       this.postsRequest("/evaluation/", this.evaluation).then(resp => {
         if (resp && resp.status == 200) {
           this.result =
@@ -191,6 +201,15 @@ export default {
             resp.data.obj.result;
         }
         // console.log(resp);
+      });
+    },
+    getArrays() {
+      var _this = this;
+      this.getRequest("/evaluation/array").then(resp => {
+        console.log(resp);
+        this.array = resp.data.obj;
+        console.log(this.array);
+        console.log(this.array.steel["1"]);
       });
     },
     getImageUrls(month) {
@@ -232,10 +251,16 @@ export default {
       this.getRequest("/evaluation/").then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {
-          console.log(resp.data);
-
           _this.param = resp.data.obj;
-          console.log(_this.param);
+          this.measuringCrackLengthName = _this.param[0].name;
+          this.measuringCrackDepthName = _this.param[1].name;
+          this.repairFactorName = _this.param[2].name;
+          this.servicePressureName = _this.param[3].name;
+          this.outsideDiameterName = _this.param[4].name;
+          this.wallThicknessName = _this.param[5].name;
+          this.bendingCoefficientsName = _this.param[6].name;
+          this.areaLevelName = _this.param[7].name;
+          this.steelLevelName = _this.param[8].name;
         }
       });
     },

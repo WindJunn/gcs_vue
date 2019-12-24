@@ -1040,7 +1040,7 @@ export default {
                   s.push(datas.tofdTest);
                 }
                 let reminder =
-                  "确定下列数据中的英文字母 “I”或“V”或阿拉伯数字“1”，不表达罗马数字Ⅰ、Ⅱ、Ⅲ、Ⅳ、Ⅴ。若是，则点击取消修改后再次上传；否则点击继续上传。 <hr><div style='height:200px;overflow-y:scroll'> ";
+                  "确定下列数据中的英文字母 “I”或“V”或阿拉伯数字“1”(被红色标记)，不表达罗马数字Ⅰ、Ⅱ、Ⅲ、Ⅳ、Ⅴ。若是，则点击取消修改后再次上传；否则点击继续上传。 <hr><div style='height:200px;overflow-y:scroll'> ";
                 s.forEach(v => {
                   v = v
                     .replace(/I/g, "<span style='color: #f50a0a;'>I</span>")
@@ -1095,7 +1095,7 @@ export default {
                 });
 
                 let reminder =
-                  "确定下列数据中的英文字母 “I”或“V”或阿拉伯数字“1”，不表示罗马数字Ⅰ、Ⅱ、Ⅲ、Ⅳ、Ⅴ。若是，则点击取消修改后再上传；否则点击继续上传。 <hr> <div style='height:200px;overflow-y:scroll'>";
+                  "确定下列数据中的英文字母 “I”或“V”或阿拉伯数字“1”(被红色标记)，不表示罗马数字Ⅰ、Ⅱ、Ⅲ、Ⅳ、Ⅴ。若是，则点击取消修改后再上传；否则点击继续上传。 <hr> <div style='height:200px;overflow-y:scroll'>";
                 s.forEach(v => {
                   v = v
                     .replace(/I/g, "<span style='color: #f50a0a;'>I</span>")
