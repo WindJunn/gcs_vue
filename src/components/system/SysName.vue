@@ -189,7 +189,7 @@ export default {
   },
   methods: {
     evaluationOnline() {
-      this.evaluation.steelLevel = parseInt(this.evaluation.calculationCrackDepth);
+      this.evaluation.steelLevel = parseInt(this.evaluation.calculationCrackDepth)+1;
       this.postsRequest("/evaluation/", this.evaluation).then(resp => {
         if (resp && resp.status == 200) {
           this.result =

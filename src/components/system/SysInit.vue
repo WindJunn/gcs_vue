@@ -1133,9 +1133,10 @@ export default {
 
     keywordsChange() {},
     exportData() {
+      this.keywordsConvert = this.keywords.replace("+", "%2B").replace(/ /g, "");
       window.open(
         "/girth/exportGirthWeld?keywords=" +
-          this.keywords +
+          this.keywordsConvert +
           "&departmentId=" +
           this.departmentId +
           "&testingResultId=" +
@@ -1293,13 +1294,14 @@ export default {
       if (pipelineName != null) {
         this.pipelineName = pipelineName;
       }
+      this.keywordsConvert = this.keywords.replace("+", "%2B").replace(/ /g, "");
       this.getRequest(
         "/girth/?page=" +
           this.currentPage +
           "&size=" +
           this.pageSize +
           "&keywords=" +
-          this.keywords +
+          this.keywordsConvert +
           "&departmentId=" +
           this.departmentId +
           "&testingResultId=" +
