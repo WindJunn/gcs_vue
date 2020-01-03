@@ -88,22 +88,23 @@
       v-loading="loading"
     >
       <el-table-column type="selection" align="left" width="30"></el-table-column>
-      <el-table-column fixed prop="department.name" align="left" label="分公司" width="150"></el-table-column>
+      <el-table-column fixed prop="department.name" align="left" label="分公司" width="130"></el-table-column>
 
-      <el-table-column fixed prop="pipelineName" align="left" label="管线名称" width="100"></el-table-column>
+      <el-table-column fixed prop="pipelineName" align="left" label="管线名称" width="80"></el-table-column>
       <el-table-column fixed prop="number" align="left" label="环焊缝编号" width="180"></el-table-column>
-      <el-table-column prop="evaluateTime" align="left" label="评价时间" width="150"></el-table-column>
-      <el-table-column prop="applicabilityEvaluationResult" width="150" label="适用性评价结果"></el-table-column>
-      <el-table-column prop="disposalAdvice" width="200" label="处置建议"></el-table-column>
+      <el-table-column prop="evaluateTime" align="left" label="评价时间" width="100"></el-table-column>
+      <el-table-column prop="applicabilityEvaluationResult" width="100" label="适用性评价结果"></el-table-column>
+      <el-table-column prop="disposalAdvice" width="180" label="处置建议"></el-table-column>
 
       <el-table-column prop="nondestructiveTestingResult" align="left" label="无损检测结果" width="280"></el-table-column>
       <el-table-column prop="stagger" align="left" label="错边量" width="200"></el-table-column>
       <el-table-column prop="testTime" width="150" label="检测时间"></el-table-column>
 
-      <el-table-column fixed="right" label="操作" width="320">
+      <el-table-column fixed="right" label="操作" width="400">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="showEditResult(scope.row)">修改提取结果</el-button>
           <el-button size="mini" type="primary" @click="showDetailed(scope.row)">详细信息</el-button>
+          <el-button size="mini" type="primary" @click="picManagement(scope.row)">图片管理</el-button>
           <el-button size="mini" type="danger" @click="deleteServer(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -802,6 +803,47 @@
         </el-scrollbar>
       </el-dialog>
     </el-form>
+
+    <el-form :model="weld" ref="editUserForm" style="margin: 0px;padding: 0px;">
+      <el-dialog
+        title=""
+        style="padding: 0px;"
+        :close-on-click-modal="true"
+        :visible.sync="dialogVisible2"
+        width="80%"
+      >
+        <el-scrollbar
+          wrapClass="scrollbar-wrap"
+          :style="{height: scrollHeight}"
+          ref="scrollbarContainer"
+        >
+        
+        <el-upload
+          class="upload-pic"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :file-list="fileList">
+          <el-button size="small" type="primary">上传图片</el-button>
+        </el-upload>
+        <div class="upload_parent">
+          <div class="defind_img_s" v-for="(item, index) in datas_upload" :key="index">
+              <img :src="item.url" class="defind">
+              <el-upload
+                      :ref='"upload" + index'
+                      class="upload-demo"
+                      :on-remove='handleRemove'
+                      :on-success='uploadSuc'
+                      :file-list='fileList'>
+                  <el-button size="mini" type="text" @click='getUploadTag(item, index)' class="up_btns">重新上传图片</el-button>
+              </el-upload>
+               <el-button size="mini" type="text" class="" @click="delupload(item,index)">删除</el-button>
+          </div>
+      </div>
+
+          
+        </el-scrollbar>
+      </el-dialog>
+    </el-form>
   </div>
 </template>
 <script>
@@ -829,6 +871,7 @@ export default {
       centerDialogVisible: false,
       dialogVisible: false,
       dialogVisible1: false,
+      dialogVisible2: false,
       dustbinData: [],
       totalCount: -1,
       currentPage: 1,
@@ -916,7 +959,20 @@ export default {
           value: 6,
           label: "B型套筒修复或换管处理"
         }
-      ]
+      ],
+    dialogImageUrl: '',
+      // 上传图片文件列表
+      fileList: [],
+      upItem: {},
+//        图片上传数组
+      datas_upload: [
+        { upbtnGroup: false, url: '../../static/bg.jpg' },
+        { upbtnGroup: false, url: '../../static/bg.jpg' },
+        { upbtnGroup: false, url: '../../static/bg.jpg' },
+        { upbtnGroup: false, url: '../../static/bg.jpg' },
+        { upbtnGroup: false, url: '../../static/bg.jpg' },
+        { upbtnGroup: false, url: '../../static/bg.jpg' },
+        ],
     };
   },
 
@@ -1170,6 +1226,55 @@ export default {
 
       this.dialogVisible1 = true;
     },
+    picManagement(row) {
+      this.weld = row;
+      // this.getGwOutwardByGwId(row);
+
+      this.dialogVisible2 = true;
+    },
+    handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePictureCardPreview(file) {
+        this.dialogImageUrl = file.url;
+        this.dialogVisible = true;
+      },
+    //      图片上传
+      getUploadTag(item, index) {
+//        console.log(response, file, fileList, 564)
+        this.uploadTag = index
+        console.log(index, 220)
+        this.upItem = item
+      },
+     //上传图片-删除
+      delupload(item, index) {
+        console.log(index, 562)
+
+        this.$confirm('此操作将永久删除该图片, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.datas_upload.splice(this.datas_upload.findIndex(index => item.index = index),1)
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+      },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+    },
+
     cancelEidt() {
       this.dialogVisible1 = false;
     },
@@ -1472,5 +1577,28 @@ export default {
   padding-bottom: 10px;
   margin-top: 10px;
   border-bottom: 1px solid #eee;
+}
+.upload-demo{
+  display: inline-block;
+}
+.upload-pic{
+  margin-bottom: 20px;
+}
+.upload_parent{
+  display: flex;
+  flex-wrap: wrap;
+}
+.defind{
+  width: 100%;
+  height: 200px;
+}
+.defind_img_s{
+  width: 30%;
+  height: 220px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+.defind_img_s:nth-of-type(3n){
+  margin-right: 0;
 }
 </style>
