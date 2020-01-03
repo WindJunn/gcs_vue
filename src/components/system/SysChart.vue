@@ -80,17 +80,17 @@
         <div id="totalAdvice" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12" :v-show="showChart.value">
+    <el-col :span="12" >
       <div class="echarts-box">
         <div id="companyDefect" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12" :v-show="showChart.value">
+    <el-col :span="12" >
       <div class="echarts-box">
         <div id="companyDefectNo" class="echarts"></div>
       </div>
     </el-col>
-    <div :v-if="showChart.value">
+    <div >
       <el-col :span="12">
         <div class="echarts-box">
           <div id="companyDefectFix" class="echarts"></div>
@@ -343,7 +343,6 @@ export default {
             }
           }
         ]
-       
       },
       pipelineDefectNo: {
         title: {
@@ -1128,9 +1127,7 @@ export default {
       endYear: "",
       departmentId: "",
       barData: [],
-      showChart: {
-        value: true
-      }
+      
     };
   },
   mounted: function() {
@@ -1158,8 +1155,6 @@ export default {
     },
     queryCoursePieChart: function() {
       var _this = this;
-      // this.showChart = 0;
-      this.$set(this.showChart, "value", false);
       if (this.startYear != "") {
         this.startYear = this.startYear.getFullYear();
       }
@@ -1175,8 +1170,8 @@ export default {
           this.departmentId
       ).then(resp => {
         if (resp && resp.status == 200) {
-          this.startYear="";
-          this.endYear="";
+          this.startYear = "";
+          this.endYear = "";
           this.datas = resp.data.obj;
           let d = this.datas[0].data;
           let d1 = this.datas[1].data;
@@ -1222,11 +1217,19 @@ export default {
           d5.forEach(element => {
             this.totalAdvice.legend.data.push(element.name);
           });
-          // this.$set(this.showChart, "showChart", "0");
 
+          if (this.datas.length == 6) {
+            document.getElementById(
+              "companyDefect"
+            ).parentNode.parentNode.style.display = "none";
+            document.getElementById(
+              "companyDefectNo"
+            ).parentNode.parentNode.style.display = "none";
+            document.getElementById(
+              "companyDefectFix"
+            ).parentNode.parentNode.style.display = "none";
+            }
           if (this.datas.length > 6) {
-            // this.showChart = 1;
-            this.$set(this.showChart, "value", true);
 
             let d6 = this.datas[6].data;
             let d7 = this.datas[7].data;
@@ -1245,7 +1248,6 @@ export default {
               this.companyDefectFix.legend.data.push(element.name);
             });
           }
-          console.log(this.showChart);
           //初始化
           this.drawLine();
         }
@@ -1404,24 +1406,7 @@ export default {
         });
       });
     },
-    echartShow: function() {
-      //图表展示隐藏
-      let chartMain = document.getElementById("chart-main");
-      let strong = document.getElementById("strong");
-      if (this.echartOn) {
-        this.echartBtn = false;
-      } else {
-        this.echartBtn = true;
-      }
-      //显示隐藏上下滑动效果
-      chartMain.style.height = this.echartOn ? "0" : "215px";
-      strong.style.color = this.echartOn ? "#222" : "#999";
-      this.echartOn = !this.echartOn;
-    },
-    echartIsShow: function(n) {
-      //不同图表切换
-      this.echartNum = n;
-    }
+   
   }
 };
 </script>
