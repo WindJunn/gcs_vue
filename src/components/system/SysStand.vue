@@ -3,49 +3,30 @@
     <el-header
       style="padding: 0px;display:flex;justify-content:space-between;align-items: center;height:5px"
     ></el-header>
-
-    
-    <div style="width: 90%;height: 50px;margin-top: 18px;margin-bottom: 0px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;">
-      <div>
-        <el-row style="margin-top: 8px;"> 
-          
-          <el-col :span="10 ">
-            上传标准:
-            <el-popover
-              v-model="showOrHidePop"
-              placement="right"
-              title="选择公司"
-              trigger="manual"
-              style="width:50%"
-            >
-              <el-tree
-                :data="deps"
-                :default-expand-all="false"
-                :props="defaultProps"
-                :expand-on-click-node="false"
-                @node-click="handleNodeClick"
-              ></el-tree>
-              <div
-                slot="reference"
-                style="width: 50%;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
-                @click.left="showDepTree"
-                v-bind:style="{color: depTextColor}"
-              >{{departmentName}}</div>
-            </el-popover>
-          </el-col>
-          <el-col :span="4">
-            <el-button size="mini" type="primary" @click="addAdm()">添加在线评价权限</el-button>
-          </el-col>
-           <el-col :span="4">
-             <el-tag>添加完成后，该公司的成员即拥有在线评价权限</el-tag>
-          </el-col>
-        </el-row>
-      </div>
+    <div>
+      <div src="/standard/file/1.pdf"/>
+    </div>
+    <div style="margin-left: 5px;display: inline">
+      <el-upload
+        :show-file-list="false"
+        accept=".xlsx"
+        action="/girth/importGirthWeld"
+        :before-upload="beforeUpload"
+        :on-success="fileUploadSuccess"
+        :on-error="fileUploadError"
+        :disabled="fileUploadBtnText=='正在导入'"
+        style="display: inline"
+      >
+        <el-button size="mini" type="success" :loading="fileUploadBtnText=='正在导入'">
+          <i class="fa fa-lg fa-level-up" style="margin-right: 5px"></i>
+          {{fileUploadBtnText}}
+        </el-button>
+      </el-upload>
     </div>
 
     <el-table
       ref="multipleTable"
-      :data="users"
+      :data="standards"
       tooltip-effect="dark"
       border
       stripe
@@ -55,17 +36,10 @@
       v-loading="loading"
     >
       <el-table-column type="selection" align="left" width="30"></el-table-column>
-      <el-table-column prop="name" align="left" fixed label="姓名" width="100"></el-table-column>
-
-      <el-table-column prop="phone" width="250" align="left" label="手机号"></el-table-column>
-
-      <el-table-column prop="department.name" label="所在公司" width="250"></el-table-column>
-      <!-- <el-table-column prop="administrator.departmentName" label="被管理公司" width="250"></el-table-column> -->
-
+      <el-table-column prop="name" align="left" fixed label="名称" width="300"></el-table-column>
+      <el-table-column prop="url" width="350" align="left" label="链接地址"></el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
-          <!-- <el-button size="mini" @click="showEditEmpView(scope.row)">编辑</el-button> -->
-          <!-- <el-button size="mini" type="primary" @click="updateTop(scope.row)">置顶</el-button> -->
           <el-button size="mini" type="danger" @click="deleteServer(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -94,8 +68,12 @@ export default {
       keywords: "",
       dialogVisible: false,
       dustbinData: [],
-      users: [],
+      standards: [],
       deps: [],
+      fileUploadBtnText: "导入标准",
+
+      faangledoubleup: "fa-angle-double-up",
+      faangledoubledown: "fa-angle-double-down",
       depTextColor: "#c0c4cc",
       defaultProps: {
         label: "name",
@@ -178,20 +156,13 @@ export default {
       var _this = this;
       this.loading = true;
       this.getRequest(
-        "/system/user/allAdm?page=" +
-          this.currentPage +
-          "&size=" +
-          this.pageSize +
-          "&keywords=" +
-          this.keywords +
-          "&departmentId=" +
-          this.departmentId
+        "/standard?keywords=" +
+          this.keywords
       ).then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {
-
-          _this.users = resp.data.users;
-          _this.totalCount = resp.data.count;
+          _this.standards = resp.data.obj.standards;
+          _this.totalCount = resp.data.obj.count;
         }
       });
     },

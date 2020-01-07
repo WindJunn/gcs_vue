@@ -104,7 +104,7 @@
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="showEditResult(scope.row)">修改提取结果</el-button>
           <el-button size="mini" type="primary" @click="showDetailed(scope.row)">详细信息</el-button>
-          <el-button size="mini" type="primary" @click="picManagement(scope.row)">图片管理</el-button>
+          <el-button size="mini" type="primary" @click="picManagement(scope.row)">裂纹图片</el-button>
           <el-button size="mini" type="danger" @click="deleteServer(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -806,41 +806,35 @@
 
     <el-form :model="weld" ref="editUserForm" style="margin: 0px;padding: 0px;">
       <el-dialog
-        title=""
+        title
         style="padding: 0px;"
         :close-on-click-modal="true"
         :visible.sync="dialogVisible2"
         width="80%"
       >
+        <el-upload
+          class="upload-pic"
+          action="/girth/image/upload"
+          :data="uploadData"
+          :before-upload="beforeUploadImage"
+          :on-remove="handleRemove"
+          :on-success="uploadSuccess"
+        >
+          <el-button size="small" type="primary">上传图片</el-button>
+        </el-upload>
+        <div v-show="images.length==0">暂无数据</div>
         <el-scrollbar
           wrapClass="scrollbar-wrap"
           :style="{height: scrollHeight}"
           ref="scrollbarContainer"
+          v-show="images.length!=0"
         >
-        
-        <el-upload
-          class="upload-pic"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :file-list="fileList">
-          <el-button size="small" type="primary">上传图片</el-button>
-        </el-upload>
-        <div class="upload_parent">
-          <div class="defind_img_s" v-for="(item, index) in datas_upload" :key="index">
-              <img :src="item.url" class="defind">
-              <el-upload
-                      :ref='"upload" + index'
-                      class="upload-demo"
-                      :on-remove='handleRemove'
-                      :on-success='uploadSuc'
-                      :file-list='fileList'>
-                  <el-button size="mini" type="text" @click='getUploadTag(item, index)' class="up_btns">重新上传图片</el-button>
-              </el-upload>
-               <el-button size="mini" type="text" class="" @click="delupload(item,index)">删除</el-button>
+          <div class="upload_parent">
+            <div class="defind_img_s" v-for="(item, index) in images" :key="index">
+              <img :src="item.url" class="defind" />
+              <el-button size="mini" type="text" class @click="delupload(item,index)">删除</el-button>
+            </div>
           </div>
-      </div>
-
-          
         </el-scrollbar>
       </el-dialog>
     </el-form>
@@ -890,6 +884,7 @@ export default {
       weldHight: [],
       cuoBian: [],
 
+      images: [],
       weld: {},
       weldResult: {},
 
@@ -960,19 +955,20 @@ export default {
           label: "B型套筒修复或换管处理"
         }
       ],
-    dialogImageUrl: '',
+      uploadData: "",
+      dialogImageUrl: "",
       // 上传图片文件列表
       fileList: [],
       upItem: {},
-//        图片上传数组
+      //        图片上传数组
       datas_upload: [
-        { upbtnGroup: false, url: '../../static/bg.jpg' },
-        { upbtnGroup: false, url: '../../static/bg.jpg' },
-        { upbtnGroup: false, url: '../../static/bg.jpg' },
-        { upbtnGroup: false, url: '../../static/bg.jpg' },
-        { upbtnGroup: false, url: '../../static/bg.jpg' },
-        { upbtnGroup: false, url: '../../static/bg.jpg' },
-        ],
+        { upbtnGroup: false, url: "../../static/bg.jpg" },
+        { upbtnGroup: false, url: "../../static/bg.jpg" },
+        { upbtnGroup: false, url: "../../static/bg.jpg" },
+        { upbtnGroup: false, url: "../../static/bg.jpg" },
+        { upbtnGroup: false, url: "../../static/bg.jpg" },
+        { upbtnGroup: false, url: "../../static/bg.jpg" }
+      ]
     };
   },
 
@@ -993,6 +989,7 @@ export default {
         // this.loadEmps();
       }
     },
+
     fileUploadSuccess(response, file, fileList) {
       if (response) {
         this.$message({ type: "success", message: response.msg });
@@ -1186,10 +1183,29 @@ export default {
           });
       });
     },
-
+    beforeUploadImage(file) {
+      this.uploadData = {
+        gwId: this.gwId
+      };
+      console.log(this.uploadData);
+      let promise = new Promise(resolve => {
+        this.$nextTick(function() {
+          resolve(true);
+        });
+      });
+      return promise; //通过返回一个promis对象解决
+    },
+    uploadSuccess(response) {
+      if (response) {
+        this.$message({ type: "success", message: response.msg });
+      }
+      this.getImagesByGwId(this.gwId);
+    },
     keywordsChange() {},
     exportData() {
-      this.keywordsConvert = this.keywords.replace("+", "%2B").replace(/ /g, "");
+      this.keywordsConvert = this.keywords
+        .replace("+", "%2B")
+        .replace(/ /g, "");
       window.open(
         "/girth/exportGirthWeld?keywords=" +
           this.keywordsConvert +
@@ -1217,56 +1233,53 @@ export default {
       this.dialogVisible = true;
     },
     showEditResult(row) {
-      // console.log(row);
-
       this.weld = row;
       console.log(this.weld);
-
-      // this.dialogTitle = "修改提取结果";
 
       this.dialogVisible1 = true;
     },
     picManagement(row) {
-      this.weld = row;
-      // this.getGwOutwardByGwId(row);
-
+      this.gwId = row.id;
+      this.getImagesByGwId(this.gwId);
       this.dialogVisible2 = true;
     },
     handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePictureCardPreview(file) {
-        this.dialogImageUrl = file.url;
-        this.dialogVisible = true;
-      },
+      console.log(file, fileList);
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+    },
     //      图片上传
-      getUploadTag(item, index) {
-//        console.log(response, file, fileList, 564)
-        this.uploadTag = index
-        console.log(index, 220)
-        this.upItem = item
-      },
-     //上传图片-删除
-      delupload(item, index) {
-        console.log(index, 562)
-
-        this.$confirm('此操作将永久删除该图片, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.datas_upload.splice(this.datas_upload.findIndex(index => item.index = index),1)
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
+    getUploadTag(item, index) {
+      //        console.log(response, file, fileList, 564)
+      this.uploadTag = index;
+      console.log(index, 220);
+      this.upItem = item;
+    },
+    //上传图片-删除
+    delupload(item, index) {
+      console.log(item)
+      this.$confirm("此操作将删除该图片, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.deleteRequest("/girth/delete/image/" + item.id).then(resp => {
+            if (resp && resp.status == 200) {
+              this.getImagesByGwId(this.gwId);
+              
+            }
           });
-        }).catch(() => {
+        })
+        .catch(() => {
           this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
+            type: "info",
+            message: "已取消删除"
+          });
         });
-      },
+    },
     handleRemove(file, fileList) {
       console.log(file, fileList);
     },
@@ -1296,6 +1309,15 @@ export default {
       this.currentPage = currentChange;
       this.loadTableData();
     },
+    getImagesByGwId(id) {
+      var _this = this;
+      this.getRequest("/girth/images?gwId=" + id).then(resp => {
+        if (resp && resp.status == 200) {
+          _this.images = resp.data.obj.images;
+          console.log(_this.images);
+        }
+      });
+    },
     getGwOutwardByGwId(row) {
       var _this = this;
       this.getRequest("/girth/gwOutward?gwId=" + row.id).then(resp => {
@@ -1303,6 +1325,7 @@ export default {
 
         if (resp && resp.status == 200) {
           _this.gwOutwards = resp.data.obj.gwOutwards;
+          _this.images = resp.data.obj.images;
           console.log(_this.gwOutwards);
 
           _this.upstreamPipe = [];
@@ -1311,39 +1334,41 @@ export default {
           _this.weldHight = [];
           _this.cuoBian = [];
 
-          for (let i = 0; i < _this.gwOutwards.length; i++) {
-            let data = _this.gwOutwards[i];
-            console.log(data);
-            if (data.type == 1) {
-              delete data.id;
-              delete data.gwId;
-              delete data.type;
+          if (_this.gwOutwards.length != 0) {
+            for (let i = 0; i < _this.gwOutwards.length; i++) {
+              let data = _this.gwOutwards[i];
+              console.log(data);
+              if (data.type == 1) {
+                delete data.id;
+                delete data.gwId;
+                delete data.type;
 
-              _this.upstreamPipe = data;
-            }
-            if (data.type == 2) {
-              delete data.id;
-              delete data.gwId;
-              delete data.type;
-              _this.downstreamPipe = data;
-            }
-            if (data.type == 3) {
-              delete data.id;
-              delete data.gwId;
-              delete data.type;
-              _this.weldWidth = data;
-            }
-            if (data.type == 4) {
-              delete data.id;
-              delete data.gwId;
-              delete data.type;
-              _this.weldHight = data;
-            }
-            if (data.type == 5) {
-              delete data.id;
-              delete data.gwId;
-              delete data.type;
-              _this.cuoBian = data;
+                _this.upstreamPipe = data;
+              }
+              if (data.type == 2) {
+                delete data.id;
+                delete data.gwId;
+                delete data.type;
+                _this.downstreamPipe = data;
+              }
+              if (data.type == 3) {
+                delete data.id;
+                delete data.gwId;
+                delete data.type;
+                _this.weldWidth = data;
+              }
+              if (data.type == 4) {
+                delete data.id;
+                delete data.gwId;
+                delete data.type;
+                _this.weldHight = data;
+              }
+              if (data.type == 5) {
+                delete data.id;
+                delete data.gwId;
+                delete data.type;
+                _this.cuoBian = data;
+              }
             }
           }
 
@@ -1399,7 +1424,9 @@ export default {
       if (pipelineName != null) {
         this.pipelineName = pipelineName;
       }
-      this.keywordsConvert = this.keywords.replace("+", "%2B").replace(/ /g, "");
+      this.keywordsConvert = this.keywords
+        .replace("+", "%2B")
+        .replace(/ /g, "");
       this.getRequest(
         "/girth/?page=" +
           this.currentPage +
@@ -1455,7 +1482,7 @@ export default {
       this.deleteRequest("/girth/" + id).then(resp => {
         _this.tableLoading = false;
         if (resp && resp.status == 200) {
-          var data = resp.data;
+          // var data = resp.data;
 
           this.loadTableData();
         }
@@ -1578,27 +1605,27 @@ export default {
   margin-top: 10px;
   border-bottom: 1px solid #eee;
 }
-.upload-demo{
+.upload-demo {
   display: inline-block;
 }
-.upload-pic{
+.upload-pic {
   margin-bottom: 20px;
 }
-.upload_parent{
+.upload_parent {
   display: flex;
   flex-wrap: wrap;
 }
-.defind{
+.defind {
   width: 100%;
   height: 200px;
 }
-.defind_img_s{
+.defind_img_s {
   width: 30%;
   height: 220px;
   margin-right: 20px;
   margin-bottom: 20px;
 }
-.defind_img_s:nth-of-type(3n){
+.defind_img_s:nth-of-type(3n) {
   margin-right: 0;
 }
 </style>

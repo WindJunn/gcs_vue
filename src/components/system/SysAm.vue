@@ -4,11 +4,12 @@
       style="padding: 0px;display:flex;justify-content:space-between;align-items: center;height:5px"
     ></el-header>
 
-    
-    <div style="width: 90%;height: 50px;margin-top: 18px;margin-bottom: 0px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;">
+    <div
+      style="width:90%;margin-left:5%;margin-top:10px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;"
+
+    >
       <div>
-        <el-row style="margin-top: 8px;"> 
-          
+        <el-row style="margin-top: 8px;">
           <el-col :span="10 ">
             公司选择:
             <el-popover
@@ -36,51 +37,22 @@
           <el-col :span="4">
             <el-button size="mini" type="primary" @click="addAdm()">添加在线评价权限</el-button>
           </el-col>
-           <el-col :span="4">
-             <el-tag>添加完成后，该公司的成员即拥有在线评价权限</el-tag>
+          <el-col :span="4">
+            <el-tag>添加完成后，该公司的成员即拥有在线评价权限</el-tag>
           </el-col>
         </el-row>
       </div>
     </div>
-
-    <el-table
-      ref="multipleTable"
-      :data="users"
-      tooltip-effect="dark"
-      border
-      stripe
-      size="mini"
-      style="width: 100%;margin-top:20px"
-      @selection-change="handleSelectionChange"
-      v-loading="loading"
+    <div
+      style="width:90%;margin-left:5%;margin-top:10px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;"
     >
-      <el-table-column type="selection" align="left" width="30"></el-table-column>
-      <el-table-column prop="name" align="left" fixed label="姓名" width="100"></el-table-column>
+      <div style="font-size:25px;margin-bottom:15px">在线评价权限公司名称</div>
 
-      <el-table-column prop="phone" width="250" align="left" label="手机号"></el-table-column>
-
-      <el-table-column prop="department.name" label="所在公司" width="250"></el-table-column>
-      <!-- <el-table-column prop="administrator.departmentName" label="被管理公司" width="250"></el-table-column> -->
-
-      <el-table-column fixed="right" label="操作" width="100">
-        <template slot-scope="scope">
-          <!-- <el-button size="mini" @click="showEditEmpView(scope.row)">编辑</el-button> -->
-          <!-- <el-button size="mini" type="primary" @click="updateTop(scope.row)">置顶</el-button> -->
-          <el-button size="mini" type="danger" @click="deleteServer(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <div style="display: flex;justify-content: space-between;margin: 2px;">
-      <el-pagination
-        background
-        @size-change="handleSizeChange"
-        @current-change="currentChange"
-        :current-page="currentPage"
-        :page-sizes="[10, 15, 20, 30, 50]"
-        :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="totalCount"
-      ></el-pagination>
+      <div v-for="item in onlineAdms" :key="item.id" style="margin-top:10px;">
+        <el-tag style="margin-left:0px;width:20%">公司名称</el-tag>
+        <el-tag style="margin-left:10px;width:20%">{{item.name}}</el-tag>
+        <el-button type="primary" style="margin-top:10px;" @click="deleteOne(item)">删除</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -94,7 +66,7 @@ export default {
       keywords: "",
       dialogVisible: false,
       dustbinData: [],
-      users: [],
+      onlineAdms: [],
       deps: [],
       depTextColor: "#c0c4cc",
       defaultProps: {
@@ -112,15 +84,9 @@ export default {
       departmentName: "选择被管理公司",
       departmentId: "",
       uid: "",
-      user: {
-        id: "",
+      onlineAdm: {
         name: "",
-        phone: "",
-        departmentId: "",
-        enabled: "",
-        username: "",
-        email: "",
-        departmentName: "选择被管理公司"
+        departmentId: ""
       }
     };
   },
@@ -136,20 +102,13 @@ export default {
     addAdm() {
       var _this = this;
       this.tableLoading = true;
-      this.postRequest(
-        "/system/user/allAdm?departmentId=" +
-          this.departmentId +
-          "&phone=" +
-          this.phone
-      ).then(resp => {
+      this.postRequest("/online/adm", this.onlineAdm).then(resp => {
         _this.tableLoading = false;
         if (resp && resp.status == 200) {
           var data = resp.data;
           _this.dialogVisible = false;
           this.departmentId = "";
-          this.phone = "";
           this.departmentName = "";
-
           this.loadTableData();
         }
       });
@@ -171,6 +130,8 @@ export default {
     handleNodeClick(data) {
       this.departmentName = data.name;
       this.departmentId = data.id;
+      this.onlineAdm.name = this.departmentName;
+      this.onlineAdm.departmentId = this.departmentId;
       this.showOrHidePop = false;
       this.depTextColor = "#606266";
     },
@@ -178,19 +139,11 @@ export default {
       var _this = this;
       this.loading = true;
       this.getRequest(
-        "/system/user/allAdm?page=" +
-          this.currentPage +
-          "&size=" +
-          this.pageSize +
-          "&keywords=" +
-          this.keywords +
-          "&departmentId=" +
-          this.departmentId
+        "/online/adm"
       ).then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {
-
-          _this.users = resp.data.users;
+          _this.onlineAdms = resp.data.obj.onlineAdms;
           _this.totalCount = resp.data.count;
         }
       });
@@ -231,22 +184,14 @@ export default {
       this.deleteToDustBin(selItems[0].state);
     },
 
-    getAllBus() {
-      var _this = this;
-      this.getRequest("/iuser/bus/all").then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          _this.bus = resp.data.bus;
-        }
-      });
-    },
+ 
     handleSelectionChange(val) {
       this.selItems = val;
     },
 
-    deleteServer(row) {
+    deleteOne(row) {
       this.$confirm(
-        "此操作将删除[" + row.name + "]的管理员身份, 是否继续?",
+        "此操作将删除[" + row.name + "]的在线评价权限, 是否继续?",
         "提示",
         {
           confirmButtonText: "确定",
@@ -262,7 +207,7 @@ export default {
     doDelete(id) {
       this.tableLoading = true;
       var _this = this;
-      this.postRequest("/system/user/delete?uid=" + id).then(resp => {
+      this.deleteRequest("/online/adm/" + id).then(resp => {
         _this.tableLoading = false;
         if (resp && resp.status == 200) {
           var data = resp.data;
