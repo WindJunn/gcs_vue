@@ -6,7 +6,6 @@
 
     <div
       style="width:90%;margin-left:5%;margin-top:10px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;"
-
     >
       <div>
         <el-row style="margin-top: 8px;">
@@ -43,16 +42,38 @@
         </el-row>
       </div>
     </div>
+
     <div
       style="width:90%;margin-left:5%;margin-top:10px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;"
     >
-      <div style="font-size:25px;margin-bottom:15px">在线评价权限公司名称</div>
-
-      <div v-for="item in onlineAdms" :key="item.id" style="margin-top:10px;">
-        <el-tag style="margin-left:0px;width:20%">公司名称</el-tag>
-        <el-tag style="margin-left:10px;width:20%">{{item.name}}</el-tag>
-        <el-button type="primary" style="margin-top:10px;" @click="deleteOne(item)">删除</el-button>
-      </div>
+      <div style="font-size:25px;margin-bottom:15px">已有在线评价权限公司名称</div>
+      <el-scrollbar
+        wrapClass="scrollbar-wrap"
+        :style="{height: scrollHeight}"
+        ref="scrollbarContainer"
+      >
+        <div v-for="item in onlineAdms" :key="item.id" style="margin-top:10px;">
+          <el-tag style="margin-left:0px;width:20%">公司名称</el-tag>
+          <el-tag style="margin-left:10px;width:20%">{{item.name}}</el-tag>
+          <el-button type="primary" style="margin-top:10px;" @click="deleteOne(item)">移除权限</el-button>
+        </div>
+      </el-scrollbar>
+    </div>
+    <div
+      style="width:90%;margin-left:5%;margin-top:10px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;"
+    >
+      <div style="font-size:25px;margin-bottom:15px">未有在线评价权限公司名称</div>
+      <el-scrollbar
+        wrapClass="scrollbar-wrap"
+        :style="{height: scrollHeight}"
+        ref="scrollbarContainer"
+      >
+        <div v-for="item in onlineAdmsNo" :key="item.id" style="margin-top:10px;">
+          <el-tag style="margin-left:0px;width:20%">公司名称</el-tag>
+          <el-tag style="margin-left:10px;width:20%">{{item.name}}</el-tag>
+          <el-button type="primary" style="margin-top:10px;" @click="addAdmByDep(item)">添加权限</el-button>
+        </div>
+      </el-scrollbar>
     </div>
   </div>
 </template>
@@ -60,6 +81,8 @@
 export default {
   data() {
     return {
+      scrollHeight: "0px",
+
       articles: [],
       selItems: [],
       loading: false,
@@ -67,6 +90,7 @@ export default {
       dialogVisible: false,
       dustbinData: [],
       onlineAdms: [],
+      onlineAdmsNo: [],
       deps: [],
       depTextColor: "#c0c4cc",
       defaultProps: {
@@ -81,7 +105,7 @@ export default {
       phone: "",
       rid: "",
       showOrHidePop: false,
-      departmentName: "选择被管理公司",
+      departmentName: "选择公司",
       departmentId: "",
       uid: "",
       onlineAdm: {
@@ -94,6 +118,8 @@ export default {
   mounted: function() {
     var _this = this;
     this.loading = true;
+    this.scrollHeight = window.innerHeight * 0.3 + "px";
+
     this.initData();
 
     this.loadTableData();
@@ -102,6 +128,21 @@ export default {
     addAdm() {
       var _this = this;
       this.tableLoading = true;
+      this.postRequest("/online/adm", this.onlineAdm).then(resp => {
+        _this.tableLoading = false;
+        if (resp && resp.status == 200) {
+          var data = resp.data;
+          _this.dialogVisible = false;
+          this.departmentId = "";
+          this.departmentName = "";
+          this.loadTableData();
+        }
+      });
+    },
+    addAdmByDep(item) {
+      var _this = this;
+      this.onlineAdm.name = item.name;
+      this.onlineAdm.departmentId = item.id;
       this.postRequest("/online/adm", this.onlineAdm).then(resp => {
         _this.tableLoading = false;
         if (resp && resp.status == 200) {
@@ -138,12 +179,12 @@ export default {
     loadTableData() {
       var _this = this;
       this.loading = true;
-      this.getRequest(
-        "/online/adm"
-      ).then(resp => {
+      this.getRequest("/online/adm").then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {
           _this.onlineAdms = resp.data.obj.onlineAdms;
+          _this.onlineAdmsNo = resp.data.obj.onlineAdmsNo;
+
           _this.totalCount = resp.data.count;
         }
       });
@@ -184,7 +225,6 @@ export default {
       this.deleteToDustBin(selItems[0].state);
     },
 
- 
     handleSelectionChange(val) {
       this.selItems = val;
     },
@@ -219,6 +259,9 @@ export default {
 };
 </script>
 <style>
+.scrollbar-wrap {
+  overflow-x: hidden;
+}
 .el-dialog__body {
   padding-top: 0px;
   padding-bottom: 0px;

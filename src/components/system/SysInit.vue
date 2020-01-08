@@ -19,19 +19,7 @@
           icon="el-icon-search"
           @click="searchData"
         >搜索</el-button>
-        <!-- <el-button
-          slot="reference"
-          type="primary"
-          size="mini"
-          style="margin-left: 5px"
-          @click="showAdvanceSearchView"
-        >
-          <i
-            class="fa fa-lg"
-            v-bind:class="[advanceSearchViewVisible ? faangledoubleup:faangledoubledown]"
-            style="margin-right: 5px"
-          ></i>高级搜索
-        </el-button>-->
+        
       </div>
       <div style="margin-left: 5px;margin-right: 20px;display: inline">
         <el-tag>罗马数字 Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ</el-tag>
@@ -815,12 +803,12 @@
         <el-upload
           class="upload-pic"
           action="/girth/image/upload"
+          :show-file-list="false"
           :data="uploadData"
           :before-upload="beforeUploadImage"
-          :on-remove="handleRemove"
           :on-success="uploadSuccess"
         >
-          <el-button size="small" type="primary">上传图片</el-button>
+          <el-button size="small" type="primary" :loading="imageUploadBtnText=='正在导入'">{{imageUploadBtnText}}</el-button>
         </el-upload>
         <div v-show="images.length==0">暂无数据</div>
         <el-scrollbar
@@ -858,6 +846,7 @@ export default {
       pipelineName: "",
 
       fileUploadBtnText: "导入检测数据",
+      imageUploadBtnText: "上传图片",
 
       faangledoubleup: "fa-angle-double-up",
       faangledoubledown: "fa-angle-double-down",
@@ -958,17 +947,9 @@ export default {
       uploadData: "",
       dialogImageUrl: "",
       // 上传图片文件列表
-      fileList: [],
-      upItem: {},
+      // fileList: [],
       //        图片上传数组
-      datas_upload: [
-        { upbtnGroup: false, url: "../../static/bg.jpg" },
-        { upbtnGroup: false, url: "../../static/bg.jpg" },
-        { upbtnGroup: false, url: "../../static/bg.jpg" },
-        { upbtnGroup: false, url: "../../static/bg.jpg" },
-        { upbtnGroup: false, url: "../../static/bg.jpg" },
-        { upbtnGroup: false, url: "../../static/bg.jpg" }
-      ]
+    
     };
   },
 
@@ -1184,6 +1165,8 @@ export default {
       });
     },
     beforeUploadImage(file) {
+      this.imageUploadBtnText = "正在上传";
+
       this.uploadData = {
         gwId: this.gwId
       };
@@ -1200,6 +1183,8 @@ export default {
         this.$message({ type: "success", message: response.msg });
       }
       this.getImagesByGwId(this.gwId);
+      this.imageUploadBtnText = "上传图片";
+
     },
     keywordsChange() {},
     exportData() {
@@ -1246,17 +1231,8 @@ export default {
     handleRemove(file, fileList) {
       console.log(file, fileList);
     },
-    handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
-    },
-    //      图片上传
-    getUploadTag(item, index) {
-      //        console.log(response, file, fileList, 564)
-      this.uploadTag = index;
-      console.log(index, 220);
-      this.upItem = item;
-    },
+  
+    
     //上传图片-删除
     delupload(item, index) {
       console.log(item)
@@ -1280,14 +1256,8 @@ export default {
           });
         });
     },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
-    handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
-    },
-
+    
+ 
     cancelEidt() {
       this.dialogVisible1 = false;
     },

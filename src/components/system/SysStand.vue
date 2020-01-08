@@ -1,28 +1,26 @@
 <template>
   <div>
     <el-header
-      style="padding: 0px;display:flex;justify-content:space-between;align-items: center;height:5px"
-    ></el-header>
-    <div>
-      <div src="/standard/file/1.pdf"/>
-    </div>
-    <div style="margin-left: 5px;display: inline">
-      <el-upload
-        :show-file-list="false"
-        accept=".xlsx"
-        action="/girth/importGirthWeld"
-        :before-upload="beforeUpload"
-        :on-success="fileUploadSuccess"
-        :on-error="fileUploadError"
-        :disabled="fileUploadBtnText=='正在导入'"
-        style="display: inline"
-      >
-        <el-button size="mini" type="success" :loading="fileUploadBtnText=='正在导入'">
-          <i class="fa fa-lg fa-level-up" style="margin-right: 5px"></i>
-          {{fileUploadBtnText}}
-        </el-button>
-      </el-upload>
-    </div>
+      style="padding: 0px;display:flex;justify-content:space-between;align-items: center;height:35px"
+    >
+      <div style="margin-left: 5px;margin-top: 10px;margin-right: 20px;display: inline">
+        <el-upload
+          :show-file-list="false"
+          accept=".pdf"
+          action="/standard/import"
+          :before-upload="beforeFileUpload"
+          :on-success="fileUploadSuccess"
+          :on-error="fileUploadError"
+          :disabled="fileUploadBtnText=='正在导入'"
+          style="display: inline"
+        >
+          <el-button size="mini" type="success" :loading="fileUploadBtnText=='正在导入'">
+            <i class="fa fa-lg fa-level-up" style="margin-right: 5px"></i>
+            {{fileUploadBtnText}}
+          </el-button>
+        </el-upload>
+      </div>
+    </el-header>
 
     <el-table
       ref="multipleTable"
@@ -36,8 +34,9 @@
       v-loading="loading"
     >
       <el-table-column type="selection" align="left" width="30"></el-table-column>
-      <el-table-column prop="name" align="left" fixed label="名称" width="300"></el-table-column>
-      <el-table-column prop="url" width="350" align="left" label="链接地址"></el-table-column>
+      <el-table-column prop="name" align="left" fixed label="名称" width="500"></el-table-column>
+      <!-- <el-table-column prop="url" width="350" align="left" label="链接地址"></el-table-column> -->
+      <el-table-column prop="title" width="400" align="left" label="链接全地址"></el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <el-button size="mini" type="danger" @click="deleteServer(scope.row)">删除</el-button>
@@ -111,6 +110,21 @@ export default {
     this.loadTableData();
   },
   methods: {
+    fileUploadSuccess(response, file, fileList) {
+      if (response) {
+        this.$message({ type: "success", message: response.msg });
+      }
+      this.loadTableData();
+      this.fileUploadBtnText = "导入标准数据";
+
+    },
+    beforeFileUpload(file) {
+      this.fileUploadBtnText = "正在导入";
+    },
+    fileUploadError(err, file, fileList) {
+      this.$message({ type: "error", message: "导入失败!" });
+      this.fileUploadBtnText = "导入标准数据";
+    },
     addAdm() {
       var _this = this;
       this.tableLoading = true;
@@ -156,7 +170,11 @@ export default {
       var _this = this;
       this.loading = true;
       this.getRequest(
-        "/standard?keywords=" +
+        "/standard?page=" +
+          this.currentPage +
+          "&size=" +
+          this.pageSize +
+          "&keywords=" +
           this.keywords
       ).then(resp => {
         _this.loading = false;
@@ -216,15 +234,11 @@ export default {
     },
 
     deleteServer(row) {
-      this.$confirm(
-        "此操作将删除[" + row.name + "]的管理员身份, 是否继续?",
-        "提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }
-      )
+      this.$confirm("此操作将删除[" + row.name + "], 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
         .then(() => {
           this.doDelete(row.id);
         })
@@ -233,7 +247,7 @@ export default {
     doDelete(id) {
       this.tableLoading = true;
       var _this = this;
-      this.postRequest("/system/user/delete?uid=" + id).then(resp => {
+      this.deleteRequest("/standard/delete/" + id).then(resp => {
         _this.tableLoading = false;
         if (resp && resp.status == 200) {
           var data = resp.data;

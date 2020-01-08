@@ -80,17 +80,17 @@
         <div id="totalAdvice" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12" >
+    <el-col :span="12">
       <div class="echarts-box">
         <div id="companyDefect" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12" >
+    <el-col :span="12">
       <div class="echarts-box">
         <div id="companyDefectNo" class="echarts"></div>
       </div>
     </el-col>
-    <div >
+    <div>
       <el-col :span="12">
         <div class="echarts-box">
           <div id="companyDefectFix" class="echarts"></div>
@@ -1126,8 +1126,7 @@ export default {
       startYear: "",
       endYear: "",
       departmentId: "",
-      barData: [],
-      
+      barData: []
     };
   },
   mounted: function() {
@@ -1153,6 +1152,13 @@ export default {
     showDepTree2() {
       this.showOrHidePop2 = !this.showOrHidePop2;
     },
+    sum(array) {
+      let sum = 0;
+      array.forEach(ele => {
+        sum += ele.value;
+      });
+      return sum;
+    },
     queryCoursePieChart: function() {
       var _this = this;
       if (this.startYear != "") {
@@ -1161,6 +1167,16 @@ export default {
       if (this.endYear != "") {
         this.endYear = this.endYear.getFullYear();
       }
+      this.pipelineDefect.title.subtext=this.pipelineDefect.title.subtext.split("，")[0];
+      this.pipelineDefectNo.title.subtext=this.pipelineDefectNo.title.subtext.split("，")[0];
+      this.pipelineDefectFix.title.subtext=this.pipelineDefectFix.title.subtext.split("，")[0];
+      this.totalResult.title.subtext=this.totalResult.title.subtext.split("，")[0];
+      this.totalAdvices.title.subtext=this.totalAdvices.title.subtext.split("，")[0];
+      this.totalAdvice.title.subtext=this.totalAdvice.title.subtext.split("，")[0];
+      this.companyDefect.title.subtext=this.companyDefect.title.subtext.split("，")[0];
+      this.companyDefectNo.title.subtext=this.companyDefectNo.title.subtext.split("，")[0];
+      this.companyDefectFix.title.subtext=this.companyDefectFix.title.subtext.split("，")[0];
+
       this.getRequest(
         "/data/?startYear=" +
           this.startYear +
@@ -1193,27 +1209,70 @@ export default {
           // 装数据
 
           this.pipelineDefect.series[0].data = d;
+          this.pipelineDefect.title.subtext =
+            this.pipelineDefect.title.subtext +
+            "，共" +
+            d.length +
+            "类" +
+            this.sum(d) +
+            "道";
+
           d.forEach(element => {
             // this.pipelineDefect.legend.data.push(element.name);
           });
 
           this.pipelineDefectNo.series[0].data = d1;
+          this.pipelineDefectNo.title.subtext =
+            this.pipelineDefectNo.title.subtext +
+            "，共" +
+            d1.length +
+            "类" +
+            this.sum(d1) +
+            "道";
           d1.forEach(element => {
             this.pipelineDefectNo.legend.data.push(element.name);
           });
           this.pipelineDefectFix.series[0].data = d2;
+          this.pipelineDefectFix.title.subtext =
+            this.pipelineDefectFix.title.subtext +
+            "，共" +
+            d2.length +
+            "类" +
+            this.sum(d2) +
+            "道";
           d2.forEach(element => {
             this.pipelineDefectFix.legend.data.push(element.name);
           });
           this.totalResult.series[0].data = d3;
+          this.totalResult.title.subtext =
+            this.totalResult.title.subtext +
+            "，共" +
+            d3.length +
+            "类" +
+            this.sum(d3) +
+            "道";
           d3.forEach(element => {
             this.totalResult.legend.data.push(element.name);
           });
           this.totalAdvices.series[0].data = d4;
+          this.totalAdvices.title.subtext =
+            this.totalAdvices.title.subtext +
+            "，共" +
+            d4.length +
+            "类" +
+            this.sum(d4) +
+            "道";
           d4.forEach(element => {
             this.totalAdvices.legend.data.push(element.name);
           });
           this.totalAdvice.series[0].data = d5;
+          this.totalAdvice.title.subtext =
+            this.totalAdvice.title.subtext +
+            "，共" +
+            d5.length +
+            "类" +
+            this.sum(d5) +
+            "道";
           d5.forEach(element => {
             this.totalAdvice.legend.data.push(element.name);
           });
@@ -1228,22 +1287,51 @@ export default {
             document.getElementById(
               "companyDefectFix"
             ).parentNode.parentNode.style.display = "none";
-            }
+          }
           if (this.datas.length > 6) {
-
+             document.getElementById(
+              "companyDefect"
+            ).parentNode.parentNode.style.display = "inline-block";
+            document.getElementById(
+              "companyDefectNo"
+            ).parentNode.parentNode.style.display = "inline-block";
+            document.getElementById(
+              "companyDefectFix"
+            ).parentNode.parentNode.style.display = "inline-block";
             let d6 = this.datas[6].data;
             let d7 = this.datas[7].data;
             let d8 = this.datas[8].data;
 
             this.companyDefect.series[0].data = d6;
+            this.companyDefect.title.subtext =
+              this.companyDefect.title.subtext +
+              "，共" +
+              d6.length +
+              "类" +
+              this.sum(d6) +
+              "道";
             d6.forEach(element => {
               this.companyDefect.legend.data.push(element.name);
             });
             this.companyDefectNo.series[0].data = d7;
+            this.companyDefectNo.title.subtext =
+              this.companyDefectNo.title.subtext +
+              "，共" +
+              d7.length +
+              "类" +
+              this.sum(d7) +
+              "道";
             d7.forEach(element => {
               this.companyDefectNo.legend.data.push(element.name);
             });
             this.companyDefectFix.series[0].data = d8;
+            this.companyDefectFix.title.subtext =
+              this.companyDefectFix.title.subtext +
+              "，共" +
+              d8.length +
+              "类" +
+              this.sum(d8) +
+              "道";
             d8.forEach(element => {
               this.companyDefectFix.legend.data.push(element.name);
             });
@@ -1405,8 +1493,7 @@ export default {
           query: { disposalAdviceIdNo: 1, departmentId: s }
         });
       });
-    },
-   
+    }
   }
 };
 </script>

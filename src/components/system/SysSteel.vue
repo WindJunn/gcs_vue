@@ -19,12 +19,21 @@
     >
       <div style="font-size:25px;margin-bottom:15px">在线评价钢级参数管理</div>
       <div>
-        <el-tag style="margin-left:0px;width:20%">钢级</el-tag>
+        <el-tag style="margin-left:10px;width:20%">钢级</el-tag>
         <el-tag style="margin-left:10px;width:20%">屈服强度(MPa)</el-tag>
         <el-tag style="margin-left:10px;width:20%">抗拉强度(MPa)</el-tag>
         <el-tag style="margin-left:10px;width:20%">冲击功(J)</el-tag>
-        <el-tag style="width:7%">操作  </el-tag>
+        <el-button type="primary" plain>操作</el-button>
       </div>
+
+      <div style="margin-top:10px;">
+        <el-input style="margin-left:10px;width:20%" placeholder="请输入内容" v-model="steelParam.steel"></el-input>
+        <el-input style="margin-left:10px;width:20%" placeholder="请输入内容" v-model="steelParam.qfqd"></el-input>
+        <el-input style="margin-left:10px;width:20%" placeholder="请输入内容" v-model="steelParam.klqd"></el-input>
+        <el-input style="margin-left:10px;width:20%" placeholder="请输入内容" v-model="steelParam.cjg"></el-input>
+        <el-button type="success" style="margin-top:10px;" @click="addParam()">增加</el-button>
+      </div>
+      <hr />
 
       <div v-for="item in steelParams" :key="item.id" style="margin-top:10px;">
         <el-input style="margin-left:10px;width:20%" placeholder="请输入内容" v-model="item.steel"></el-input>
@@ -32,15 +41,6 @@
         <el-input style="margin-left:10px;width:20%" placeholder="请输入内容" v-model="item.klqd"></el-input>
         <el-input style="margin-left:10px;width:20%" placeholder="请输入内容" v-model="item.cjg"></el-input>
         <el-button type="primary" style="margin-top:10px;" @click="deleteOne(item.id)">删除</el-button>
-      </div>
-
-      <hr />
-      <div style="margin-top:10px;">
-        <el-input style="margin-left:10px;width:20%" placeholder="请输入内容" v-model="steelParam.steel"></el-input>
-        <el-input style="margin-left:10px;width:20%" placeholder="请输入内容" v-model="steelParam.qfqd"></el-input>
-        <el-input style="margin-left:10px;width:20%" placeholder="请输入内容" v-model="steelParam.klqd"></el-input>
-        <el-input style="margin-left:10px;width:20%" placeholder="请输入内容" v-model="steelParam.cjg"></el-input>
-        <el-button type="primary" style="margin-top:10px;" @click="addParam()">增加</el-button>
       </div>
     </div>
   </div>
