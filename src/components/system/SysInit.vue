@@ -42,6 +42,20 @@
         <el-upload
           :show-file-list="false"
           accept=".xlsx"
+          action="/girth/importGirthWeldNew"
+          :before-upload="beforeUpload"
+          :on-success="fileUploadSuccess"
+          :on-error="fileUploadError"
+          :disabled="fileUploadBtnText=='正在导入'"
+          style="display: inline"
+        >
+          <el-button class="success1" type="success" size="mini">
+            <i class="fa fa-lg fa-level-up" style="margin-right: 5px"></i>导入检测数据(新版)
+          </el-button>
+        </el-upload>
+         <el-upload
+          :show-file-list="false"
+          accept=".xlsx"
           action="/girth/importGirthWeldEvaluation"
           :on-success="fileUploadSuccess"
           :on-error="fileUploadError"
