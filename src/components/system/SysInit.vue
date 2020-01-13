@@ -1203,7 +1203,7 @@ export default {
     keywordsChange() {},
     exportData() {
       this.keywordsConvert = this.keywords
-        .replace("+", "%2B")
+        .replace(/\+/g, "%2B")
         .replace(/ /g, "");
       window.open(
         "/girth/exportGirthWeld?keywords=" +
@@ -1409,7 +1409,7 @@ export default {
         this.pipelineName = pipelineName;
       }
       this.keywordsConvert = this.keywords
-        .replace("+", "%2B")
+        .replace(/\+/g, "%2B")
         .replace(/ /g, "");
       this.getRequest(
         "/girth/?page=" +
