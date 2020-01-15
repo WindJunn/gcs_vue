@@ -12,23 +12,21 @@
   <div>
     <el-header
       style="padding: 0px;display:flex;justify-content:space-between;align-items: center;height:5px"
-    >
-      <!-- <div style="margin-left: 5px;margin-right: 20px;display: inline">
-        <el-button type="primary" size="mini" icon="el-icon-plus" @click="showAddView">添加车辆</el-button>
-      </div>-->
-    </el-header>
+    ></el-header>
 
     <div
       style="width:80%;margin-left:10%;margin-top:0px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;"
     >
       <div style="font-size:25px">在线评价</div>
       <div style="display:flex;align-items: center;margin: 20px;">
-        <!-- <el-tag style="margin-left:20px;">缺陷位置</el-tag>
-        <el-select v-model="evaluation.defectLocation" placeholder="请选择" style="margin-left:10px;">
-          <el-option label="焊缝" value="1.0"></el-option>
-          <el-option label="母材" value="0.0"></el-option>
-        </el-select>-->
-
+        <div style="margin-left:20px;">
+          <el-radio-group v-model="radio1" @change="agreeChange">
+            <el-radio label="1" border>输气</el-radio>
+            <el-radio label="2" border>输油</el-radio>
+          </el-radio-group>
+        </div>
+      </div>
+      <div style="display:flex;align-items: center;margin: 20px;">
         <el-tag style="margin-left:20px;">{{repairFactorName}}</el-tag>
         <el-select v-model="evaluation.repairFactor" placeholder="请选择" style="margin-left:10px;">
           <el-option label="未返修" value="1.0"></el-option>
@@ -37,16 +35,28 @@
 
         <el-tag style="margin-left:20px;">{{steelLevelName}}</el-tag>
 
-        <el-select v-model="evaluation.calculationCrackDepth" placeholder="请选择" style="margin-left:10px;">
+        <el-select
+          v-model="evaluation.calculationCrackDepth"
+          placeholder="请选择"
+          style="margin-left:10px;"
+        >
           <el-option :label="item" :value="index" v-for="(item,index) in array.steel" :key="index"></el-option>
         </el-select>
         <el-tag style="margin-left:20px;">{{areaLevelName}}</el-tag>
 
         <el-select v-model="evaluation.areaLevel" placeholder="请选择" style="margin-left:10px;">
-          <el-option label="一级" value="1.0"></el-option>
-          <el-option label="二级" value="2.0"></el-option>
-          <el-option label="三级" value="3.0"></el-option>
-          <el-option label="四级" value="4.0"></el-option>
+          <el-option :label="item" :value="index+1" v-for="(item,index) in area" :key="index"></el-option>
+
+          <!-- <div v-show="radio1==1">
+            <el-option label="一级" value="1.0"></el-option>
+            <el-option label="二级" value="2.0"></el-option>
+            <el-option label="三级" value="3.0"></el-option>
+            <el-option label="四级" value="4.0"></el-option>
+          </div>
+          <div v-show="radio1==2">
+            <el-option label="一般地区" value="1.0"></el-option>
+            <el-option label="其他地区" value="2.0"></el-option>
+          </div>-->
         </el-select>
       </div>
 
@@ -73,21 +83,6 @@
           v-model="evaluation.bendingCoefficients"
           clearable
         ></el-input>
-        <!-- <el-tag style="margin-left:20px;">{{param[2].name}}</el-tag>
-        <el-input
-          style="margin-left:10px;width:15%"
-          placeholder="请输入内容"
-          v-model="evaluation.materialYieldStrength"
-          clearable
-        ></el-input>-->
-
-        <!-- <el-tag style="margin-left:20px;">{{param[4].name}}</el-tag>
-        <el-input
-          style="margin-left:10px;width:15%"
-          placeholder="请输入内容"
-          v-model="evaluation.impactPower"
-          clearable
-        ></el-input>-->
       </div>
       <div style="display:flex;align-items: center;margin: 20px;">
         <el-tag style="margin-left:20px;">{{servicePressureName}}</el-tag>
@@ -174,7 +169,9 @@ export default {
         steelLevel: ""
       },
       result: "",
-      array: []
+      array: [],
+      area: [],
+      radio1: "1"
     };
   },
   mounted: function() {
@@ -189,7 +186,8 @@ export default {
   },
   methods: {
     evaluationOnline() {
-      this.evaluation.steelLevel = parseInt(this.evaluation.calculationCrackDepth)+1;
+      this.evaluation.steelLevel =
+        parseInt(this.evaluation.calculationCrackDepth) + 1;
       this.postsRequest("/evaluation/", this.evaluation).then(resp => {
         if (resp && resp.status == 200) {
           this.result =
@@ -208,9 +206,23 @@ export default {
       this.getRequest("/evaluation/array").then(resp => {
         console.log(resp);
         this.array = resp.data.obj;
+        if (this.radio1 == 1) {
+          this.area = resp.data.obj.areaLevel;
+        } else if (this.radio1 == 2) {
+          this.area = resp.data.obj.areaLevelOil;
+        }
         console.log(this.array);
         console.log(this.array.steel["1"]);
       });
+    },
+    agreeChange: function(val) {
+      console.log(val)
+      this.evaluation.areaLevel="";
+      if (this.radio1 == 1) {
+        this.area = this.array.areaLevel;
+      } else if (this.radio1 == 2) {
+        this.area = this.array.areaLevelOil;
+      }
     },
     getImageUrls(month) {
       var _this = this;
