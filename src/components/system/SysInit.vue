@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-header style="padding: 0px;display:flex;justify-content:space-between;align-items: center;">
+    <el-header style="padding: 10px;display:flex;flex-wrap: wrap;height:100px">
       <div style="display: inline">
         <el-input
           placeholder="通过环焊缝编号搜索,记得回车哦..."
@@ -12,6 +12,29 @@
           prefix-icon="el-icon-search"
           v-model="keywords"
         ></el-input>
+        <el-tag>选择公司:</el-tag>
+        <el-popover
+          v-model="showOrHidePop"
+          placement="right"
+          title="请选择公司"
+          trigger="manual"
+          style="width:250px;"
+        >
+          <el-tree
+            :data="deps"
+            :default-expand-all="false"
+            :props="defaultProps"
+            :expand-on-click-node="false"
+            @node-click="handleNodeClick"
+          ></el-tree>
+          <div
+            slot="reference"
+            style="width: 200px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
+            @click="showDepTree"
+            v-bind:style="{color: depTextColor}"
+          >{{departmentName}}</div>
+        </el-popover>
+
         <el-button
           type="primary"
           size="mini"
@@ -19,10 +42,12 @@
           icon="el-icon-search"
           @click="searchData"
         >搜索</el-button>
-        
+        <el-button type="primary" size="mini" style="margin-left: 15px" @click="searchDay">查看当天上传数据</el-button>
+        <el-button type="primary" size="mini" style="margin-left: 15px" @click="searchWeek">查看本周上传数据</el-button>
+        <el-button type="info" size="mini" style="margin-left: 15px" @click="clear">清空搜索条件</el-button>
       </div>
-      <div style="margin-left: 5px;margin-right: 20px;display: inline">
-        <el-tag>罗马数字 Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ</el-tag>
+      <div style="margin-left: 0px;margin-right: 20px;display: inline">
+        <el-tag>罗马数字 &nbsp;&nbsp;Ⅰ &nbsp;&nbsp; Ⅱ&nbsp;&nbsp; Ⅲ&nbsp;&nbsp; Ⅳ &nbsp;&nbsp; Ⅴ&nbsp;</el-tag>
         <el-upload
           :show-file-list="false"
           accept=".xlsx"
@@ -53,7 +78,7 @@
             <i class="fa fa-lg fa-level-up" style="margin-right: 5px"></i>导入检测数据(新版)
           </el-button>
         </el-upload>
-         <el-upload
+        <el-upload
           :show-file-list="false"
           accept=".xlsx"
           action="/girth/importGirthWeldEvaluation"
@@ -822,7 +847,11 @@
           :before-upload="beforeUploadImage"
           :on-success="uploadSuccess"
         >
-          <el-button size="small" type="primary" :loading="imageUploadBtnText=='正在导入'">{{imageUploadBtnText}}</el-button>
+          <el-button
+            size="small"
+            type="primary"
+            :loading="imageUploadBtnText=='正在导入'"
+          >{{imageUploadBtnText}}</el-button>
         </el-upload>
         <div v-show="images.length==0">暂无数据</div>
         <el-scrollbar
@@ -847,17 +876,26 @@ export default {
   data() {
     return {
       scrollHeight: "0px",
-      articles: [],
       selItems: [],
+      deps: [],
+      defaultProps: {
+        label: "name",
+        isLeaf: "leaf",
+        children: "children"
+      },
+      depTextColor: "#c0c4cc",
+
       loading: false,
       keywords: "",
       departmentId: "",
+      departmentName: "",
       testingResultId: "",
       evaluationResultId: "",
       disposalAdviceId: "",
       defectId: "",
       disposalAdviceIdNo: "",
       pipelineName: "",
+      time: "",
 
       fileUploadBtnText: "导入检测数据",
       imageUploadBtnText: "上传图片",
@@ -959,11 +997,10 @@ export default {
         }
       ],
       uploadData: "",
-      dialogImageUrl: "",
+      dialogImageUrl: ""
       // 上传图片文件列表
       // fileList: [],
       //        图片上传数组
-    
     };
   },
 
@@ -971,6 +1008,7 @@ export default {
     var _this = this;
     this.loading = true;
     this.loadTableData();
+    this.initData();
     this.scrollHeight = window.innerHeight * 0.7 + "px";
   },
   methods: {
@@ -983,6 +1021,46 @@ export default {
         // this.beginDateScope = "";
         // this.loadEmps();
       }
+    },
+    searchDay() {
+      this.time = "day";
+      this.loadTableData();
+    },
+    searchWeek() {
+      this.time = "week";
+      this.loadTableData();
+    },
+    showDepTree() {
+      this.showOrHidePop = !this.showOrHidePop;
+    },
+
+    handleNodeClick(data) {
+      this.departmentName = data.name;
+      this.departmentId = data.id;
+      this.showOrHidePop = false;
+      this.depTextColor = "#606266";
+    },
+    clear() {
+      this.keywords = "";
+      this.departmentId = "";
+      this.departmentName = "";
+      this.testingResultId = "";
+      this.evaluationResultId = "";
+      this.disposalAdviceId = "";
+      this.defectId = "";
+      this.disposalAdviceIdNo = "";
+      this.pipelineName = "";
+      this.time = "";
+      this.loadTableData();
+    },
+    initData() {
+      var _this = this;
+      this.getRequest("/system/user/basicdata").then(resp => {
+        if (resp && resp.status == 200) {
+          var data = resp.data;
+          _this.deps = data.deps;
+        }
+      });
     },
 
     fileUploadSuccess(response, file, fileList) {
@@ -1198,7 +1276,6 @@ export default {
       }
       this.getImagesByGwId(this.gwId);
       this.imageUploadBtnText = "上传图片";
-
     },
     keywordsChange() {},
     exportData() {
@@ -1245,11 +1322,10 @@ export default {
     handleRemove(file, fileList) {
       console.log(file, fileList);
     },
-  
-    
+
     //上传图片-删除
     delupload(item, index) {
-      console.log(item)
+      console.log(item);
       this.$confirm("此操作将删除该图片, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -1259,7 +1335,6 @@ export default {
           this.deleteRequest("/girth/delete/image/" + item.id).then(resp => {
             if (resp && resp.status == 200) {
               this.getImagesByGwId(this.gwId);
-              
             }
           });
         })
@@ -1270,8 +1345,7 @@ export default {
           });
         });
     },
-    
- 
+
     cancelEidt() {
       this.dialogVisible1 = false;
     },
@@ -1431,7 +1505,9 @@ export default {
           "&disposalAdviceIdNo=" +
           this.disposalAdviceIdNo +
           "&pipelineName=" +
-          this.pipelineName
+          this.pipelineName +
+          "&time=" +
+          this.time
       ).then(resp => {
         _this.loading = false;
         if (resp && resp.status == 200) {

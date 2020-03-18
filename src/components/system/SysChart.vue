@@ -1376,9 +1376,10 @@ export default {
 
       pipelineDefect.on("click", function(params) {
         let s = params.data.query.split("=")[1];
+        console.log(self.departmentId);
         self.$router.push({
           path: "/sys/init",
-          query: { pipelineName: s }
+          query: { pipelineName: s ,departmentId:self.departmentId}
         });
       });
       pipelineOption.setOption(this.pipelineOption);
@@ -1408,9 +1409,10 @@ export default {
           console.log(xIndex);
           let data = self.barData[xIndex].query;
           let s = data.split("=")[1];
+          
           self.$router.push({
             path: "/sys/init",
-            query: { pipelineName: s }
+            query: { pipelineName: s,departmentId:self.departmentId }
           });
         }
       });
@@ -1424,7 +1426,7 @@ export default {
 
         self.$router.push({
           path: "/sys/init",
-          query: { evaluationResultId: 2, pipelineName: s }
+          query: { evaluationResultId: 2, pipelineName: s,departmentId:self.departmentId }
         });
       });
       pipelineDefectFix.setOption(this.pipelineDefectFix);
@@ -1432,7 +1434,7 @@ export default {
         let s = params.data.query.split("=")[2];
         self.$router.push({
           path: "/sys/init",
-          query: { disposalAdviceIdNo: 1, pipelineName: s }
+          query: { disposalAdviceIdNo: 1, pipelineName: s,departmentId:self.departmentId }
         });
       });
       totalResult.setOption(this.totalResult);
@@ -1440,7 +1442,7 @@ export default {
         let s = params.data.query.split("=")[1];
         self.$router.push({
           path: "/sys/init",
-          query: { evaluationResultId: s }
+          query: { evaluationResultId: s ,departmentId:self.departmentId}
         });
       });
       totalAdvices.setOption(this.totalAdvices);
@@ -1450,13 +1452,13 @@ export default {
         if (q == "disposalAdviceId") {
           self.$router.push({
             path: "/sys/init",
-            query: { disposalAdviceId: s }
+            query: { disposalAdviceId: s ,departmentId:self.departmentId}
           });
         }
         if (q == "disposalAdviceIdNo") {
           self.$router.push({
             path: "/sys/init",
-            query: { disposalAdviceIdNo: s }
+            query: { disposalAdviceIdNo: s ,departmentId:self.departmentId}
           });
         }
       });
@@ -1466,7 +1468,7 @@ export default {
         let s = params.data.query.split("=")[1];
         self.$router.push({
           path: "/sys/init",
-          query: { disposalAdviceId: s }
+          query: { disposalAdviceId: s ,departmentId:self.departmentId}
         });
       });
       companyDefect.setOption(this.companyDefect);
@@ -1474,7 +1476,7 @@ export default {
         let s = params.data.query.split("=")[1];
         self.$router.push({
           path: "/sys/init",
-          query: { departmentId: s }
+          query: { departmentId: s ,departmentId:self.departmentId}
         });
       });
       companyDefectNo.setOption(this.companyDefectNo);
