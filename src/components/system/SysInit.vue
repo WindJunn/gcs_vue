@@ -368,8 +368,6 @@
               <div class="grid-content">
                 <el-form-item label="Kr:" prop="name">
                   <el-tag style="width: 50%">{{weld.kr}}</el-tag>
-
-                  <!-- <el-input v-model="weld.kr" size="mini" style="width: 50%" placeholder></el-input> -->
                 </el-form-item>
               </div>
             </el-col>
@@ -377,7 +375,6 @@
               <div class="grid-content">
                 <el-form-item label="Lr:" prop="name">
                   <el-tag style="width: 50%">{{weld.lr}}</el-tag>
-                  <!-- <el-input v-model="weld.lr" size="mini" style="width: 50%" placeholder></el-input> -->
                 </el-form-item>
               </div>
             </el-col>
@@ -385,12 +382,7 @@
               <div class="grid-content">
                 <el-form-item label="评价结果:" prop="name">
                   <el-tag style="width: 70%">{{weld.applicabilityEvaluationResult}}</el-tag>
-                  <!-- <el-input
-                    v-model="weld.applicabilityEvaluationResult"
-                    size="mini"
-                    style="width: 70%"
-                    placeholder
-                  ></el-input>-->
+                 
                 </el-form-item>
               </div>
             </el-col>
@@ -423,7 +415,48 @@
               </div>
             </el-col>
           </el-row>
+          <el-row :gutter="20">
+            <el-col :offset="1" :span="20">
+              <div class="grid-content">
+                <el-form-item label="备注:" prop="name">
+                  <el-tag style="width: 80%">{{weld.remark}}</el-tag>
+                  <!-- <el-input v-model="weld.conclusion" size="mini" style="width: 80%" placeholder></el-input> -->
+                </el-form-item>
+              </div>
+            </el-col>
+           
+          </el-row>
           <h4 class="del-title">环焊缝基础信息</h4>
+          <el-row :gutter="20">
+            <el-col :span="6">
+              <div class="grid-content">
+                <el-form-item label="项目名称:" prop="name">
+                  <el-tag>{{weld.projectName}}</el-tag>
+                </el-form-item>
+              </div>
+            </el-col>
+            <el-col :span="6">
+              <div class="grid-content">
+                <el-form-item label="检测地点:" prop="name">
+                  <el-tag>{{weld.testingSites}}</el-tag>
+                </el-form-item>
+              </div>
+            </el-col>
+            <el-col :span="6">
+              <div class="grid-content">
+                <el-form-item label="输送介质:" prop="name">
+                  <el-tag>{{weld.pumpedMedium}}</el-tag>
+                </el-form-item>
+              </div>
+            </el-col>
+            <el-col :span="6">
+              <div class="grid-content">
+                <el-form-item label="螺旋缝/直缝与环焊缝交点钟点数:" prop="name">
+                  <el-tag>{{weld.jdzdj}}</el-tag>
+                </el-form-item>
+              </div>
+            </el-col>
+          </el-row>
           <el-row :gutter="20">
             <el-col :span="6">
               <div class="grid-content">
