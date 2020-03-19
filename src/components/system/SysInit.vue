@@ -1,12 +1,12 @@
 <template>
   <div>
-    <el-header style="padding: 10px;display:flex;flex-wrap: wrap;height:100px">
-      <div style="display: inline">
+    <el-header style="padding: 5px;display:flex;flex-wrap: wrap;height:110px;justify-content: space-between;align-items: center;">
+ 
         <el-input
           placeholder="通过环焊缝编号搜索,记得回车哦..."
           clearable
           style="width: 300px;margin: 0px;padding: 0px;"
-          size="mini"
+          size="small"
           :disabled="advanceSearchViewVisible"
           @keyup.enter.native="searchData"
           prefix-icon="el-icon-search"
@@ -18,7 +18,7 @@
           placement="right"
           title="请选择公司"
           trigger="manual"
-          style="width:250px;"
+          style="width:250px;margin-left: -30px;"
         >
           <el-tree
             :data="deps"
@@ -29,23 +29,30 @@
           ></el-tree>
           <div
             slot="reference"
-            style="width: 200px;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
+            style="width: 200px;height: 32px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
             @click="showDepTree"
             v-bind:style="{color: depTextColor}"
           >{{departmentName}}</div>
         </el-popover>
+        <el-tag>选择处置建议:</el-tag>
+        <el-select v-model="disposalAdviceId" placeholder="请选择">
+          <el-option
+            v-for="item in advice"
+            :key="item.key"
+            :label="item.value"
+            :value="item.key"
+            style="height:28px"
+          ></el-option>
+        </el-select>
 
         <el-button
           type="primary"
-          size="mini"
-          style="margin-left: 5px"
+          size="small"
           icon="el-icon-search"
           @click="searchData"
         >搜索</el-button>
-        <el-button type="primary" size="mini" style="margin-left: 15px" @click="searchDay">查看当天上传数据</el-button>
-        <el-button type="primary" size="mini" style="margin-left: 15px" @click="searchWeek">查看本周上传数据</el-button>
-        <el-button type="info" size="mini" style="margin-left: 15px" @click="clear">清空搜索条件</el-button>
-      </div>
+        <el-button type="info" size="small"  @click="clear">清空搜索条件</el-button>
+
       <div style="margin-left: 0px;margin-right: 20px;display: inline">
         <el-tag>罗马数字 &nbsp;&nbsp;Ⅰ &nbsp;&nbsp; Ⅱ&nbsp;&nbsp; Ⅲ&nbsp;&nbsp; Ⅳ &nbsp;&nbsp; Ⅴ&nbsp;</el-tag>
         <el-upload
@@ -92,13 +99,13 @@
             <i class="fa fa-lg fa-level-up" style="margin-right: 5px"></i>导入评价数据
           </el-button>
         </el-upload>
-        <!-- <el-button class="success2" type="success" size="mini">
-          <i class="fa fa-lg fa-level-up" style="margin-right: 5px"></i>导入评价数据
-        </el-button>-->
 
         <el-button type="success" size="mini" @click="exportData">
           <i class="fa fa-lg fa-level-down" style="margin-right: 5px"></i>导出评价数据
         </el-button>
+        <el-button type="primary" size="mini" style="margin-left: 15px" @click="searchDay">查看当天上传数据</el-button>
+        <el-button type="primary" size="mini" style="margin-left: 15px" @click="searchWeek">查看本周上传数据</el-button>
+
         <!-- <el-button type="primary" size="mini" icon="el-icon-plus" @click="showAddEmpView">添加记录</el-button> -->
       </div>
     </el-header>
@@ -926,6 +933,7 @@ export default {
       cuoBian: [],
 
       images: [],
+      advice: [],
       weld: {},
       weldResult: {},
 
@@ -1009,10 +1017,27 @@ export default {
     this.loading = true;
     this.loadTableData();
     this.initData();
+    this.initAdvice();
     this.scrollHeight = window.innerHeight * 0.7 + "px";
   },
   methods: {
     editResult() {},
+    initAdvice() {
+      var _this = this;
+      _this.getRequest("/girth/advice").then(resp => {
+        if (resp && resp.status == 200) {
+          var data = resp.data.obj;
+          // _this.advice = data.obj;
+          let a;
+          for (var key in data) {
+            a={};
+            a.key= key;
+            a.value= data[key];
+            _this.advice.push(a)
+          }
+        }
+      });
+    },
     showAdvanceSearchView() {
       this.advanceSearchViewVisible = !this.advanceSearchViewVisible;
       this.keywords = "";
@@ -1138,7 +1163,8 @@ export default {
         this.uploadFileRequest("/girth/findLetter", formData)
           .then(resp => {
             if (resp && resp.status == 200) {
-              let list = resp.data.obj;
+              let list = resp.data.obj.girthWelds;
+              let dep = resp.data.obj.dep;
               // console.log(list);
               if (list.length == 0) {
                 this.bools = true;
@@ -1165,6 +1191,10 @@ export default {
                 if (datas.tofdTest != null) {
                   s.push(datas.tofdTest);
                 }
+                let depInfo =
+                  "\n<span style='color: #f50a0a;'>此公司：" +
+                  dep +
+                  "  <hr/>未在系统中找到完全匹配公司，请确认已在系统中添加，否则请先添加再上传。</span>";
                 let reminder =
                   "确定下列数据中的英文字母 “I”或“V”或阿拉伯数字“1”(被红色标记)，不表达罗马数字Ⅰ、Ⅱ、Ⅲ、Ⅳ、Ⅴ。若是，则点击取消修改后再次上传；否则点击继续上传。 <hr><div style='height:200px;overflow-y:scroll'> ";
                 s.forEach(v => {
@@ -1175,6 +1205,9 @@ export default {
                   reminder = reminder + v + "<hr>";
                 });
                 reminder = reminder + "</div>";
+                if (dep.length != 0 && dep != null) {
+                  reminder = reminder + depInfo;
+                }
 
                 this.$confirm(reminder, "提示", {
                   confirmButtonText: "继续上传",
@@ -1210,7 +1243,10 @@ export default {
         this.uploadFileRequest("/girth/findLetterEvaluation", formData)
           .then(resp => {
             if (resp && resp.status == 200) {
-              let list = resp.data.obj;
+              let list = resp.data.obj.girthWelds;
+              let dep = resp.data.obj.dep;
+              let advice = resp.data.obj.advice;
+
               if (list.length == 0) {
                 resolve(true);
                 _self.fileUploadBtnText = "正在导入";
@@ -1219,7 +1255,14 @@ export default {
                 list.forEach(v => {
                   s.push(v.number);
                 });
-
+                let depInfo =
+                  "\n<span style='color: #f50a0a;'>以下公司：" +
+                  dep +
+                  "  <hr/>未在系统中找到完全匹配公司，请确认已在系统中添加，否则请先添加再上传。</span>";
+                let adviceInfo =
+                  "<hr/><hr/><span style='color: #f50a0a;'>以下处置建议：" +
+                  advice +
+                  "<hr/>未在系统中找到以下关键匹配字符（普通, 年, 内检测, 复合材料, 环氧, B, 换管, 打磨），请检查后再上传。</span>";
                 let reminder =
                   "确定下列数据中的英文字母 “I”或“V”或阿拉伯数字“1”(被红色标记)，不表示罗马数字Ⅰ、Ⅱ、Ⅲ、Ⅳ、Ⅴ。若是，则点击取消修改后再上传；否则点击继续上传。 <hr> <div style='height:200px;overflow-y:scroll'>";
                 s.forEach(v => {
@@ -1230,6 +1273,12 @@ export default {
                   reminder = reminder + v + "<hr>";
                 });
                 reminder = reminder + "</div>";
+                if (dep.length != 0 && dep != null) {
+                  reminder = reminder + depInfo;
+                }
+                if (advice.length != 0 && advice != null) {
+                  reminder = reminder + adviceInfo;
+                }
                 this.$confirm(reminder, "提示", {
                   confirmButtonText: "继续上传",
                   cancelButtonText: "取消",
@@ -1280,7 +1329,7 @@ export default {
     keywordsChange() {},
     exportData() {
       this.keywordsConvert = this.keywords
-        .replace(/\+/g, "%2B")
+        .replace(/\+/g, "%2B") // 解决存在加号+  搜索不到的问题
         .replace(/ /g, "");
       window.open(
         "/girth/exportGirthWeld?keywords=" +
@@ -1311,7 +1360,6 @@ export default {
     showEditResult(row) {
       this.weld = row;
       console.log(this.weld);
-
       this.dialogVisible1 = true;
     },
     picManagement(row) {
