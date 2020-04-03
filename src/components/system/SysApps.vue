@@ -22,12 +22,13 @@
           :show-file-list="false"
           class="upload-demo"
           action="version/apk"
+          :headers="importHeaders"
           :on-success="fileUploadSuccess"
+          :on-progress="onProgress"
           :on-error="fileUploadError"
           :disabled="fileUploadBtnText=='正在上传'"
           :before-upload="beforeFileUpload"
           style="display: inline"
-          multiple
         >
           <el-button
             size="mini"
@@ -39,6 +40,18 @@
         <el-input v-model="version.url" disabled placeholder="请输入内容" style="margin: 5px;width:70%"></el-input>
       </div>
 
+      <!-- <div style="display:flex;align-items: center;margin-top:10px">
+        <input type="file" ref="myfile" />
+        <el-button @click="importData" type="success" size="mini" icon="el-icon-upload2">导入数据</el-button>
+      </div>-->
+      <div style="margin-top:30px;width:70%" v-show="progressStatus">
+        <el-progress
+          :text-inside="true"
+          :stroke-width="24"
+          :percentage="percentage"
+          status="success"
+        ></el-progress>
+      </div>
       <div style="display:flex;align-items: center;margin-top:30px">
         <el-tag>版本号：</el-tag>
         <el-input v-model="version.versionCode" placeholder="请输入内容" style="margin: 5px;width:40%"></el-input>
@@ -69,12 +82,15 @@ export default {
       loading: false,
       keywords: "",
       dialogVisible: false,
-      dustbinData: [],
-      // periodicals: [],
       totalCount: -1,
       currentPage: 1,
       pageSize: 10,
       fileUploadBtnText: "上传安装包",
+      percentage: 0,
+      progressStatus: false,
+      importHeaders: {
+        enctype: "multipart/form-data"
+      },
 
       version: {
         id: "",
@@ -91,6 +107,23 @@ export default {
     this.loadTableData();
   },
   methods: {
+    importData() {
+      let myfile = this.$refs.myfile;
+      let files = myfile.files;
+
+      let file = files[0];
+      let formData = new FormData();
+      formData.append("file", file);
+      this.uploadFileRequest("/version/apk", formData, config).then(resp => {
+        if (resp) {
+          console.log(resp);
+        }
+      });
+    },
+    onProgress(response, file, fileList) {
+      this.percentage = Math.floor(response.percent);
+      console.log("进度：" + this.percentage);
+    },
     fileUploadSuccess(response, file, fileList) {
       this.$message({ type: "success", message: response.msg });
       this.loadTableData();
@@ -102,6 +135,17 @@ export default {
       this.fileUploadBtnText = "上传安装包";
     },
     beforeFileUpload(file) {
+      this.progressStatus = true;
+      // this.postRequest("/version/resetPercent").then(resp => {
+      //   if (resp && resp.status == 200) {
+      //   }
+      // });
+      // this.getRequest("/version/getPercent").then(resp => {
+      //   if (resp && resp.status == 200) {
+      //     this.percentage = resp.data.obj;
+      //     console.log(this.percentage);
+      //   }
+      // });
       this.fileUploadBtnText = "正在上传";
     },
     updatePer() {
@@ -109,6 +153,8 @@ export default {
       this.postRequest("/version/", _this.version).then(resp => {
         if (resp && resp.status == 200) {
           _this.loadTableData();
+          _this.percentage = 0;
+          _this.progressStatus = false;
         }
       });
     },

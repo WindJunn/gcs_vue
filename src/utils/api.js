@@ -94,9 +94,11 @@ export const uploadFileRequest = (url, params) => {
     },
     transformRequest: [function (data) {
       return data
-    }],
+    }]
+    ,
     onUploadProgress: progressEvent => {
-      let complete = (progressEvent.loaded / progressEvent.total * 100 | 0) + '%'
+      // let complete = (progressEvent.loaded / progressEvent.total * 100 | 0) + '%'
+      let complete = (progressEvent.loaded / progressEvent.total * 100 | 0) 
       console.log('complete: ', complete)
     }
 
