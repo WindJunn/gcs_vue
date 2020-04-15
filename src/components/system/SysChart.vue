@@ -45,7 +45,7 @@
       </el-col>
     </div>
 
-    <el-col :span="24">
+    <el-col :span="24" v-show="false">
       <div class="echarts-box1">
         <div id="pipelineDefect" class="echarts"></div>
       </div>
@@ -55,45 +55,52 @@
         <div id="pipelineOption" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="12" v-show="false">
       <div class="echarts-box">
         <div id="pipelineDefectNo" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="12" v-show="false">
       <div class="echarts-box">
         <div id="pipelineDefectFix" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="12" v-show="false">
       <div class="echarts-box">
         <div id="totalResult" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="12" v-show="false">
       <div class="echarts-box">
         <div id="totalAdvices" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="12" v-show="false">
       <div class="echarts-box">
         <div id="totalAdvice" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="12" v-show="false">
       <div class="echarts-box">
         <div id="companyDefect" class="echarts"></div>
       </div>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="12" v-show="false">
       <div class="echarts-box">
         <div id="companyDefectNo" class="echarts"></div>
       </div>
     </el-col>
     <div>
-      <el-col :span="12">
+      <el-col :span="12" v-show="false">
         <div class="echarts-box">
           <div id="companyDefectFix" class="echarts"></div>
+        </div>
+      </el-col>
+    </div>
+    <div>
+      <el-col :span="12" v-for="(item,index) in datas" :key="index">
+        <div class="echarts-box">
+          <div :ref="'chartComponent'+index" :id="'chartComponent'+index" class="echarts"></div>
         </div>
       </el-col>
     </div>
@@ -359,7 +366,6 @@ export default {
         },
         tooltip: {
           trigger: "item",
-          /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
           formatter: "{a} {b} : ({c}道) {d}%"
         },
         legend: {
@@ -532,13 +538,6 @@ export default {
             }
           }
         ]
-        // color: [
-        //   "rgb(187,140,238)",
-        //   "rgb(134,146,243)",
-        //   "rgb(60,184,255)",
-        //   "rgb(113,171,246)",
-        //   "rgb(255,193,134)"
-        // ] //饼图分块颜色设置
       },
       totalResult: {
         title: {
@@ -1111,6 +1110,95 @@ export default {
         // ] //饼图分块颜色设置
       },
 
+      chartComponent: {
+        title: {
+          text: "11",
+          subtext: "11",
+          x: "left",
+          textStyle: {
+            color: "#222",
+            fontStyle: "normal",
+            fontWeight: "600",
+            fontFamily: "san-serif",
+            fontSize: 16
+          }
+        },
+        tooltip: {
+          trigger: "item",
+          /* formatter: "{a} <br/>{b} : ({c}道) {d}%"*/
+          formatter: "{a} {b} : ({c}道) {d}%"
+        },
+        legend: {
+          x: "70%",
+          y: "25%",
+          orient: "vertical",
+          left: "left",
+          itemWidth: 10,
+          itemHeight: 10,
+          selectedMode: false, //禁止点击
+          textStyle: {
+            fontSize: 12,
+            color: "#999"
+          },
+          formatter: function(name) {
+            //避免文字太长做省略处理
+            return name.length > 4 ? name.slice(0, 4) + "..." : name;
+          },
+          data: []
+        },
+        series: [
+          {
+            name: "",
+            type: "pie",
+            radius: "50%",
+            center: ["55%", "60%"],
+            hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果
+            selectedMode: "single", //选中模式，表示是否支持多个选中，默认关闭，支持布尔值和字符串，字符串取值可选'single'，'multiple'，分别表示单选还是多选。
+            selectedOffset: 5, //选中扇区的偏移距离
+            data: [],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  textStyle: {
+                    fontSize: 12
+                  },
+                  /* formatter: '{b} : ({c}门) \n {d}%'	*/
+                  formatter: function(params) {
+                    //避免文字太长做省略处理
+                    var name = params.name; //名字
+                    var percent = params.percent; //占比
+                    var value = params.value; //数量
+                    if (name.length > 8) {
+                      return (
+                        name.slice(0, 7) +
+                        "..." +
+                        "\n" +
+                        "(" +
+                        value +
+                        "道)" +
+                        percent +
+                        "%"
+                      );
+                    } else {
+                      return name + "\n" + "(" + value + "道)" + percent + "%";
+                    }
+                  }
+                },
+                labelLine: {
+                  show: true
+                }
+              },
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)"
+              }
+            }
+          }
+        ]
+      },
+
       showOrHidePop2: false,
       depTextColor: "#c0c4cc",
 
@@ -1130,9 +1218,13 @@ export default {
     };
   },
   mounted: function() {
+    // this.test();
+  },
+  created: function() {
     this.queryCoursePieChart();
     this.initData();
   },
+
   methods: {
     initData() {
       var _this = this;
@@ -1159,7 +1251,7 @@ export default {
       });
       return sum;
     },
-    queryCoursePieChart: function() {
+    queryCoursePieChart() {
       var _this = this;
       if (this.startYear != "") {
         this.startYear = this.startYear.getFullYear();
@@ -1167,15 +1259,33 @@ export default {
       if (this.endYear != "") {
         this.endYear = this.endYear.getFullYear();
       }
-      this.pipelineDefect.title.subtext=this.pipelineDefect.title.subtext.split("，")[0];
-      this.pipelineDefectNo.title.subtext=this.pipelineDefectNo.title.subtext.split("，")[0];
-      this.pipelineDefectFix.title.subtext=this.pipelineDefectFix.title.subtext.split("，")[0];
-      this.totalResult.title.subtext=this.totalResult.title.subtext.split("，")[0];
-      this.totalAdvices.title.subtext=this.totalAdvices.title.subtext.split("，")[0];
-      this.totalAdvice.title.subtext=this.totalAdvice.title.subtext.split("，")[0];
-      this.companyDefect.title.subtext=this.companyDefect.title.subtext.split("，")[0];
-      this.companyDefectNo.title.subtext=this.companyDefectNo.title.subtext.split("，")[0];
-      this.companyDefectFix.title.subtext=this.companyDefectFix.title.subtext.split("，")[0];
+      this.pipelineDefect.title.subtext = this.pipelineDefect.title.subtext.split(
+        "，"
+      )[0];
+      this.pipelineDefectNo.title.subtext = this.pipelineDefectNo.title.subtext.split(
+        "，"
+      )[0];
+      this.pipelineDefectFix.title.subtext = this.pipelineDefectFix.title.subtext.split(
+        "，"
+      )[0];
+      this.totalResult.title.subtext = this.totalResult.title.subtext.split(
+        "，"
+      )[0];
+      this.totalAdvices.title.subtext = this.totalAdvices.title.subtext.split(
+        "，"
+      )[0];
+      this.totalAdvice.title.subtext = this.totalAdvice.title.subtext.split(
+        "，"
+      )[0];
+      this.companyDefect.title.subtext = this.companyDefect.title.subtext.split(
+        "，"
+      )[0];
+      this.companyDefectNo.title.subtext = this.companyDefectNo.title.subtext.split(
+        "，"
+      )[0];
+      this.companyDefectFix.title.subtext = this.companyDefectFix.title.subtext.split(
+        "，"
+      )[0];
 
       this.getRequest(
         "/data/?startYear=" +
@@ -1184,11 +1294,12 @@ export default {
           this.endYear +
           "&departmentId=" +
           this.departmentId
-      ).then(resp => {
+      ).then(async resp => {
         if (resp && resp.status == 200) {
           this.startYear = "";
           this.endYear = "";
           this.datas = resp.data.obj;
+          let chart = this.datas;
           let d = this.datas[0].data;
           let d1 = this.datas[1].data;
           let d2 = this.datas[2].data;
@@ -1288,58 +1399,85 @@ export default {
               "companyDefectFix"
             ).parentNode.parentNode.style.display = "none";
           }
-          if (this.datas.length > 6) {
-             document.getElementById(
-              "companyDefect"
-            ).parentNode.parentNode.style.display = "inline-block";
-            document.getElementById(
-              "companyDefectNo"
-            ).parentNode.parentNode.style.display = "inline-block";
-            document.getElementById(
-              "companyDefectFix"
-            ).parentNode.parentNode.style.display = "inline-block";
-            let d6 = this.datas[6].data;
-            let d7 = this.datas[7].data;
-            let d8 = this.datas[8].data;
+          // if (this.datas.length > 6) {
+          //   document.getElementById(
+          //     "companyDefect"
+          //   ).parentNode.parentNode.style.display = "inline-block";
+          //   document.getElementById(
+          //     "companyDefectNo"
+          //   ).parentNode.parentNode.style.display = "inline-block";
+          //   document.getElementById(
+          //     "companyDefectFix"
+          //   ).parentNode.parentNode.style.display = "inline-block";
+          //   let d6 = this.datas[6].data;
+          //   let d7 = this.datas[7].data;
+          //   let d8 = this.datas[8].data;
 
-            this.companyDefect.series[0].data = d6;
-            this.companyDefect.title.subtext =
-              this.companyDefect.title.subtext +
-              "，共" +
-              d6.length +
-              "类" +
-              this.sum(d6) +
-              "道";
-            d6.forEach(element => {
-              this.companyDefect.legend.data.push(element.name);
-            });
-            this.companyDefectNo.series[0].data = d7;
-            this.companyDefectNo.title.subtext =
-              this.companyDefectNo.title.subtext +
-              "，共" +
-              d7.length +
-              "类" +
-              this.sum(d7) +
-              "道";
-            d7.forEach(element => {
-              this.companyDefectNo.legend.data.push(element.name);
-            });
-            this.companyDefectFix.series[0].data = d8;
-            this.companyDefectFix.title.subtext =
-              this.companyDefectFix.title.subtext +
-              "，共" +
-              d8.length +
-              "类" +
-              this.sum(d8) +
-              "道";
-            d8.forEach(element => {
-              this.companyDefectFix.legend.data.push(element.name);
-            });
-          }
+          //   this.companyDefect.series[0].data = d6;
+          //   this.companyDefect.title.subtext =
+          //     this.companyDefect.title.subtext +
+          //     "，共" +
+          //     d6.length +
+          //     "类" +
+          //     this.sum(d6) +
+          //     "道";
+          //   d6.forEach(element => {
+          //     this.companyDefect.legend.data.push(element.name);
+          //   });
+          //   this.companyDefectNo.series[0].data = d7;
+          //   this.companyDefectNo.title.subtext =
+          //     this.companyDefectNo.title.subtext +
+          //     "，共" +
+          //     d7.length +
+          //     "类" +
+          //     this.sum(d7) +
+          //     "道";
+          //   d7.forEach(element => {
+          //     this.companyDefectNo.legend.data.push(element.name);
+          //   });
+          //   this.companyDefectFix.series[0].data = d8;
+          //   this.companyDefectFix.title.subtext =
+          //     this.companyDefectFix.title.subtext +
+          //     "，共" +
+          //     d8.length +
+          //     "类" +
+          //     this.sum(d8) +
+          //     "道";
+          //   d8.forEach(element => {
+          //     this.companyDefectFix.legend.data.push(element.name);
+          //   });
+          // }
           //初始化
-          this.drawLine();
+          await this.drawLine();
+          await this.test();
         }
       });
+    },
+
+    test() {
+      console.log("数据长度" + this.datas.length);
+      let _this = this;
+      for (let i = 0; i < this.datas.length; i++) {
+        let ds = this.datas[i].data;
+        let chart = _this.chartComponent;
+        chart.series[0].data = ds;
+        chart.title.text = this.datas[i].title;
+        chart.title.subtext =
+          this.datas[i].detail +
+          "，共" +
+          ds.length +
+          "类" +
+          this.sum(ds) +
+          "道";
+        ds.forEach(element => {
+          chart.legend.data.push(element.name);
+        });
+        let s = "chartComponent" + i;
+        console.log(s);
+        // echarts.init(this.$refs.s).setOption(chart);
+        echarts.init(document.getElementById(s)).setOption(chart);
+        chart = "";
+      }
     },
     drawLine: function() {
       // 初始化echarts实例
@@ -1379,7 +1517,7 @@ export default {
         console.log(self.departmentId);
         self.$router.push({
           path: "/sys/init",
-          query: { pipelineName: s ,departmentId:self.departmentId}
+          query: { pipelineName: s, departmentId: self.departmentId }
         });
       });
       pipelineOption.setOption(this.pipelineOption);
@@ -1409,10 +1547,10 @@ export default {
           console.log(xIndex);
           let data = self.barData[xIndex].query;
           let s = data.split("=")[1];
-          
+
           self.$router.push({
             path: "/sys/init",
-            query: { pipelineName: s,departmentId:self.departmentId }
+            query: { pipelineName: s, departmentId: self.departmentId }
           });
         }
       });
@@ -1426,7 +1564,11 @@ export default {
 
         self.$router.push({
           path: "/sys/init",
-          query: { evaluationResultId: 2, pipelineName: s,departmentId:self.departmentId }
+          query: {
+            evaluationResultId: 2,
+            pipelineName: s,
+            departmentId: self.departmentId
+          }
         });
       });
       pipelineDefectFix.setOption(this.pipelineDefectFix);
@@ -1434,7 +1576,11 @@ export default {
         let s = params.data.query.split("=")[2];
         self.$router.push({
           path: "/sys/init",
-          query: { disposalAdviceIdNo: 1, pipelineName: s,departmentId:self.departmentId }
+          query: {
+            disposalAdviceIdNo: 1,
+            pipelineName: s,
+            departmentId: self.departmentId
+          }
         });
       });
       totalResult.setOption(this.totalResult);
@@ -1442,7 +1588,7 @@ export default {
         let s = params.data.query.split("=")[1];
         self.$router.push({
           path: "/sys/init",
-          query: { evaluationResultId: s ,departmentId:self.departmentId}
+          query: { evaluationResultId: s, departmentId: self.departmentId }
         });
       });
       totalAdvices.setOption(this.totalAdvices);
@@ -1452,13 +1598,13 @@ export default {
         if (q == "disposalAdviceId") {
           self.$router.push({
             path: "/sys/init",
-            query: { disposalAdviceId: s ,departmentId:self.departmentId}
+            query: { disposalAdviceId: s, departmentId: self.departmentId }
           });
         }
         if (q == "disposalAdviceIdNo") {
           self.$router.push({
             path: "/sys/init",
-            query: { disposalAdviceIdNo: s ,departmentId:self.departmentId}
+            query: { disposalAdviceIdNo: s, departmentId: self.departmentId }
           });
         }
       });
@@ -1468,7 +1614,7 @@ export default {
         let s = params.data.query.split("=")[1];
         self.$router.push({
           path: "/sys/init",
-          query: { disposalAdviceId: s ,departmentId:self.departmentId}
+          query: { disposalAdviceId: s, departmentId: self.departmentId }
         });
       });
       companyDefect.setOption(this.companyDefect);
@@ -1476,7 +1622,7 @@ export default {
         let s = params.data.query.split("=")[1];
         self.$router.push({
           path: "/sys/init",
-          query: { departmentId: s ,departmentId:self.departmentId}
+          query: { departmentId: s, departmentId: self.departmentId }
         });
       });
       companyDefectNo.setOption(this.companyDefectNo);
