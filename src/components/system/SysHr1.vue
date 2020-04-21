@@ -69,7 +69,8 @@
                 size="mini"
                 style="margin-right: 5px"
                 :disable-transitions="false"
-              >{{role.nameZh}}</el-tag>
+              >{{role.nameZh}}
+              </el-tag>
               <el-popover
                 v-loading="eploading[index]"
                 placement="right"
@@ -104,154 +105,154 @@
   </div>
 </template>
 <script>
-export default {
-  data() {
-    return {
-      keywords: "",
-      fullloading: false,
-      iusers: [],
-      cardLoading: [],
-      eploading: [],
-      allRoles: [],
-      moreBtnState: false,
-      selRoles: [],
-      selRolesBak: []
-    };
-  },
-  mounted: function() {
-    this.initCards();
-    this.loadAllRoles();
-  },
-  methods: {
-    searchClick() {
+  export default {
+    data() {
+      return {
+        keywords: "",
+        fullloading: false,
+        iusers: [],
+        cardLoading: [],
+        eploading: [],
+        allRoles: [],
+        moreBtnState: false,
+        selRoles: [],
+        selRolesBak: []
+      };
+    },
+    mounted: function () {
       this.initCards();
       this.loadAllRoles();
     },
-    updateHrRoles(hrId, index) {
-      this.moreBtnState = false;
-      var _this = this;
-      if (this.selRolesBak.length == this.selRoles.length) {
-        for (var i = 0; i < this.selRoles.length; i++) {
-          for (var j = 0; j < this.selRolesBak.length; j++) {
-            if (this.selRoles[i] == this.selRolesBak[j]) {
-              this.selRolesBak.splice(j, 1);
-              break;
+    methods: {
+      searchClick() {
+        this.initCards();
+        this.loadAllRoles();
+      },
+      updateHrRoles(hrId, index) {
+        this.moreBtnState = false;
+        var _this = this;
+        if (this.selRolesBak.length == this.selRoles.length) {
+          for (var i = 0; i < this.selRoles.length; i++) {
+            for (var j = 0; j < this.selRolesBak.length; j++) {
+              if (this.selRoles[i] == this.selRolesBak[j]) {
+                this.selRolesBak.splice(j, 1);
+                break;
+              }
             }
           }
-        }
-        if (this.selRolesBak.length == 0) {
-          return;
-        }
-      }
-      this.eploading.splice(index, 1, true);
-      this.putRequest("/system/iuser/roles", {
-        hrId: hrId,
-        rids: this.selRoles
-      }).then(resp => {
-        _this.eploading.splice(index, 1, false);
-        if (resp && resp.status == 200) {
-          var data = resp.data;
-
-          if (data.status == "success") {
-            _this.refreshHr(hrId, index);
+          if (this.selRolesBak.length == 0) {
+            return;
           }
         }
-      });
-    },
-    refreshHr(hrId, index) {
-      var _this = this;
-      _this.cardLoading.splice(index, 1, true);
-      this.putRequest("/system/iuser/id/" + hrId).then(resp => {
-        _this.cardLoading.splice(index, 1, false);
-        _this.iusers.splice(index, 1, resp.data);
-      });
-    },
-    loadSelRoles(hrRoles, index) {
-      this.moreBtnState = true;
-      this.selRoles = [];
-      this.selRolesBak = [];
-      hrRoles.forEach(role => {
-        this.selRoles.push(role.id);
-        this.selRolesBak.push(role.id);
-      });
-    },
-    loadAllRoles() {
-      var _this = this;
-      this.getRequest("/system/basic/roles").then(resp => {
-        _this.fullloading = false;
-        if (resp && resp.status == 200) {
-          _this.allRoles = resp.data;
-        }
-      });
-    },
-    switchChange(newValue, hrId, index) {
-      var _this = this;
-      _this.cardLoading.splice(index, 1, true);
-      this.putRequest("/system/iuser/", {
-        enabled: newValue,
-        id: hrId
-      }).then(resp => {
-        _this.cardLoading.splice(index, 1, false);
-        if (resp && resp.status == 200) {
-          var data = resp.data;
+        this.eploading.splice(index, 1, true);
+        this.putRequest("/system/iuser/roles", {
+          hrId: hrId,
+          rids: this.selRoles
+        }).then(resp => {
+          _this.eploading.splice(index, 1, false);
+          if (resp && resp.status == 200) {
+            var data = resp.data;
 
-          if (data.status == "error") {
+            if (data.status == "success") {
+              _this.refreshHr(hrId, index);
+            }
+          }
+        });
+      },
+      refreshHr(hrId, index) {
+        var _this = this;
+        _this.cardLoading.splice(index, 1, true);
+        this.putRequest("/system/iuser/id/" + hrId).then(resp => {
+          _this.cardLoading.splice(index, 1, false);
+          _this.iusers.splice(index, 1, resp.data);
+        });
+      },
+      loadSelRoles(hrRoles, index) {
+        this.moreBtnState = true;
+        this.selRoles = [];
+        this.selRolesBak = [];
+        hrRoles.forEach(role => {
+          this.selRoles.push(role.id);
+          this.selRolesBak.push(role.id);
+        });
+      },
+      loadAllRoles() {
+        var _this = this;
+        this.getRequest("/system/basic/roles").then(resp => {
+          _this.fullloading = false;
+          if (resp && resp.status == 200) {
+            _this.allRoles = resp.data;
+          }
+        });
+      },
+      switchChange(newValue, hrId, index) {
+        var _this = this;
+        _this.cardLoading.splice(index, 1, true);
+        this.putRequest("/system/iuser/", {
+          enabled: newValue,
+          id: hrId
+        }).then(resp => {
+          _this.cardLoading.splice(index, 1, false);
+          if (resp && resp.status == 200) {
+            var data = resp.data;
+
+            if (data.status == "error") {
+              _this.refreshHr(hrId, index);
+            }
+          } else {
             _this.refreshHr(hrId, index);
           }
+        });
+      },
+      initCards() {
+        this.fullloading = true;
+        var _this = this;
+        var searchWords;
+        if (this.keywords === "") {
+          searchWords = "all";
         } else {
-          _this.refreshHr(hrId, index);
+          searchWords = this.keywords;
         }
-      });
-    },
-    initCards() {
-      this.fullloading = true;
-      var _this = this;
-      var searchWords;
-      if (this.keywords === "") {
-        searchWords = "all";
-      } else {
-        searchWords = this.keywords;
-      }
-      this.getRequest("/system/iuser/" + searchWords).then(resp => {
-        if (resp && resp.status == 200) {
-          _this.iusers = resp.data;
-          var length = resp.data.length;
-          _this.cardLoading = Array.apply(null, Array(length)).map(function(
-            item,
-            i
-          ) {
-            return false;
-          });
-          _this.eploading = Array.apply(null, Array(length)).map(function(
-            item,
-            i
-          ) {
-            return false;
-          });
-        }
-      });
-    },
-    deleteHr(hrId) {
-      var _this = this;
-      this.fullloading = true;
-      this.deleteRequest("/system/iuser/" + hrId).then(resp => {
-        _this.fullloading = false;
-        if (resp && resp.status == 200) {
-          var data = resp.data;
-
-          if (data.status == "success") {
-            _this.initCards();
-            _this.loadAllRoles();
+        this.getRequest("/system/iuser/" + searchWords).then(resp => {
+          if (resp && resp.status == 200) {
+            _this.iusers = resp.data;
+            var length = resp.data.length;
+            _this.cardLoading = Array.apply(null, Array(length)).map(function (
+              item,
+              i
+            ) {
+              return false;
+            });
+            _this.eploading = Array.apply(null, Array(length)).map(function (
+              item,
+              i
+            ) {
+              return false;
+            });
           }
-        }
-      });
+        });
+      },
+      deleteHr(hrId) {
+        var _this = this;
+        this.fullloading = true;
+        this.deleteRequest("/system/iuser/" + hrId).then(resp => {
+          _this.fullloading = false;
+          if (resp && resp.status == 200) {
+            var data = resp.data;
+
+            if (data.status == "success") {
+              _this.initCards();
+              _this.loadAllRoles();
+            }
+          }
+        });
+      }
     }
-  }
-};
+  };
 </script>
 <style>
-.user-info {
-  font-size: 12px;
-  color: #09c0f6;
-}
+  .user-info {
+    font-size: 12px;
+    color: #09c0f6;
+  }
 </style>

@@ -28,7 +28,7 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-  
+
     {
       path: '/',
       name: 'Login',
@@ -53,9 +53,9 @@ export default new Router({
       //       requireAuth: true
       //     }
       //   },
-        
+
       // ]
     }
-   
+
   ]
 })

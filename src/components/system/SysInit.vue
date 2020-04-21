@@ -1,58 +1,82 @@
 <template>
   <div>
-    <el-header style="padding: 5px;display:flex;flex-wrap: wrap;height:110px;justify-content: space-between;align-items: center;">
- 
-        <el-input
-          placeholder="通过环焊缝编号搜索,记得回车哦..."
-          clearable
-          style="width: 300px;margin: 0px;padding: 0px;"
-          size="small"
-          :disabled="advanceSearchViewVisible"
-          @keyup.enter.native="searchData"
-          prefix-icon="el-icon-search"
-          v-model="keywords"
-        ></el-input>
-        <el-tag>选择公司:</el-tag>
-        <el-popover
-          v-model="showOrHidePop"
-          placement="right"
-          title="请选择公司"
-          trigger="manual"
-          style="width:250px;margin-left: -30px;"
-        >
-          <el-tree
-            :data="deps"
-            :default-expand-all="false"
-            :props="defaultProps"
-            :expand-on-click-node="false"
-            @node-click="handleNodeClick"
-          ></el-tree>
-          <div
-            slot="reference"
-            style="width: 200px;height: 32px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
-            @click="showDepTree"
-            v-bind:style="{color: depTextColor}"
-          >{{departmentName}}</div>
-        </el-popover>
-        <el-tag>选择处置建议:</el-tag>
-        <el-select v-model="disposalAdviceId" placeholder="请选择">
-          <el-option
-            v-for="item in advice"
-            :key="item.key"
-            :label="item.value"
-            :value="item.key"
-            style="height:28px"
-          ></el-option>
-        </el-select>
+    <el-header style="padding: 10px;display:flex;flex-wrap: wrap;height:160px">
+      <div>
+        <el-row style="margin-top: 8px;">
+          <el-col :span="6">
+            <el-input
+              placeholder="通过环焊缝编号搜索"
+              clearable
+              style="width: 200px;"
+              size="small"
+              :disabled="advanceSearchViewVisible"
+              @keyup.enter.native="searchData"
+              prefix-icon="el-icon-search"
+              v-model="keywords"
+            ></el-input>
+          </el-col>
 
+          <el-col :span="12">
+            <el-tag style="margin-left: 10px;">选择处置建议:</el-tag>
+            <el-select size="small" v-model="disposalAdviceId" placeholder="请选择">
+              <el-option
+                v-for="item in advice"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+                style="height:23px"
+              ></el-option>
+            </el-select>
+            <el-tag style="margin-left: 10px;">选择公司:</el-tag>
+          </el-col>
+          <el-col :span="6">
+            <el-popover
+              v-model="showOrHidePop"
+              placement="right"
+              title="请选择公司"
+              trigger="manual"
+              style="width:250px;margin-top:10px;margin-left:10px"
+            >
+              <el-tree
+                :data="deps"
+                :default-expand-all="false"
+                :props="defaultProps"
+                :expand-on-click-node="false"
+                @node-click="handleNodeClick"
+              ></el-tree>
+              <div
+                slot="reference"
+                style="width: 200px;height: 32px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
+                @click="showDepTree"
+                v-bind:style="{color: depTextColor}"
+              >{{departmentName}}</div>
+            </el-popover>
+          </el-col>
+        </el-row>
+      </div>
+
+      <div style="margin-left: 0px;margin-right: 20px;display: inline">
         <el-button
           type="primary"
           size="small"
-          icon="el-icon-search"
-          @click="searchData"
-        >搜索</el-button>
-        <el-button type="info" size="small"  @click="clear">清空搜索条件</el-button>
-
+          style="margin-left: 0px"
+          @click="searchTest"
+        >查看仅上传检测数据环焊缝</el-button>
+        <el-button
+          type="primary"
+          size="small"
+          style="margin-left: 15px"
+          @click="searchEvalution"
+        >查看仅上传评价数据环焊缝</el-button>
+        <el-button
+          type="primary"
+          size="small"
+          style="margin-left: 15px"
+          @click="searchTestAndEvalution"
+        >查看已上传检测评价数据环焊缝</el-button>
+        <el-button type="info" size="small" @click="clear">清空搜索条件</el-button>
+        <el-button type="primary" size="small" icon="el-icon-search" @click="searchData">搜索</el-button>
+      </div>
       <div style="margin-left: 0px;margin-right: 20px;display: inline">
         <el-tag>罗马数字 &nbsp;&nbsp;Ⅰ &nbsp;&nbsp; Ⅱ&nbsp;&nbsp; Ⅲ&nbsp;&nbsp; Ⅳ &nbsp;&nbsp; Ⅴ&nbsp;</el-tag>
         <el-upload
@@ -122,7 +146,7 @@
       v-loading="loading"
     >
       <el-table-column type="selection" align="left" width="30"></el-table-column>
-      <el-table-column fixed prop="department.name" align="left" label="分公司" width="130"></el-table-column>
+      <el-table-column fixed prop="departmentName" align="left" label="分公司" width="130"></el-table-column>
 
       <el-table-column fixed prop="pipelineName" align="left" label="管线名称" width="80"></el-table-column>
       <el-table-column fixed prop="number" align="left" label="环焊缝编号" width="180"></el-table-column>
@@ -382,7 +406,6 @@
               <div class="grid-content">
                 <el-form-item label="评价结果:" prop="name">
                   <el-tag style="width: 70%">{{weld.applicabilityEvaluationResult}}</el-tag>
-                 
                 </el-form-item>
               </div>
             </el-col>
@@ -424,7 +447,6 @@
                 </el-form-item>
               </div>
             </el-col>
-           
           </el-row>
           <h4 class="del-title">环焊缝基础信息</h4>
           <el-row :gutter="20">
@@ -936,6 +958,8 @@ export default {
       disposalAdviceIdNo: "",
       pipelineName: "",
       time: "",
+      isTestData: "",
+      isEvalutionData: "",
 
       fileUploadBtnText: "导入检测数据",
       imageUploadBtnText: "上传图片",
@@ -969,6 +993,7 @@ export default {
       advice: [],
       weld: {},
       weldResult: {},
+      param: "",
 
       bools: "",
       girth: {
@@ -993,21 +1018,21 @@ export default {
       },
       optionsTestingResult: [
         {
-          value: 1,
+          value: 0,
           label: "合格"
         },
         {
-          value: 2,
+          value: 1,
           label: "不合格"
         }
       ],
       optionsEvaluationResult: [
         {
-          value: 1,
+          value: 0,
           label: "可接受"
         },
         {
-          value: 2,
+          value: 1,
           label: "不可接受"
         }
       ],
@@ -1063,10 +1088,10 @@ export default {
           // _this.advice = data.obj;
           let a;
           for (var key in data) {
-            a={};
-            a.key= key;
-            a.value= data[key];
-            _this.advice.push(a)
+            a = {};
+            a.key = key;
+            a.value = data[key];
+            _this.advice.push(a);
           }
         }
       });
@@ -1088,6 +1113,22 @@ export default {
       this.time = "week";
       this.loadTableData();
     },
+    searchTest() {
+      this.empty();
+      this.isTestData = 1;
+      this.loadTableData();
+    },
+    searchEvalution() {
+      this.empty();
+      this.isEvalutionData = 1;
+      this.loadTableData();
+    },
+    searchTestAndEvalution() {
+      this.empty();
+      this.isTestData = 1;
+      this.isEvalutionData = 1;
+      this.loadTableData();
+    },
     showDepTree() {
       this.showOrHidePop = !this.showOrHidePop;
     },
@@ -1099,6 +1140,10 @@ export default {
       this.depTextColor = "#606266";
     },
     clear() {
+      this.empty();
+      this.loadTableData();
+    },
+    empty() {
       this.keywords = "";
       this.departmentId = "";
       this.departmentName = "";
@@ -1109,7 +1154,8 @@ export default {
       this.disposalAdviceIdNo = "";
       this.pipelineName = "";
       this.time = "";
-      this.loadTableData();
+      this.isTestData = "";
+      this.isEvalutionData = "";
     },
     initData() {
       var _this = this;
@@ -1534,68 +1580,65 @@ export default {
 
     loadTableData() {
       var _this = this;
-      let departmentId = this.$route.query.departmentId;
-      let testingResultId = this.$route.query.testingResultId;
-      let evaluationResultId = this.$route.query.evaluationResultId;
-      let disposalAdviceId = this.$route.query.disposalAdviceId;
-      let defectId = this.$route.query.defectId;
-      let disposalAdviceIdNo = this.$route.query.disposalAdviceIdNo;
-      let pipelineName = this.$route.query.pipelineName;
 
-      if (departmentId != null) {
-        this.departmentId = departmentId;
-      }
-      if (testingResultId != null) {
-        this.testingResultId = testingResultId;
-      }
-      if (evaluationResultId != null) {
-        this.evaluationResultId = evaluationResultId;
-      }
-      if (disposalAdviceId != null) {
-        this.disposalAdviceId = disposalAdviceId;
-      }
-      if (defectId != null) {
-        this.defectId = defectId;
-      }
-      if (disposalAdviceIdNo != null) {
-        this.disposalAdviceIdNo = disposalAdviceIdNo;
-      }
-      if (pipelineName != null) {
-        this.pipelineName = pipelineName;
-      }
       this.keywordsConvert = this.keywords
         .replace(/\+/g, "%2B")
         .replace(/ /g, "");
-      this.getRequest(
-        "/girth/?page=" +
-          this.currentPage +
-          "&size=" +
-          this.pageSize +
-          "&keywords=" +
-          this.keywordsConvert +
-          "&departmentId=" +
-          this.departmentId +
-          "&testingResultId=" +
-          this.testingResultId +
-          "&evaluationResultId=" +
-          this.evaluationResultId +
-          "&disposalAdviceId=" +
-          this.disposalAdviceId +
-          "&defectId=" +
-          this.defectId +
-          "&disposalAdviceIdNo=" +
-          this.disposalAdviceIdNo +
-          "&pipelineName=" +
-          this.pipelineName +
-          "&time=" +
-          this.time
-      ).then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          _this.girthWeld = resp.data.obj.girthWelds;
-          _this.totalCount = resp.data.obj.count;
-        }
-      });
+      let param = this.$route.query.param;
+
+      let flag =
+        this.keywords != "" &&
+        this.departmentId == "" &&
+        this.disposalAdviceId == "";
+      if (param != null) {
+        this.getRequest(
+          "/girth/?page=" + this.currentPage + "&size=" + this.pageSize + param
+        ).then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
+            _this.girthWeld = resp.data.obj.girthWelds;
+            _this.totalCount = resp.data.obj.count;
+          }
+        });
+      } else if (flag) {
+        this.getRequest(
+          "/girth/search?page=" +
+            this.currentPage +
+            "&size=" +
+            this.pageSize +
+            "&keywords=" +
+            this.keywordsConvert
+        ).then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
+            _this.girthWeld = resp.data.obj.girthWelds;
+            _this.totalCount = resp.data.obj.count;
+          }
+        });
+      } else {
+        this.getRequest(
+          "/girth/?page=" +
+            this.currentPage +
+            "&size=" +
+            this.pageSize +
+            "&keywords=" +
+            this.keywordsConvert +
+            "&departmentId=" +
+            this.departmentId +
+            "&disposalAdviceId=" +
+            this.disposalAdviceId +
+            "&isTestData=" +
+            this.isTestData +
+            "&isEvalutionData=" +
+            this.isEvalutionData
+        ).then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
+            _this.girthWeld = resp.data.obj.girthWelds;
+            _this.totalCount = resp.data.obj.count;
+          }
+        });
+      }
     },
 
     handleSelectionChange(val) {
@@ -1690,9 +1733,11 @@ export default {
 .el-scrollbar {
   height: 90%;
 }
+
 .scrollbar-wrap {
   overflow-x: hidden;
 }
+
 .slide-fade-enter-active {
   transition: all 0.8s ease;
 }
@@ -1706,66 +1751,83 @@ export default {
   transform: translateX(10px);
   opacity: 0;
 }
+
 .user-info {
   font-size: 12px;
   color: #09c0f6;
 }
+
 .el-row {
   margin-bottom: 1px;
 }
+
 .el-row:last-child {
   margin-bottom: 0;
 }
+
 .el-col {
   border-radius: 4px;
 }
+
 .-dark {
   background: #99a9bf;
 }
+
 .-light {
   background: #e5e9f2;
 }
+
 .grid-content {
   border-radius: 4px;
   min-height: 36px;
 }
+
 .row-bg {
   padding: 10px 0;
   background-color: #f9fafc;
 }
+
 .el-form .el-tag {
   width: 100%;
 }
+
 .el-form .el-form-item__content {
   width: 65%;
   float: left;
 }
+
 .del-title {
   font-weight: 500;
   padding-bottom: 10px;
   margin-top: 10px;
   border-bottom: 1px solid #eee;
 }
+
 .upload-demo {
   display: inline-block;
 }
+
 .upload-pic {
   margin-bottom: 20px;
 }
+
 .upload_parent {
   display: flex;
   flex-wrap: wrap;
 }
+
 .defind {
   width: 100%;
   height: 200px;
 }
+
 .defind_img_s {
   width: 30%;
   height: 220px;
   margin-right: 20px;
   margin-bottom: 20px;
 }
+
 .defind_img_s:nth-of-type(3n) {
   margin-right: 0;
 }

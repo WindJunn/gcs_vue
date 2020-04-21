@@ -8,7 +8,8 @@
           size="mini"
           icon="el-icon-plus"
           @click="showAddAdvView"
-        >添加数据</el-button>
+        >添加数据
+        </el-button>
       </div>
     </el-header>
 
@@ -33,7 +34,8 @@
             active-color="#13ce66"
             inactive-color="#ff4949"
             @change="changeSwith($event,scope.row)"
-          >></el-switch>
+          >>
+          </el-switch>
         </template>
       </el-table-column>
 
@@ -126,229 +128,231 @@
   </div>
 </template>
 <script>
-export default {
-  data() {
-    return {
-      selItems: [],
-      loading: false,
-      keywords: "",
+  export default {
+    data() {
+      return {
+        selItems: [],
+        loading: false,
+        keywords: "",
 
-      dialogTitle: "",
+        dialogTitle: "",
 
-      dialogVisible: false,
-      dustbinData: [],
-      advertisements: [],
-      totalCount: -1,
-      currentPage: 1,
-      pageSize: 10,
-      advertisement: {
-        name: "",
-        imageUrl: "",
-        skipUrl: "",
-        enable: false
-      },
-      adv: {
-        id:'',
-        name: "",
-        imageUrl: "",
-        skipUrl: "",
-        enable: ''
-      }
-    };
-  },
-
-  mounted: function() {
-    var _this = this;
-    this.loadTableData();
-  },
-  methods: {
-    changeSwith(vaule, row) {
-      this.adv.id = row.id;
-      this.adv.name = row.name;
-      this.adv.imageUrl = row.imageUrl;
-      this.adv.skipUrl = row.skipUrl;
-      this.adv.enable = row.enable;
-
-      this.putRequest("/advertisement/", this.adv).then(resp => {
-        if (resp && resp.status == 200) {
-          this.emptyData();
-          this.loadTableData();
+        dialogVisible: false,
+        dustbinData: [],
+        advertisements: [],
+        totalCount: -1,
+        currentPage: 1,
+        pageSize: 10,
+        advertisement: {
+          name: "",
+          imageUrl: "",
+          skipUrl: "",
+          enable: false
+        },
+        adv: {
+          id: '',
+          name: "",
+          imageUrl: "",
+          skipUrl: "",
+          enable: ''
         }
-      });
-    },
-    loadTableData() {
-      var _this = this;
-      this.loading = true;
-      this.getRequest("/advertisement/all").then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          _this.advertisements = resp.data.obj.advertisement;
-          _this.totalCount = resp.data.obj.count;
-        }
-      });
-    },
-
-    handleSizeChange(pageSize) {
-      this.pageSize = pageSize;
-      this.loadTableData();
-    },
-    currentChange(currentChange) {
-      this.currentPage = currentChange;
-      this.loadTableData();
-    },
-    showEditAdv(row) {
-      this.dialogTitle = "编辑数据";
-      this.advertisement = row;
-      this.dialogVisible = true;
-    },
-    showAddAdvView() {
-      this.emptyData();
-      this.dialogTitle = "添加数据";
-      this.dialogVisible = true;
-      var _this = this;
-      _this.user.enabled = true;
-    },
-    cancelEidt() {
-      this.dialogVisible = false;
-    },
-    deleteAdv(id) {
-      var _this = this;
-      this.deleteRequest("/advertisement/" + id).then(resp => {
-        if (resp && resp.status == 200) {
-          var data = resp.data;
-          this.loadTableData();
-        }
-      });
-    },
-    addAdv(formName) {
-      var _this = this;
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          if (this.advertisement.id) {
-            //更新
-            this.tableLoading = true;
-            this.putRequest("/advertisement/", this.advertisement).then(
-              resp => {
-                _this.tableLoading = false;
-                if (resp && resp.status == 200) {
-                  var data = resp.data;
-
-                  _this.dialogVisible = false;
-                  this.emptyData();
-                  this.loadTableData();
-                }
-              }
-            );
-          } else {
-            //添加
-            this.tableLoading = true;
-            this.postRequest("/advertisement/", this.advertisement).then(
-              resp => {
-                _this.tableLoading = false;
-                if (resp && resp.status == 200) {
-                  var data = resp.data;
-
-                  _this.dialogVisible = false;
-                  _this.emptyData();
-                  _this.loadTableData();
-                }
-              }
-            );
-          }
-        } else {
-          return false;
-        }
-      });
-    },
-    emptyData() {
-      this.advertisement = {
-        id: "",
-        name: "",
-        imageUrl: "",
-        skipUrl: "",
-        enable: false
       };
     },
 
-    searchClick() {
-      this.loadBlogs(1, this.pageSize);
+    mounted: function () {
+      var _this = this;
+      this.loadTableData();
     },
+    methods: {
+      changeSwith(vaule, row) {
+        this.adv.id = row.id;
+        this.adv.name = row.name;
+        this.adv.imageUrl = row.imageUrl;
+        this.adv.skipUrl = row.skipUrl;
+        this.adv.enable = row.enable;
 
-    deleteMany() {
-      var selItems = this.selItems;
-      for (var i = 0; i < selItems.length; i++) {
-        this.dustbinData.push(selItems[i].id);
+        this.putRequest("/advertisement/", this.adv).then(resp => {
+          if (resp && resp.status == 200) {
+            this.emptyData();
+            this.loadTableData();
+          }
+        });
+      },
+      loadTableData() {
+        var _this = this;
+        this.loading = true;
+        this.getRequest("/advertisement/all").then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
+            _this.advertisements = resp.data.obj.advertisement;
+            _this.totalCount = resp.data.obj.count;
+          }
+        });
+      },
+
+      handleSizeChange(pageSize) {
+        this.pageSize = pageSize;
+        this.loadTableData();
+      },
+      currentChange(currentChange) {
+        this.currentPage = currentChange;
+        this.loadTableData();
+      },
+      showEditAdv(row) {
+        this.dialogTitle = "编辑数据";
+        this.advertisement = row;
+        this.dialogVisible = true;
+      },
+      showAddAdvView() {
+        this.emptyData();
+        this.dialogTitle = "添加数据";
+        this.dialogVisible = true;
+        var _this = this;
+        _this.user.enabled = true;
+      },
+      cancelEidt() {
+        this.dialogVisible = false;
+      },
+      deleteAdv(id) {
+        var _this = this;
+        this.deleteRequest("/advertisement/" + id).then(resp => {
+          if (resp && resp.status == 200) {
+            var data = resp.data;
+            this.loadTableData();
+          }
+        });
+      },
+      addAdv(formName) {
+        var _this = this;
+        this.$refs[formName].validate(valid => {
+          if (valid) {
+            if (this.advertisement.id) {
+              //更新
+              this.tableLoading = true;
+              this.putRequest("/advertisement/", this.advertisement).then(
+                resp => {
+                  _this.tableLoading = false;
+                  if (resp && resp.status == 200) {
+                    var data = resp.data;
+
+                    _this.dialogVisible = false;
+                    this.emptyData();
+                    this.loadTableData();
+                  }
+                }
+              );
+            } else {
+              //添加
+              this.tableLoading = true;
+              this.postRequest("/advertisement/", this.advertisement).then(
+                resp => {
+                  _this.tableLoading = false;
+                  if (resp && resp.status == 200) {
+                    var data = resp.data;
+
+                    _this.dialogVisible = false;
+                    _this.emptyData();
+                    _this.loadTableData();
+                  }
+                }
+              );
+            }
+          } else {
+            return false;
+          }
+        });
+      },
+      emptyData() {
+        this.advertisement = {
+          id: "",
+          name: "",
+          imageUrl: "",
+          skipUrl: "",
+          enable: false
+        };
+      },
+
+      searchClick() {
+        this.loadBlogs(1, this.pageSize);
+      },
+
+      deleteMany() {
+        var selItems = this.selItems;
+        for (var i = 0; i < selItems.length; i++) {
+          this.dustbinData.push(selItems[i].id);
+        }
+        this.deleteToDustBin(selItems[0].state);
+      },
+
+      getAllBus() {
+        var _this = this;
+        this.getRequest("/iuser/bus/all").then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
+            _this.bus = resp.data.bus;
+          }
+        });
+      },
+      handleSelectionChange(val) {
+        this.selItems = val;
+      },
+
+      deleteServer(row) {
+        this.$confirm(
+          "此操作将删除名称为[" + row.name + "]的数据, 是否继续?",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }
+        )
+          .then(() => {
+            this.deleteAdv(row.id);
+          })
+          .catch(() => {
+          });
+      },
+      doDelete(id) {
+        this.tableLoading = true;
+        var _this = this;
+        this.deleteRequest("/system/iuser/del/" + id).then(resp => {
+          _this.tableLoading = false;
+          if (resp && resp.status == 200) {
+            var data = resp.data;
+            this.loadTableData();
+          }
+        });
+      },
+      handleDelete(index, row) {
+        this.dustbinData.push(row.id);
+        this.deleteToDustBin(row.state);
       }
-      this.deleteToDustBin(selItems[0].state);
-    },
-
-    getAllBus() {
-      var _this = this;
-      this.getRequest("/iuser/bus/all").then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          _this.bus = resp.data.bus;
-        }
-      });
-    },
-    handleSelectionChange(val) {
-      this.selItems = val;
-    },
-
-    deleteServer(row) {
-      this.$confirm(
-        "此操作将删除名称为[" + row.name + "]的数据, 是否继续?",
-        "提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }
-      )
-        .then(() => {
-          this.deleteAdv(row.id);
-        })
-        .catch(() => {});
-    },
-    doDelete(id) {
-      this.tableLoading = true;
-      var _this = this;
-      this.deleteRequest("/system/iuser/del/" + id).then(resp => {
-        _this.tableLoading = false;
-        if (resp && resp.status == 200) {
-          var data = resp.data;
-          this.loadTableData();
-        }
-      });
-    },
-    handleDelete(index, row) {
-      this.dustbinData.push(row.id);
-      this.deleteToDustBin(row.state);
     }
-  }
-};
+  };
 </script>
 <style>
-.el-dialog__body {
-  padding-top: 0px;
-  padding-bottom: 0px;
-}
+  .el-dialog__body {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
 
-.slide-fade-enter-active {
-  transition: all 0.8s ease;
-}
+  .slide-fade-enter-active {
+    transition: all 0.8s ease;
+  }
 
-.slide-fade-leave-active {
-  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-}
+  .slide-fade-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+  }
 
-.slide-fade-enter,
-.slide-fade-leave-to {
-  transform: translateX(10px);
-  opacity: 0;
-}
-.user-info {
-  font-size: 12px;
-  color: #09c0f6;
-}
+  .slide-fade-enter,
+  .slide-fade-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
+  }
+
+  .user-info {
+    font-size: 12px;
+    color: #09c0f6;
+  }
 </style>

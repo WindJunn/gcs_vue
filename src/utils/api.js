@@ -1,19 +1,19 @@
 import axios from 'axios'
-import { Message } from 'element-ui'
+import {Message} from 'element-ui'
 import store from '../store'
 
 axios.interceptors.request.use(config => {
-    // config = {
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data'
-    //   },
-    //   transformRequest: [function (data) {
-    //     return data
-    //   }]
-    // };
+  // config = {
+  //   headers: {
+  //     'Content-Type': 'multipart/form-data'
+  //   },
+  //   transformRequest: [function (data) {
+  //     return data
+  //   }]
+  // };
   return config;
 }, err => {
-  Message.error({ message: '请求超时!' });
+  Message.error({message: '请求超时!'});
   // return Promise.resolve(err);
 })
 
@@ -21,7 +21,7 @@ axios.interceptors.response.use(data => {
 
   let self = this;
   if (data.status && data.status == 200 && data.data.status == 500) {
-    Message.error({ message: data.data.msg });
+    Message.error({message: data.data.msg});
     return;
   }
   if (data.data.status == 501) {
@@ -34,21 +34,21 @@ axios.interceptors.response.use(data => {
     window.location.href = '/'
   }
   if (data.data.msg) {
-    Message.success({ message: data.data.msg });
+    Message.success({message: data.data.msg});
   }
   return data;
 }, err => {
   if (err.response.status == 504 || err.response.status == 404) {
-    Message.error({ message: '服务器被吃了⊙﹏⊙∥' });
+    Message.error({message: '服务器被吃了⊙﹏⊙∥'});
   } else if (err.response.status == 403) {
-    Message.error({ message: '权限不足,请联系管理员!' });
+    Message.error({message: '权限不足,请联系管理员!'});
   } else if (err.response.status == 401) {
-    Message.error({ message: err.response.data.msg });
+    Message.error({message: err.response.data.msg});
   } else {
     if (err.response.data.msg) {
-      Message.error({ message: err.response.data.msg });
+      Message.error({message: err.response.data.msg});
     } else {
-      Message.error({ message: '未知错误!' });
+      Message.error({message: '未知错误!'});
     }
   }
   // return Promise.resolve(err);
@@ -98,7 +98,7 @@ export const uploadFileRequest = (url, params) => {
     ,
     onUploadProgress: progressEvent => {
       // let complete = (progressEvent.loaded / progressEvent.total * 100 | 0) + '%'
-      let complete = (progressEvent.loaded / progressEvent.total * 100 | 0) 
+      let complete = (progressEvent.loaded / progressEvent.total * 100 | 0)
       console.log('complete: ', complete)
     }
 
@@ -140,6 +140,7 @@ export const putsRequest = (url, params) => {
           else void 0 !== n && null !== n && (c += encodeURIComponent(t) + "=" + encodeURIComponent(n) + "&");
         return c.length ? c.substr(0, c.length - 1) : c
       }
+
       // 数据转换的核心代码结束
       return setDate(e)
     }],

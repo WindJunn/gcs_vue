@@ -1,12 +1,12 @@
 <style type="text/css">
-.blog_table_footer {
-  display: flex;
-  box-sizing: content-box;
-  padding-top: 10px;
-  padding-bottom: 0px;
-  margin-bottom: 0px;
-  justify-content: space-between;
-}
+  .blog_table_footer {
+    display: flex;
+    box-sizing: content-box;
+    padding-top: 10px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+    justify-content: space-between;
+  }
 </style>
 <template>
   <div>
@@ -120,191 +120,191 @@
 </template>
 
 
-
-  
- 
-
 <script>
-export default {
-  data() {
-    return {
-      images: [],
-      imagesList: [],
-      value: "",
-      dataUrl: {},
-      header: "",
-      selItems: [],
-      loading: false,
-      keywords: "",
-      dialogVisible: false,
-      dustbinData: [],
-      activeName: "post",
-      status: false,
-      statusList: [],
-      month: "",
-      input: "",
-      param: [],
-      measuringCrackLengthName: "",
-      measuringCrackDepthName: "",
-      repairFactorName: "",
-      servicePressureName: "",
-      outsideDiameterName: "",
-      wallThicknessName: "",
-      bendingCoefficientsName: "",
-      areaLevelName: "",
-      steelLevelName: "",
-      evaluation: {
-        // defectLocation: "1.0",
-        measuringCrackLength: 33,
-        measuringCrackDepth: 3,
-        materialYieldStrength: 245.0,
-        repairFactor: "1.0",
-        impactPower: 27.0,
-        servicePressure: 1.0,
-        outsideDiameter: 210.0,
-        wallThickness: 7.0,
-        bendingCoefficients: 0.0,
-        areaLevel: "",
-        calculationCrackDepth: "",
-        steelLevel: ""
-      },
-      result: "",
-      array: [],
-      area: [],
-      radio1: "1"
-    };
-  },
-  mounted: function() {
-    var _this = this;
-    this.loading = true;
-    // this.getImageUrls('');
-    // this.getDevStatus();
-    // this.getMonth();
-    this.loadTableData();
-    this.getArrays();
-    var _this = this;
-  },
-  methods: {
-    evaluationOnline() {
-      this.evaluation.steelLevel =
-        parseInt(this.evaluation.calculationCrackDepth) + 1;
-      this.postsRequest("/evaluation/", this.evaluation).then(resp => {
-        if (resp && resp.status == 200) {
-          this.result =
-            "【Kr: " +
-            resp.data.obj.Kr +
-            " 】【Lr: " +
-            resp.data.obj.Lr +
-            "】" +
-            resp.data.obj.result;
-        }
-        // console.log(resp);
-      });
+  export default {
+    data() {
+      return {
+        images: [],
+        imagesList: [],
+        value: "",
+        dataUrl: {},
+        header: "",
+        selItems: [],
+        loading: false,
+        keywords: "",
+        dialogVisible: false,
+        dustbinData: [],
+        activeName: "post",
+        status: false,
+        statusList: [],
+        month: "",
+        input: "",
+        param: [],
+        measuringCrackLengthName: "",
+        measuringCrackDepthName: "",
+        repairFactorName: "",
+        servicePressureName: "",
+        outsideDiameterName: "",
+        wallThicknessName: "",
+        bendingCoefficientsName: "",
+        areaLevelName: "",
+        steelLevelName: "",
+        evaluation: {
+          // defectLocation: "1.0",
+          measuringCrackLength: 33,
+          measuringCrackDepth: 3,
+          materialYieldStrength: 245.0,
+          repairFactor: "1.0",
+          impactPower: 27.0,
+          servicePressure: 1.0,
+          outsideDiameter: 210.0,
+          wallThickness: 7.0,
+          bendingCoefficients: 0.0,
+          areaLevel: "",
+          calculationCrackDepth: "",
+          steelLevel: ""
+        },
+        result: "",
+        array: [],
+        area: [],
+        radio1: "1"
+      };
     },
-    getArrays() {
-      var _this = this;
-      this.getRequest("/evaluation/array").then(resp => {
-        console.log(resp);
-        this.array = resp.data.obj;
-        if (this.radio1 == 1) {
-          this.area = resp.data.obj.areaLevel;
-        } else if (this.radio1 == 2) {
-          this.area = resp.data.obj.areaLevelOil;
-        }
-        console.log(this.array);
-        console.log(this.array.steel["1"]);
-      });
-    },
-    agreeChange: function(val) {
-      console.log(val)
-      this.evaluation.areaLevel="";
-      if (this.radio1 == 1) {
-        this.area = this.array.areaLevel;
-      } else if (this.radio1 == 2) {
-        this.area = this.array.areaLevelOil;
-      }
-    },
-    getImageUrls(month) {
-      var _this = this;
-      this.getRequest("/evaluation/?evaluationParams=" + this.evaluation).then(
-        resp => {
-          console.log(resp);
-        }
-      );
-    },
-
-    showEditEmpView(row) {
-      console.log(row);
-    },
-    showAddView() {
-      this.dialogTitle = "增加车辆";
-
-      this.dialogVisible = true;
-    },
-    cancelEidt() {
-      this.dialogVisible = false;
-      this.emptyEmpData();
-    },
-    searchClick() {
-      this.loadBlogs(1, this.pageSize);
-    },
-
-    deleteMany() {
-      var selItems = this.selItems;
-      for (var i = 0; i < selItems.length; i++) {
-        this.dustbinData.push(selItems[i].id);
-      }
-      this.deleteToDustBin(selItems[0].state);
-    },
-
-    loadTableData() {
+    mounted: function () {
       var _this = this;
       this.loading = true;
-      this.getRequest("/evaluation/").then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          _this.param = resp.data.obj;
-          this.measuringCrackLengthName = _this.param[0].name;
-          this.measuringCrackDepthName = _this.param[1].name;
-          this.repairFactorName = _this.param[2].name;
-          this.servicePressureName = _this.param[3].name;
-          this.outsideDiameterName = _this.param[4].name;
-          this.wallThicknessName = _this.param[5].name;
-          this.bendingCoefficientsName = _this.param[6].name;
-          this.areaLevelName = _this.param[7].name;
-          this.steelLevelName = _this.param[8].name;
+      // this.getImageUrls('');
+      // this.getDevStatus();
+      // this.getMonth();
+      this.loadTableData();
+      this.getArrays();
+      var _this = this;
+    },
+    methods: {
+      evaluationOnline() {
+        this.evaluation.steelLevel =
+          parseInt(this.evaluation.calculationCrackDepth) + 1;
+        this.postsRequest("/evaluation/", this.evaluation).then(resp => {
+          if (resp && resp.status == 200) {
+            this.result =
+              "【Kr: " +
+              resp.data.obj.Kr +
+              " 】【Lr: " +
+              resp.data.obj.Lr +
+              "】" +
+              resp.data.obj.result;
+          }
+          // console.log(resp);
+        });
+      },
+      getArrays() {
+        var _this = this;
+        this.getRequest("/evaluation/array").then(resp => {
+          console.log(resp);
+          this.array = resp.data.obj;
+          if (this.radio1 == 1) {
+            this.area = resp.data.obj.areaLevel;
+          } else if (this.radio1 == 2) {
+            this.area = resp.data.obj.areaLevelOil;
+          }
+          console.log(this.array);
+          console.log(this.array.steel["1"]);
+        });
+      },
+      agreeChange: function (val) {
+        console.log(val)
+        this.evaluation.areaLevel = "";
+        if (this.radio1 == 1) {
+          this.area = this.array.areaLevel;
+        } else if (this.radio1 == 2) {
+          this.area = this.array.areaLevelOil;
         }
-      });
-    },
-    handleSelectionChange(val) {
-      this.selItems = val;
-    },
+      },
+      getImageUrls(month) {
+        var _this = this;
+        this.getRequest("/evaluation/?evaluationParams=" + this.evaluation).then(
+          resp => {
+            console.log(resp);
+          }
+        );
+      },
 
-    handleDelete(index, row) {
-      this.dustbinData.push(row.id);
-      this.deleteToDustBin(row.state);
+      showEditEmpView(row) {
+        console.log(row);
+      },
+      showAddView() {
+        this.dialogTitle = "增加车辆";
+
+        this.dialogVisible = true;
+      },
+      cancelEidt() {
+        this.dialogVisible = false;
+        this.emptyEmpData();
+      },
+      searchClick() {
+        this.loadBlogs(1, this.pageSize);
+      },
+
+      deleteMany() {
+        var selItems = this.selItems;
+        for (var i = 0; i < selItems.length; i++) {
+          this.dustbinData.push(selItems[i].id);
+        }
+        this.deleteToDustBin(selItems[0].state);
+      },
+
+      loadTableData() {
+        var _this = this;
+        this.loading = true;
+        this.getRequest("/evaluation/").then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
+            _this.param = resp.data.obj;
+            this.measuringCrackLengthName = _this.param[0].name;
+            this.measuringCrackDepthName = _this.param[1].name;
+            this.repairFactorName = _this.param[2].name;
+            this.servicePressureName = _this.param[3].name;
+            this.outsideDiameterName = _this.param[4].name;
+            this.wallThicknessName = _this.param[5].name;
+            this.bendingCoefficientsName = _this.param[6].name;
+            this.areaLevelName = _this.param[7].name;
+            this.steelLevelName = _this.param[8].name;
+          }
+        });
+      },
+      handleSelectionChange(val) {
+        this.selItems = val;
+      },
+
+      handleDelete(index, row) {
+        this.dustbinData.push(row.id);
+        this.deleteToDustBin(row.state);
+      }
     }
-  }
-};
+  };
 </script>
 
 <style>
-.bg-purple-dark {
-  background: #d3dce6;
-}
-.bg-purple {
-  background: #d3dce6;
-}
-.bg-purple-light {
-  background: #e5e9f2;
-}
-.grid-content {
-  border-radius: 4px;
-  min-height: 36px;
-}
-.row-bg {
-  padding: 10px 0;
+  .bg-purple-dark {
+    background: #d3dce6;
+  }
 
-  background-color: #f9fafc;
-}
+  .bg-purple {
+    background: #d3dce6;
+  }
+
+  .bg-purple-light {
+    background: #e5e9f2;
+  }
+
+  .grid-content {
+    border-radius: 4px;
+    min-height: 36px;
+  }
+
+  .row-bg {
+    padding: 10px 0;
+
+    background-color: #f9fafc;
+  }
 </style>

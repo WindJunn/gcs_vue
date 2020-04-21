@@ -28,83 +28,84 @@
   </div>
 </template>
 <script>
-export default {
-  data() {
-    return {
-      loading: false,
-      keywords: "",
-      dialogVisible: false,
-      dustbinData: [],
-      // periodicals: [],
-      totalCount: -1,
-      currentPage: 1,
-      pageSize: 10,
-      periodical: {
-        id: "",
-        enable: true,
-        link: "http://www.gcyq.org"
+  export default {
+    data() {
+      return {
+        loading: false,
+        keywords: "",
+        dialogVisible: false,
+        dustbinData: [],
+        // periodicals: [],
+        totalCount: -1,
+        currentPage: 1,
+        pageSize: 10,
+        periodical: {
+          id: "",
+          enable: true,
+          link: "http://www.gcyq.org"
+        }
+      };
+    },
+
+    mounted: function () {
+      var _this = this;
+      this.loadTableData();
+    },
+    methods: {
+      updatePer() {
+        var _this = this;
+        this.postsRequest("/periodical/", this.periodical).then(resp => {
+          if (resp && resp.status == 200) {
+            _this.loadTableData();
+          }
+        });
+      },
+
+      handleSizeChange(pageSize) {
+        this.pageSize = pageSize;
+        this.loadTableData();
+      },
+      currentChange(currentChange) {
+        this.currentPage = currentChange;
+        this.loadTableData();
+      },
+
+      loadTableData() {
+        var _this = this;
+        this.loading = true;
+        this.getRequest("/periodical/").then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
+            _this.periodical = resp.data.obj.periodical;
+            console.log(_this.periodical);
+          }
+        });
       }
-    };
-  },
-
-  mounted: function() {
-    var _this = this;
-    this.loadTableData();
-  },
-  methods: {
-    updatePer() {
-      var _this = this;
-      this.postsRequest("/periodical/", this.periodical).then(resp => {
-        if (resp && resp.status == 200) {
-          _this.loadTableData();
-        }
-      });
-    },
-
-    handleSizeChange(pageSize) {
-      this.pageSize = pageSize;
-      this.loadTableData();
-    },
-    currentChange(currentChange) {
-      this.currentPage = currentChange;
-      this.loadTableData();
-    },
-
-    loadTableData() {
-      var _this = this;
-      this.loading = true;
-      this.getRequest("/periodical/").then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          _this.periodical = resp.data.obj.periodical;
-          console.log(_this.periodical);
-        }
-      });
     }
-  }
-};
+  };
 </script>
 <style>
-.el-dialog__body {
-  padding-top: 0px;
-  padding-bottom: 0px;
-}
+  .el-dialog__body {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
 
-.slide-fade-enter-active {
-  transition: all 0.8s ease;
-}
+  .slide-fade-enter-active {
+    transition: all 0.8s ease;
+  }
 
-.slide-fade-leave-active {
-  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-}
+  .slide-fade-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+  }
 
-.slide-fade-enter,
-.slide-fade-leave-to {
-  transform: translateX(10px);
-  opacity: 0;
-}
-.user-info {
-  font-size: 12px;
-  color: #09c0f6;
-}
+  .slide-fade-enter,
+  .slide-fade-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
+  }
+
+  .user-info {
+    font-size: 12px;
+    color: #09c0f6;
+  }
 </style>

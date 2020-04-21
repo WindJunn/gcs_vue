@@ -7,9 +7,10 @@
     <div
       style="width: 100%;height: 1px;background-color: #20a0ff;margin-top: 8px;margin-bottom: 0px;"
     ></div>
-    <div style="width: 90%;height: 50px;margin-top: 18px;margin-bottom: 0px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;">
+    <div
+      style="width: 90%;height: 50px;margin-top: 18px;margin-bottom: 0px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;">
       <div>
-        <el-row style="margin-top: 8px;"> 
+        <el-row style="margin-top: 8px;">
           <el-col :span="6">
             手机号:
             <el-input v-model="phone" size="mini" placeholder="请输入手机号" style="width: 70%"></el-input>
@@ -42,8 +43,8 @@
           <el-col :span="4">
             <el-button size="mini" type="primary" @click="addAdm()">添加管理员</el-button>
           </el-col>
-           <el-col :span="4">
-             <el-tag>此管理员负责注册用户的审核工作，管理员只能审核他所在公司用户的注册操作</el-tag>
+          <el-col :span="4">
+            <el-tag>此管理员负责注册用户的审核工作，管理员只能审核他所在公司用户的注册操作</el-tag>
           </el-col>
         </el-row>
       </div>
@@ -91,100 +92,100 @@
   </div>
 </template>
 <script>
-export default {
-  data() {
-    return {
-      articles: [],
-      selItems: [],
-      loading: false,
-      keywords: "",
-      dialogVisible: false,
-      dustbinData: [],
-      users: [],
-      deps: [],
-      depTextColor: "#c0c4cc",
-      defaultProps: {
-        label: "name",
-        isLeaf: "leaf",
-        children: "children"
-      },
-      totalCount: -1,
-      currentPage: 1,
-      pageSize: 10,
-      departmentId: "",
-      phone: "",
-      rid: "",
-      showOrHidePop: false,
-      departmentName: "选择被管理公司",
-      departmentId: "",
-      uid: "",
-      user: {
-        id: "",
-        name: "",
-        phone: "",
+  export default {
+    data() {
+      return {
+        articles: [],
+        selItems: [],
+        loading: false,
+        keywords: "",
+        dialogVisible: false,
+        dustbinData: [],
+        users: [],
+        deps: [],
+        depTextColor: "#c0c4cc",
+        defaultProps: {
+          label: "name",
+          isLeaf: "leaf",
+          children: "children"
+        },
+        totalCount: -1,
+        currentPage: 1,
+        pageSize: 10,
         departmentId: "",
-        enabled: "",
-        username: "",
-        email: "",
-        departmentName: "选择被管理公司"
-      }
-    };
-  },
+        phone: "",
+        rid: "",
+        showOrHidePop: false,
+        departmentName: "选择被管理公司",
+        departmentId: "",
+        uid: "",
+        user: {
+          id: "",
+          name: "",
+          phone: "",
+          departmentId: "",
+          enabled: "",
+          username: "",
+          email: "",
+          departmentName: "选择被管理公司"
+        }
+      };
+    },
 
-  mounted: function() {
-    var _this = this;
-    this.loading = true;
-    this.initData();
-
-    this.loadTableData();
-  },
-  methods: {
-    addAdm() {
+    mounted: function () {
       var _this = this;
-      this.tableLoading = true;
-      this.postRequest(
-        "/system/user/allAdm?departmentId=" +
+      this.loading = true;
+      this.initData();
+
+      this.loadTableData();
+    },
+    methods: {
+      addAdm() {
+        var _this = this;
+        this.tableLoading = true;
+        this.postRequest(
+          "/system/user/allAdm?departmentId=" +
           this.departmentId +
           "&phone=" +
           this.phone
-      ).then(resp => {
-        _this.tableLoading = false;
-        if (resp && resp.status == 200) {
-          var data = resp.data;
-          _this.dialogVisible = false;
-          this.departmentId = "";
-          this.phone = "";
-          this.departmentName = "";
+        ).then(resp => {
+          _this.tableLoading = false;
+          if (resp && resp.status == 200) {
+            var data = resp.data;
+            _this.dialogVisible = false;
+            this.departmentId = "";
+            this.phone = "";
+            this.departmentName = "";
 
-          this.loadTableData();
-        }
-      });
-    },
+            this.loadTableData();
+          }
+        });
+      },
 
-    initData() {
-      var _this = this;
-      this.getRequest("/system/user/basicdata").then(resp => {
-        if (resp && resp.status == 200) {
-          var data = resp.data;
-          _this.deps = data.deps;
-          // _this.role = data.roles;
-        }
-      });
-    },
-    showDepTree() {
-      this.showOrHidePop = !this.showOrHidePop;
-    },
-    handleNodeClick(data) {
-      this.departmentName = data.name;
-      this.departmentId = data.id;
-      this.showOrHidePop = false;
-      this.depTextColor = "#606266";
-    },
-    loadTableData() {
-      var _this = this;
-      this.loading = true;
-      this.getRequest(
-        "/system/user/allAdm?page=" +
+      initData() {
+        var _this = this;
+        this.getRequest("/system/user/basicdata").then(resp => {
+          if (resp && resp.status == 200) {
+            var data = resp.data;
+            _this.deps = data.deps;
+            // _this.role = data.roles;
+          }
+        });
+      },
+      showDepTree() {
+        this.showOrHidePop = !this.showOrHidePop;
+      },
+      handleNodeClick(data) {
+        this.departmentName = data.name;
+        this.departmentId = data.id;
+        this.showOrHidePop = false;
+        this.depTextColor = "#606266";
+      },
+      loadTableData() {
+        var _this = this;
+        this.loading = true;
+        this.getRequest(
+          "/system/user/allAdm?page=" +
           this.currentPage +
           "&size=" +
           this.pageSize +
@@ -192,114 +193,116 @@ export default {
           this.keywords +
           "&departmentId=" +
           this.departmentId
-      ).then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
+        ).then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
 
-          _this.users = resp.data.users;
-          _this.totalCount = resp.data.count;
+            _this.users = resp.data.users;
+            _this.totalCount = resp.data.count;
+          }
+        });
+      },
+
+      handleSizeChange(pageSize) {
+        this.pageSize = pageSize;
+        this.loadTableData();
+      },
+      currentChange(currentChange) {
+        this.currentPage = currentChange;
+        this.loadTableData();
+      },
+
+      showEditEmpView(row) {
+        // console.log(row);
+        this.dialogTitle = "编辑学员";
+        this.bus = row;
+        // this.bus.bustime = this.formatDate(row.bustime);
+        // this.bus.bustime = this.bus.bustime;
+
+        // this.bus.firstNumber = "";
+        // this.bus.lastNumber = "";
+        this.dialogVisible = true;
+      },
+      cancelEidt() {
+        this.dialogVisible = false;
+      },
+      searchClick() {
+        this.loadBlogs(1, this.pageSize);
+      },
+
+      deleteMany() {
+        var selItems = this.selItems;
+        for (var i = 0; i < selItems.length; i++) {
+          this.dustbinData.push(selItems[i].id);
         }
-      });
-    },
+        this.deleteToDustBin(selItems[0].state);
+      },
 
-    handleSizeChange(pageSize) {
-      this.pageSize = pageSize;
-      this.loadTableData();
-    },
-    currentChange(currentChange) {
-      this.currentPage = currentChange;
-      this.loadTableData();
-    },
+      getAllBus() {
+        var _this = this;
+        this.getRequest("/iuser/bus/all").then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
+            _this.bus = resp.data.bus;
+          }
+        });
+      },
+      handleSelectionChange(val) {
+        this.selItems = val;
+      },
 
-    showEditEmpView(row) {
-      // console.log(row);
-      this.dialogTitle = "编辑学员";
-      this.bus = row;
-      // this.bus.bustime = this.formatDate(row.bustime);
-      // this.bus.bustime = this.bus.bustime;
-
-      // this.bus.firstNumber = "";
-      // this.bus.lastNumber = "";
-      this.dialogVisible = true;
-    },
-    cancelEidt() {
-      this.dialogVisible = false;
-    },
-    searchClick() {
-      this.loadBlogs(1, this.pageSize);
-    },
-
-    deleteMany() {
-      var selItems = this.selItems;
-      for (var i = 0; i < selItems.length; i++) {
-        this.dustbinData.push(selItems[i].id);
+      deleteServer(row) {
+        this.$confirm(
+          "此操作将删除[" + row.name + "]的管理员身份, 是否继续?",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }
+        )
+          .then(() => {
+            this.doDelete(row.id);
+          })
+          .catch(() => {
+          });
+      },
+      doDelete(id) {
+        this.tableLoading = true;
+        var _this = this;
+        this.postRequest("/system/user/delete?uid=" + id).then(resp => {
+          _this.tableLoading = false;
+          if (resp && resp.status == 200) {
+            var data = resp.data;
+            this.loadTableData();
+          }
+        });
       }
-      this.deleteToDustBin(selItems[0].state);
-    },
-
-    getAllBus() {
-      var _this = this;
-      this.getRequest("/iuser/bus/all").then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          _this.bus = resp.data.bus;
-        }
-      });
-    },
-    handleSelectionChange(val) {
-      this.selItems = val;
-    },
-
-    deleteServer(row) {
-      this.$confirm(
-        "此操作将删除[" + row.name + "]的管理员身份, 是否继续?",
-        "提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }
-      )
-        .then(() => {
-          this.doDelete(row.id);
-        })
-        .catch(() => {});
-    },
-    doDelete(id) {
-      this.tableLoading = true;
-      var _this = this;
-      this.postRequest("/system/user/delete?uid=" + id).then(resp => {
-        _this.tableLoading = false;
-        if (resp && resp.status == 200) {
-          var data = resp.data;
-          this.loadTableData();
-        }
-      });
     }
-  }
-};
+  };
 </script>
 <style>
-.el-dialog__body {
-  padding-top: 0px;
-  padding-bottom: 0px;
-}
+  .el-dialog__body {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
 
-.slide-fade-enter-active {
-  transition: all 0.8s ease;
-}
+  .slide-fade-enter-active {
+    transition: all 0.8s ease;
+  }
 
-.slide-fade-leave-active {
-  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-}
+  .slide-fade-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+  }
 
-.slide-fade-enter,
-.slide-fade-leave-to {
-  transform: translateX(10px);
-  opacity: 0;
-}
-.user-info {
-  font-size: 12px;
-  color: #09c0f6;
-}
+  .slide-fade-enter,
+  .slide-fade-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
+  }
+
+  .user-info {
+    font-size: 12px;
+    color: #09c0f6;
+  }
 </style>

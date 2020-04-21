@@ -34,7 +34,8 @@
             size="mini"
             type="success"
             :loading="fileUploadBtnText=='正在上传'"
-          >{{fileUploadBtnText}}</el-button>
+          >{{fileUploadBtnText}}
+          </el-button>
         </el-upload>
         <el-tag style="margin-left: 10px;">链接：</el-tag>
         <el-input v-model="version.url" disabled placeholder="请输入内容" style="margin: 5px;width:70%"></el-input>
@@ -76,132 +77,133 @@
   </div>
 </template>
 <script>
-export default {
-  data() {
-    return {
-      loading: false,
-      keywords: "",
-      dialogVisible: false,
-      totalCount: -1,
-      currentPage: 1,
-      pageSize: 10,
-      fileUploadBtnText: "上传安装包",
-      percentage: 0,
-      progressStatus: false,
-      importHeaders: {
-        enctype: "multipart/form-data"
+  export default {
+    data() {
+      return {
+        loading: false,
+        keywords: "",
+        dialogVisible: false,
+        totalCount: -1,
+        currentPage: 1,
+        pageSize: 10,
+        fileUploadBtnText: "上传安装包",
+        percentage: 0,
+        progressStatus: false,
+        importHeaders: {
+          enctype: "multipart/form-data"
+        },
+
+        version: {
+          id: "",
+          versionCode: "",
+          versionName: "",
+          url: "",
+          content: ""
+        }
+      };
+    },
+
+    mounted: function () {
+      var _this = this;
+      this.loadTableData();
+    },
+    methods: {
+      importData() {
+        let myfile = this.$refs.myfile;
+        let files = myfile.files;
+
+        let file = files[0];
+        let formData = new FormData();
+        formData.append("file", file);
+        this.uploadFileRequest("/version/apk", formData, config).then(resp => {
+          if (resp) {
+            console.log(resp);
+          }
+        });
+      },
+      onProgress(response, file, fileList) {
+        this.percentage = Math.floor(response.percent);
+        console.log("进度：" + this.percentage);
+      },
+      fileUploadSuccess(response, file, fileList) {
+        this.$message({type: "success", message: response.msg});
+        this.loadTableData();
+
+        this.fileUploadBtnText = "上传安装包";
+      },
+      fileUploadError(err, file, fileList) {
+        this.$message({type: "error", message: "上传失败!"});
+        this.fileUploadBtnText = "上传安装包";
+      },
+      beforeFileUpload(file) {
+        this.progressStatus = true;
+        // this.postRequest("/version/resetPercent").then(resp => {
+        //   if (resp && resp.status == 200) {
+        //   }
+        // });
+        // this.getRequest("/version/getPercent").then(resp => {
+        //   if (resp && resp.status == 200) {
+        //     this.percentage = resp.data.obj;
+        //     console.log(this.percentage);
+        //   }
+        // });
+        this.fileUploadBtnText = "正在上传";
+      },
+      updatePer() {
+        var _this = this;
+        this.postRequest("/version/", _this.version).then(resp => {
+          if (resp && resp.status == 200) {
+            _this.loadTableData();
+            _this.percentage = 0;
+            _this.progressStatus = false;
+          }
+        });
       },
 
-      version: {
-        id: "",
-        versionCode: "",
-        versionName: "",
-        url: "",
-        content: ""
+      handleSizeChange(pageSize) {
+        this.pageSize = pageSize;
+        this.loadTableData();
+      },
+      currentChange(currentChange) {
+        this.currentPage = currentChange;
+        this.loadTableData();
+      },
+
+      loadTableData() {
+        var _this = this;
+        this.loading = true;
+        this.getRequest("/version/?type=1").then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
+            _this.version = resp.data.obj.version;
+          }
+        });
       }
-    };
-  },
-
-  mounted: function() {
-    var _this = this;
-    this.loadTableData();
-  },
-  methods: {
-    importData() {
-      let myfile = this.$refs.myfile;
-      let files = myfile.files;
-
-      let file = files[0];
-      let formData = new FormData();
-      formData.append("file", file);
-      this.uploadFileRequest("/version/apk", formData, config).then(resp => {
-        if (resp) {
-          console.log(resp);
-        }
-      });
-    },
-    onProgress(response, file, fileList) {
-      this.percentage = Math.floor(response.percent);
-      console.log("进度：" + this.percentage);
-    },
-    fileUploadSuccess(response, file, fileList) {
-      this.$message({ type: "success", message: response.msg });
-      this.loadTableData();
-
-      this.fileUploadBtnText = "上传安装包";
-    },
-    fileUploadError(err, file, fileList) {
-      this.$message({ type: "error", message: "上传失败!" });
-      this.fileUploadBtnText = "上传安装包";
-    },
-    beforeFileUpload(file) {
-      this.progressStatus = true;
-      // this.postRequest("/version/resetPercent").then(resp => {
-      //   if (resp && resp.status == 200) {
-      //   }
-      // });
-      // this.getRequest("/version/getPercent").then(resp => {
-      //   if (resp && resp.status == 200) {
-      //     this.percentage = resp.data.obj;
-      //     console.log(this.percentage);
-      //   }
-      // });
-      this.fileUploadBtnText = "正在上传";
-    },
-    updatePer() {
-      var _this = this;
-      this.postRequest("/version/", _this.version).then(resp => {
-        if (resp && resp.status == 200) {
-          _this.loadTableData();
-          _this.percentage = 0;
-          _this.progressStatus = false;
-        }
-      });
-    },
-
-    handleSizeChange(pageSize) {
-      this.pageSize = pageSize;
-      this.loadTableData();
-    },
-    currentChange(currentChange) {
-      this.currentPage = currentChange;
-      this.loadTableData();
-    },
-
-    loadTableData() {
-      var _this = this;
-      this.loading = true;
-      this.getRequest("/version/?type=1").then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          _this.version = resp.data.obj.version;
-        }
-      });
     }
-  }
-};
+  };
 </script>
 <style>
-.el-dialog__body {
-  padding-top: 0px;
-  padding-bottom: 0px;
-}
+  .el-dialog__body {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
 
-.slide-fade-enter-active {
-  transition: all 0.8s ease;
-}
+  .slide-fade-enter-active {
+    transition: all 0.8s ease;
+  }
 
-.slide-fade-leave-active {
-  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-}
+  .slide-fade-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+  }
 
-.slide-fade-enter,
-.slide-fade-leave-to {
-  transform: translateX(10px);
-  opacity: 0;
-}
-.user-info {
-  font-size: 12px;
-  color: #09c0f6;
-}
+  .slide-fade-enter,
+  .slide-fade-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
+  }
+
+  .user-info {
+    font-size: 12px;
+    color: #09c0f6;
+  }
 </style>

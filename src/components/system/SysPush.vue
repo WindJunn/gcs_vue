@@ -46,7 +46,8 @@
                 style="width: 70%;height: 26px;display: inline-flex;font-size:13px;border: 1px;border-radius: 5px;border-style: solid;padding-left: 13px;box-sizing:border-box;border-color: #dcdfe6;cursor: pointer;align-items: center"
                 @click.left="showDepTree"
                 v-bind:style="{color: depTextColor}"
-              >{{departmentName}}</div>
+              >{{departmentName}}
+              </div>
             </el-popover>
           </el-col>
           <el-col :span="4">
@@ -96,193 +97,197 @@
   </div>
 </template>
 <script>
-export default {
-  data() {
-    return {
-      scrollHeight: "0px",
+  export default {
+    data() {
+      return {
+        scrollHeight: "0px",
 
-      selItems: [],
-      loading: false,
-      keywords: "",
-      dialogVisible: false,
-      dustbinData: [],
-      users: [],
-      deps: [],
-      nodeps: [],
-      depTextColor: "#c0c4cc",
-      defaultProps: {
-        label: "name",
-        isLeaf: "leaf",
-        children: "children"
+        selItems: [],
+        loading: false,
+        keywords: "",
+        dialogVisible: false,
+        dustbinData: [],
+        users: [],
+        deps: [],
+        nodeps: [],
+        depTextColor: "#c0c4cc",
+        defaultProps: {
+          label: "name",
+          isLeaf: "leaf",
+          children: "children"
+        },
+
+        departmentId: "",
+        phone: "",
+        rid: "",
+        showOrHidePop: false,
+        departmentName: "选择不推送消息公司",
+        uid: ""
+      };
+    },
+
+    mounted: function () {
+      var _this = this;
+      this.scrollHeight = window.innerHeight * 0.3 + "px";
+      this.initData();
+      this.loadTableData();
+    },
+    methods: {
+      loadTableData() {
+        var _this = this;
+        this.getRequest("/no/push").then(resp => {
+          if (resp && resp.status == 200) {
+            _this.users = resp.data.obj.user;
+            _this.nodeps = resp.data.obj.dep;
+          }
+        });
+      },
+      addByPhone() {
+        var _this = this;
+        this.postRequest("/no/push/phone?phone=" + this.phone).then(resp => {
+          if (resp && resp.status == 200) {
+            this.departmentId = "";
+            this.phone = "";
+            this.departmentName = "";
+            this.loadTableData();
+          }
+        });
+      },
+      addByDep() {
+        var _this = this;
+        this.postRequest("/no/push/dep?id=" + this.departmentId).then(resp => {
+          if (resp && resp.status == 200) {
+            this.departmentId = "";
+            this.phone = "";
+            this.departmentName = "";
+            this.loadTableData();
+          }
+        });
       },
 
-      departmentId: "",
-      phone: "",
-      rid: "",
-      showOrHidePop: false,
-      departmentName: "选择不推送消息公司",
-      uid: ""
-    };
-  },
+      initData() {
+        var _this = this;
+        this.getRequest("/system/user/basicdata").then(resp => {
+          if (resp && resp.status == 200) {
+            var data = resp.data;
+            _this.deps = data.deps;
+            // _this.role = data.roles;
+          }
+        });
+      },
+      showDepTree() {
+        this.showOrHidePop = !this.showOrHidePop;
+      },
+      handleNodeClick(data) {
+        this.departmentName = data.name;
+        this.departmentId = data.id;
+        this.showOrHidePop = false;
+        this.depTextColor = "#606266";
+      },
 
-  mounted: function() {
-    var _this = this;
-    this.scrollHeight = window.innerHeight * 0.3 + "px";
-    this.initData();
-    this.loadTableData();
-  },
-  methods: {
-    loadTableData() {
-      var _this = this;
-      this.getRequest("/no/push").then(resp => {
-        if (resp && resp.status == 200) {
-          _this.users = resp.data.obj.user;
-          _this.nodeps = resp.data.obj.dep;
+      handleSizeChange(pageSize) {
+        this.pageSize = pageSize;
+        this.loadTableData();
+      },
+      currentChange(currentChange) {
+        this.currentPage = currentChange;
+        this.loadTableData();
+      },
+
+      showEditEmpView(row) {
+        // console.log(row);
+        this.dialogTitle = "编辑学员";
+        this.bus = row;
+        // this.bus.bustime = this.formatDate(row.bustime);
+        // this.bus.bustime = this.bus.bustime;
+
+        // this.bus.firstNumber = "";
+        // this.bus.lastNumber = "";
+        this.dialogVisible = true;
+      },
+      cancelEidt() {
+        this.dialogVisible = false;
+      },
+      searchClick() {
+        this.loadBlogs(1, this.pageSize);
+      },
+
+      deleteMany() {
+        var selItems = this.selItems;
+        for (var i = 0; i < selItems.length; i++) {
+          this.dustbinData.push(selItems[i].id);
         }
-      });
-    },
-    addByPhone() {
-      var _this = this;
-      this.postRequest("/no/push/phone?phone=" + this.phone).then(resp => {
-        if (resp && resp.status == 200) {
-          this.departmentId = "";
-          this.phone = "";
-          this.departmentName = "";
-          this.loadTableData();
-        }
-      });
-    },
-    addByDep() {
-      var _this = this;
-      this.postRequest("/no/push/dep?id=" + this.departmentId).then(resp => {
-        if (resp && resp.status == 200) {
-          this.departmentId = "";
-          this.phone = "";
-          this.departmentName = "";
-          this.loadTableData();
-        }
-      });
-    },
+        this.deleteToDustBin(selItems[0].state);
+      },
 
-    initData() {
-      var _this = this;
-      this.getRequest("/system/user/basicdata").then(resp => {
-        if (resp && resp.status == 200) {
-          var data = resp.data;
-          _this.deps = data.deps;
-          // _this.role = data.roles;
-        }
-      });
-    },
-    showDepTree() {
-      this.showOrHidePop = !this.showOrHidePop;
-    },
-    handleNodeClick(data) {
-      this.departmentName = data.name;
-      this.departmentId = data.id;
-      this.showOrHidePop = false;
-      this.depTextColor = "#606266";
-    },
-
-    handleSizeChange(pageSize) {
-      this.pageSize = pageSize;
-      this.loadTableData();
-    },
-    currentChange(currentChange) {
-      this.currentPage = currentChange;
-      this.loadTableData();
-    },
-
-    showEditEmpView(row) {
-      // console.log(row);
-      this.dialogTitle = "编辑学员";
-      this.bus = row;
-      // this.bus.bustime = this.formatDate(row.bustime);
-      // this.bus.bustime = this.bus.bustime;
-
-      // this.bus.firstNumber = "";
-      // this.bus.lastNumber = "";
-      this.dialogVisible = true;
-    },
-    cancelEidt() {
-      this.dialogVisible = false;
-    },
-    searchClick() {
-      this.loadBlogs(1, this.pageSize);
-    },
-
-    deleteMany() {
-      var selItems = this.selItems;
-      for (var i = 0; i < selItems.length; i++) {
-        this.dustbinData.push(selItems[i].id);
-      }
-      this.deleteToDustBin(selItems[0].state);
-    },
-
-    handleSelectionChange(val) {
-      this.selItems = val;
-    },
-    deleteOneDep(item) {
-      this.$confirm("此操作将取消不推送, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.deleteRequest("/no/push/del/" + item.id).then(resp => {
-            if (resp && resp.status == 200) {
-              this.loadTableData();
-            }
+      handleSelectionChange(val) {
+        this.selItems = val;
+      },
+      deleteOneDep(item) {
+        this.$confirm("此操作将取消不推送, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            this.deleteRequest("/no/push/del/" + item.id).then(resp => {
+              if (resp && resp.status == 200) {
+                this.loadTableData();
+              }
+            });
+          })
+          .catch(() => {
           });
+      },
+      deleteOne(row) {
+        this.$confirm("此操作将取消不推送, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
         })
-        .catch(() => {});
-    },
-    deleteOne(row) {
-      this.$confirm("此操作将取消不推送, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.doDelete(row.id);
-        })
-        .catch(() => {});
-    },
-    doDelete(id) {
-      var _this = this;
-      this.deleteRequest("/no/push/delete/" + id).then(resp => {
-        if (resp && resp.status == 200) {
-          this.loadTableData();
-        }
-      });
+          .then(() => {
+            this.doDelete(row.id);
+          })
+          .catch(() => {
+          });
+      },
+      doDelete(id) {
+        var _this = this;
+        this.deleteRequest("/no/push/delete/" + id).then(resp => {
+          if (resp && resp.status == 200) {
+            this.loadTableData();
+          }
+        });
+      }
     }
-  }
-};
+  };
 </script>
 <style>
-.scrollbar-wrap {
-  overflow-x: hidden;
-}
-.el-dialog__body {
-  padding-top: 0px;
-  padding-bottom: 0px;
-}
+  .scrollbar-wrap {
+    overflow-x: hidden;
+  }
 
-.slide-fade-enter-active {
-  transition: all 0.8s ease;
-}
+  .el-dialog__body {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
 
-.slide-fade-leave-active {
-  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-}
+  .slide-fade-enter-active {
+    transition: all 0.8s ease;
+  }
 
-.slide-fade-enter,
-.slide-fade-leave-to {
-  transform: translateX(10px);
-  opacity: 0;
-}
-.user-info {
-  font-size: 12px;
-  color: #09c0f6;
-}
+  .slide-fade-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+  }
+
+  .slide-fade-enter,
+  .slide-fade-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
+  }
+
+  .user-info {
+    font-size: 12px;
+    color: #09c0f6;
+  }
 </style>

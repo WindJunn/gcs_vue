@@ -1,11 +1,11 @@
-import { getRequest } from './api'
-import { Message } from 'element-ui'
+import {getRequest} from './api'
+import {Message} from 'element-ui'
 
 export const isNotNullORBlank = (...args) => {
   for (var i = 0; i < args.length; i++) {
     var argument = args[i];
     if (argument == null || argument == '' || argument == undefined) {
-      Message.warning({ message: '数据不能为空!' })
+      Message.warning({message: '数据不能为空!'})
       return false;
     }
   }
@@ -44,23 +44,23 @@ export const formatRoutes = (routes) => {
       component(resolve) {
         if (component.startsWith("Home")) {
           require(['../components/' + component + '.vue'], resolve)
-        } 
-        // else if (component.startsWith("One")) {
-        //   require(['../components/one/' + component + '.vue'], resolve)
-        // } else if (component.startsWith("Emp")) {
-        //   require(['../components/emp/' + component + '.vue'], resolve)
-        // } 
-        // else if (component.startsWith("Per")) {
-        //   require(['../components/personnel/' + component + '.vue'], resolve)
-        // } else if (component.startsWith("Sal")) {
-        //   require(['../components/salary/' + component + '.vue'], resolve)
-        // } else if (component.startsWith("Sta")) {
-        //   require(['../components/statistics/' + component + '.vue'], resolve)
-        // } 
+        }
+          // else if (component.startsWith("One")) {
+          //   require(['../components/one/' + component + '.vue'], resolve)
+          // } else if (component.startsWith("Emp")) {
+          //   require(['../components/emp/' + component + '.vue'], resolve)
+          // }
+          // else if (component.startsWith("Per")) {
+          //   require(['../components/personnel/' + component + '.vue'], resolve)
+          // } else if (component.startsWith("Sal")) {
+          //   require(['../components/salary/' + component + '.vue'], resolve)
+          // } else if (component.startsWith("Sta")) {
+          //   require(['../components/statistics/' + component + '.vue'], resolve)
+        // }
         else if (component.startsWith("Sys")) {
           require(['../components/system/' + component + '.vue'], resolve)
-        } 
-        
+        }
+
       },
       hidden: b,
       name: name,

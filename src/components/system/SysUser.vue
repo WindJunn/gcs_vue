@@ -1,9 +1,7 @@
 <template>
   <div>
     <el-container>
-      <el-header
-        style="padding: 10px;display:flex;flex-wrap: wrap;height:100px"
-      >
+      <el-header style="padding: 10px;display:flex;flex-wrap: wrap;height:100px">
         <div style="display: inline">
           <el-input
             placeholder="通过姓名或手机号搜索用户,记得回车哦..."
@@ -94,10 +92,16 @@
 
             <el-table-column prop="phone" width="120" label="电话号码"></el-table-column>
 
-            <el-table-column prop="department.name" align="left" width="150" label="所属公司"></el-table-column>
+            <el-table-column prop="department.name" align="center" width="150" label="所属公司"></el-table-column>
 
-            <el-table-column prop="email" width="300" align="left" label="邮箱"></el-table-column>
-            <el-table-column prop="roles[0].nameZh" width="200" align="left" label="角色"></el-table-column>
+            <el-table-column width="220" align="center" label="审核状态">
+              <template slot-scope="scope">
+                <span
+                  style="margin-left: 10px"
+                >{{ scope.row.check === 1 ? '审核通过':scope.row.check === 2 ? '审核未通过':scope.row.check === 0 ? '审核中':"管理员后台添加用户" }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="roles[0].nameZh" width="200" align="center" label="角色"></el-table-column>
 
             <el-table-column fixed="right" label="操作" width="300">
               <template slot-scope="scope">
@@ -125,12 +129,6 @@
                   size="mini"
                   @click="deleteEmp(scope.row)"
                 >删除</el-button>
-                <!-- <el-button
-                  type="danger"
-                  style="padding: 3px 4px 3px 4px;margin: 2px"
-                  size="mini"
-                  @click="resetPassword(scope.row)"
-                >重置密码</el-button>-->
               </template>
             </el-table-column>
           </el-table>
@@ -398,8 +396,7 @@ export default {
   mounted: function() {
     this.initData();
     this.loadEmps();
-    // this.initCards();
-    // this.loadAllRoles();
+   
   },
   methods: {
     addRole(rid) {
@@ -837,6 +834,7 @@ export default {
   transform: translateX(10px);
   opacity: 0;
 }
+
 .user-info {
   font-size: 12px;
   color: #09c0f6;

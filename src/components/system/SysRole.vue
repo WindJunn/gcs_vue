@@ -49,13 +49,14 @@
 </template>
 <script>
   import {isNotNullORBlank} from '../../utils/utils'
-  export default{
+
+  export default {
     mounted: function () {
       this.loading = true;
       this.initRoles();
     },
     methods: {
-      deleteRole(rid, rname){
+      deleteRole(rid, rname) {
         var _this = this;
         this.$confirm('删除角色[' + rname + '], 是否继续?', '提示', {
           confirmButtonText: '确定',
@@ -63,7 +64,7 @@
           type: 'warning'
         }).then(() => {
           _this.loading = true;
-          _this.deleteRequest("/system/basic/role/" + rid).then(resp=> {
+          _this.deleteRequest("/system/basic/role/" + rid).then(resp => {
             if (resp && resp.status == 200) {
               _this.initRoles();
             } else {
@@ -77,17 +78,17 @@
           });
         });
       },
-      addNewRole(){
+      addNewRole() {
         if (isNotNullORBlank(this.newRole, this.newRoleZh)) {
           this.loading = true;
           var _this = this;
           this.postRequest("/system/basic/addRole", {
             role: this.newRole,
             roleZh: this.newRoleZh
-          }).then(resp=> {
+          }).then(resp => {
             if (resp && resp.status == 200) {
               var data = resp.data;
-              
+
               _this.initRoles();
               _this.newRole = '';
               _this.newRoleZh = '';
@@ -98,24 +99,24 @@
         }
       },
       //有五个树，但是五个树用的同一个数据源
-      updateRoleMenu(index){
+      updateRoleMenu(index) {
         var checkedKeys = this.$refs.tree[index].getCheckedKeys(true);
         var _this = this;
         this.putRequest("/system/basic/updateMenuRole", {
           rid: this.activeColItem,
           mids: checkedKeys
-        }).then(resp=> {
+        }).then(resp => {
           if (resp && resp.status == 200) {
             _this.activeColItem = -1;
           }
         })
       },
-      collapseChange(activeName){
+      collapseChange(activeName) {
         if (activeName == '') {
           return;
         }
         var _this = this;
-        this.getRequest("/system/basic/menuTree/" + activeName).then(resp=> {
+        this.getRequest("/system/basic/menuTree/" + activeName).then(resp => {
           if (resp && resp.status == 200) {
             var data = resp.data;
             _this.treeData = data.menus;
@@ -126,21 +127,21 @@
       handleCheckChange(data, checked, indeterminate) {
 //        console.log(data,checked,indeterminate)
       },
-      initRoles(){
+      initRoles() {
         var _this = this;
-        this.getRequest("/system/basic/roles").then(resp=> {
+        this.getRequest("/system/basic/roles").then(resp => {
           _this.loading = false;
           if (resp && resp.status == 200) {
             _this.roles = resp.data;
-            _this.activeColItem=-1
+            _this.activeColItem = -1
           }
         })
       },
-      cancelUpdateRoleMenu(){
+      cancelUpdateRoleMenu() {
         this.activeColItem = -1;
       }
     },
-    data(){
+    data() {
       return {
         props: {
           label: 'name',

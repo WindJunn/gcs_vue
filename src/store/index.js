@@ -21,35 +21,35 @@ export default new Vuex.Store({
     nfDot: false
   },
   mutations: {
-    initMenu(state, menus){
+    initMenu(state, menus) {
       state.routes = menus;
     },
-    login(state, user){
+    login(state, user) {
       state.user = user;
       window.localStorage.setItem('user', JSON.stringify(user));
     },
-    logout(state){
+    logout(state) {
       window.localStorage.removeItem('user');
       state.routes = [];
     },
-    toggleNFDot(state, newValue){
+    toggleNFDot(state, newValue) {
       state.nfDot = newValue;
     },
-    updateMsgList(state, newMsgList){
+    updateMsgList(state, newMsgList) {
       state.msgList = newMsgList;
     },
-    updateCurrentFriend(state, newFriend){
+    updateCurrentFriend(state, newFriend) {
       state.currentFriend = newFriend;
     },
-    addValue2DotMap(state, key){
+    addValue2DotMap(state, key) {
       state.isDotMap.set(key, "您有未读消息")
     },
-    removeValueDotMap(state, key){
+    removeValueDotMap(state, key) {
       state.isDotMap.delete(key);
     }
   },
   actions: {
-    connect(context){
+    connect(context) {
       // context.state.stomp = Stomp.over(new SockJS("/ws/endpointChat"));
       // context.state.stomp.connect({}, frame=> {
       //   context.state.stomp.subscribe("/user/queue/chat", message=> {

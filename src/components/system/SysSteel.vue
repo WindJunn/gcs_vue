@@ -1,12 +1,12 @@
 <style type="text/css">
-.blog_table_footer {
-  display: flex;
-  box-sizing: content-box;
-  padding-top: 10px;
-  padding-bottom: 0px;
-  margin-bottom: 0px;
-  justify-content: space-between;
-}
+  .blog_table_footer {
+    display: flex;
+    box-sizing: content-box;
+    padding-top: 10px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+    justify-content: space-between;
+  }
 </style>
 <template>
   <div>
@@ -33,7 +33,7 @@
         <el-input style="margin-left:10px;width:20%" placeholder="请输入内容" v-model="steelParam.cjg"></el-input>
         <el-button type="success" style="margin-top:10px;" @click="addParam()">增加</el-button>
       </div>
-      <hr />
+      <hr/>
 
       <div v-for="item in steelParams" :key="item.id" style="margin-top:10px;">
         <el-input style="margin-left:10px;width:20%" placeholder="请输入内容" v-model="item.steel"></el-input>
@@ -48,87 +48,91 @@
 
 
 <script>
-export default {
-  data() {
-    return {
-      loading: false,
-      keywords: "",
-      dialogVisible: false,
-      steelParams: [],
-      steelParam: {
-        id: "",
-        steel: "",
-        qfqd: "",
-        klqd: "",
-        cjg: ""
-      }
-    };
-  },
-  mounted: function() {
-    var _this = this;
-    _this.findParamData();
-  },
-  methods: {
-    findParamData() {
+  export default {
+    data() {
+      return {
+        loading: false,
+        keywords: "",
+        dialogVisible: false,
+        steelParams: [],
+        steelParam: {
+          id: "",
+          steel: "",
+          qfqd: "",
+          klqd: "",
+          cjg: ""
+        }
+      };
+    },
+    mounted: function () {
       var _this = this;
-      this.getRequest("/steel/param/").then(resp => {
-        _this.steelParams = resp.data.obj.steelParams;
-      });
+      _this.findParamData();
     },
-    deleteOne(id) {
-      this.deleteRequest("/steel/param/" + id).then(resp => {
-        if (resp && resp.status == 200) {
-          this.findParamData();
-        }
-      });
-    },
-    addParam() {
-      this.postRequest("/steel/param/", this.steelParam).then(resp => {
-        if (resp && resp.status == 200) {
-          this.steelParam = {
-            steel: "",
-            qfqd: "",
-            klqd: "",
-            cjg: ""
-          };
-          this.findParamData();
-        }
-      });
-    },
+    methods: {
+      findParamData() {
+        var _this = this;
+        this.getRequest("/steel/param/").then(resp => {
+          _this.steelParams = resp.data.obj.steelParams;
+        });
+      },
+      deleteOne(id) {
+        this.deleteRequest("/steel/param/" + id).then(resp => {
+          if (resp && resp.status == 200) {
+            this.findParamData();
+          }
+        });
+      },
+      addParam() {
+        this.postRequest("/steel/param/", this.steelParam).then(resp => {
+          if (resp && resp.status == 200) {
+            this.steelParam = {
+              steel: "",
+              qfqd: "",
+              klqd: "",
+              cjg: ""
+            };
+            this.findParamData();
+          }
+        });
+      },
 
-    searchClick() {
-      this.loadBlogs(1, this.pageSize);
-    },
+      searchClick() {
+        this.loadBlogs(1, this.pageSize);
+      },
 
-    handleSelectionChange(val) {
-      this.selItems = val;
-    },
+      handleSelectionChange(val) {
+        this.selItems = val;
+      },
 
-    handleDelete(index, row) {
-      this.dustbinData.push(row.id);
-      this.deleteToDustBin(row.state);
+      handleDelete(index, row) {
+        this.dustbinData.push(row.id);
+        this.deleteToDustBin(row.state);
+      }
     }
-  }
-};
+  };
 </script>
 
 <style>
-.bg-purple-dark {
-  background: #d3dce6;
-}
-.bg-purple {
-  background: #d3dce6;
-}
-.bg-purple-light {
-  background: #e5e9f2;
-}
-.grid-content {
-  border-radius: 4px;
-  min-height: 36px;
-}
-.row-bg {
-  padding: 10px 0;
+  .bg-purple-dark {
+    background: #d3dce6;
+  }
 
-  background-color: #f9fafc;
-}
+  .bg-purple {
+    background: #d3dce6;
+  }
+
+  .bg-purple-light {
+    background: #e5e9f2;
+  }
+
+  .grid-content {
+    border-radius: 4px;
+    min-height: 36px;
+  }
+
+  .row-bg {
+    padding: 10px 0;
+
+    background-color: #f9fafc;
+  }
 </style>

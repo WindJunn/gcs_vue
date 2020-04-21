@@ -1,6 +1,8 @@
 import Vue from 'vue'
+
 Vue.filter("formatDate", formatDate);
 Vue.prototype.formatDate = formatDate;
+
 function formatDate(value) {
   var date = new Date(value);
   var year = date.getFullYear();
@@ -16,6 +18,7 @@ function formatDate(value) {
 };
 Vue.filter("formatDateTime", formatDateTime);
 Vue.prototype.formatDateTime = formatDateTime;
+
 function formatDateTime(value) {
   var date = new Date(value);
   var year = date.getFullYear();
@@ -39,7 +42,7 @@ function formatDateTime(value) {
   if (seconds < 10) {
     seconds = "0" + seconds;
   }
-  return (year + "-" + month + "-" + day + " " + hours + ":" + minutes+ ":" + seconds);
+  return (year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds);
 };
 Vue.filter("formatDateTime", function formatDateTime(value) {
   var date = new Date(value);

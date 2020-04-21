@@ -153,10 +153,9 @@ export default {
         _this.treeLoading = false;
         _this.depName = "";
         console.log(resp);
-          _this.setDataToTree(_this.treeData, _this.pDep, respData.msg);
+        _this.setDataToTree(_this.treeData, _this.pDep, respData.msg);
 
-          // _this.loadTreeData();
-
+        // _this.loadTreeData();
       });
     },
 

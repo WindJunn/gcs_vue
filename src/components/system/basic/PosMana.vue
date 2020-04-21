@@ -57,7 +57,8 @@
         v-if="posData.length>0"
         :disabled="multipleSelection.length==0"
         @click="deleteMany"
-      >批量删除</el-button>
+      >批量删除
+      </el-button>
     </div>
     <div style="text-align: left">
       <el-dialog
@@ -84,170 +85,170 @@
   </div>
 </template>
 <script>
-export default {
-  mounted: function() {
-    this.loadTableData();
-  },
-  methods: {
-    updatePosNameExec() {
-      if (!this.isNotNullORBlank(this.updatePosName)) {
-        this.$message.warning(
-          this.state == "position" ? "职位名称不能为空!" : "职称名称不能为空!"
-        );
-        return;
-      }
-      this.loading = true;
-      var _this = this;
-      this.putRequest(
-        this.state == "position"
-          ? "/system/basic/position"
-          : "/system/basic/joblevel",
-        {
-          name: this.updatePosName,
-          id: this.updatePosId,
-          titleLevel: this.updateTitleLevel
-        }
-      ).then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          this.dialogVisible = false;
-          var data = resp.data;
-
-          _this.loadTableData();
-        }
-      });
+  export default {
+    mounted: function () {
+      this.loadTableData();
     },
-    deleteMany() {
-      var _this = this;
-      this.$confirm(
-        "删除" + this.multipleSelection.length + "条数据, 是否继续?",
-        "提示",
-        {
+    methods: {
+      updatePosNameExec() {
+        if (!this.isNotNullORBlank(this.updatePosName)) {
+          this.$message.warning(
+            this.state == "position" ? "职位名称不能为空!" : "职称名称不能为空!"
+          );
+          return;
+        }
+        this.loading = true;
+        var _this = this;
+        this.putRequest(
+          this.state == "position"
+            ? "/system/basic/position"
+            : "/system/basic/joblevel",
+          {
+            name: this.updatePosName,
+            id: this.updatePosId,
+            titleLevel: this.updateTitleLevel
+          }
+        ).then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
+            this.dialogVisible = false;
+            var data = resp.data;
+
+            _this.loadTableData();
+          }
+        });
+      },
+      deleteMany() {
+        var _this = this;
+        this.$confirm(
+          "删除" + this.multipleSelection.length + "条数据, 是否继续?",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }
+        )
+          .then(() => {
+            var multipleSelection = _this.multipleSelection;
+            var ids = "";
+            multipleSelection.forEach(row => {
+              ids = ids + row.id + ",";
+            });
+            _this.doDelete(ids);
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
+          });
+      },
+      addPosition() {
+        if (!this.isNotNullORBlank(this.positionName)) {
+          this.$message.warning(
+            this.state == "position" ? "职位名称不能为空!" : "职称名称不能为空!"
+          );
+          return;
+        }
+        if (this.state == "jobtitle") {
+          if (!this.isNotNullORBlank(this.titleLevel)) {
+            this.$message.warning("请选择职称级别!");
+            return;
+          }
+        }
+        var _this = this;
+        this.loading = true;
+        this.postRequest(
+          this.state == "position"
+            ? "/system/basic/position"
+            : "/system/basic/joblevel",
+          {
+            name: this.positionName,
+            titleLevel: this.titleLevel
+          }
+        ).then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
+            var data = resp.data;
+
+            _this.loadTableData();
+            _this.positionName = "";
+            _this.titleLevel = "";
+          }
+        });
+      },
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+      },
+      handleEdit(index, row) {
+        this.updatePosName = row.name;
+        this.updatePosId = row.id;
+        this.updateTitleLevel = row.titleLevel;
+        this.dialogVisible = true;
+      },
+      handleDelete(index, row) {
+        var _this = this;
+        this.$confirm("删除[" + row.name + "], 是否继续?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
-        }
-      )
-        .then(() => {
-          var multipleSelection = _this.multipleSelection;
-          var ids = "";
-          multipleSelection.forEach(row => {
-            ids = ids + row.id + ",";
-          });
-          _this.doDelete(ids);
         })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
+          .then(() => {
+            _this.doDelete(row.id);
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
           });
+      },
+      doDelete(ids) {
+        var _this = this;
+        _this.loading = true;
+        var url =
+          this.state == "position"
+            ? "/system/basic/position/"
+            : "/system/basic/joblevel/";
+        this.deleteRequest(url + ids).then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
+            _this.loadTableData();
+          }
         });
-    },
-    addPosition() {
-      if (!this.isNotNullORBlank(this.positionName)) {
-        this.$message.warning(
-          this.state == "position" ? "职位名称不能为空!" : "职称名称不能为空!"
-        );
-        return;
-      }
-      if (this.state == "jobtitle") {
-        if (!this.isNotNullORBlank(this.titleLevel)) {
-          this.$message.warning("请选择职称级别!");
-          return;
-        }
-      }
-      var _this = this;
-      this.loading = true;
-      this.postRequest(
-        this.state == "position"
-          ? "/system/basic/position"
-          : "/system/basic/joblevel",
-        {
-          name: this.positionName,
-          titleLevel: this.titleLevel
-        }
-      ).then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          var data = resp.data;
-
-          _this.loadTableData();
-          _this.positionName = "";
-          _this.titleLevel = "";
-        }
-      });
-    },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
-    handleEdit(index, row) {
-      this.updatePosName = row.name;
-      this.updatePosId = row.id;
-      this.updateTitleLevel = row.titleLevel;
-      this.dialogVisible = true;
-    },
-    handleDelete(index, row) {
-      var _this = this;
-      this.$confirm("删除[" + row.name + "], 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          _this.doDelete(row.id);
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
+      },
+      loadTableData() {
+        var _this = this;
+        this.loading = true;
+        this.getRequest(
+          this.state == "position"
+            ? "/system/basic/positions"
+            : "/system/basic/joblevels"
+        ).then(resp => {
+          _this.loading = false;
+          if (resp && resp.status == 200) {
+            _this.posData = resp.data;
+          }
         });
+      }
     },
-    doDelete(ids) {
-      var _this = this;
-      _this.loading = true;
-      var url =
-        this.state == "position"
-          ? "/system/basic/position/"
-          : "/system/basic/joblevel/";
-      this.deleteRequest(url + ids).then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          _this.loadTableData();
-        }
-      });
+    data() {
+      return {
+        positionName: "",
+        updatePosName: "",
+        updateTitleLevel: "",
+        titleLevel: "",
+        updatePosId: -1,
+        loading: false,
+        dialogVisible: false,
+        multipleSelection: [],
+        type: [],
+        titleLevels: ["正高级", "副高级", "中级", "初级", "员级"],
+        nameLabelName: this.state == "position" ? "职位名称" : "职称名称",
+        posData: []
+      };
     },
-    loadTableData() {
-      var _this = this;
-      this.loading = true;
-      this.getRequest(
-        this.state == "position"
-          ? "/system/basic/positions"
-          : "/system/basic/joblevels"
-      ).then(resp => {
-        _this.loading = false;
-        if (resp && resp.status == 200) {
-          _this.posData = resp.data;
-        }
-      });
-    }
-  },
-  data() {
-    return {
-      positionName: "",
-      updatePosName: "",
-      updateTitleLevel: "",
-      titleLevel: "",
-      updatePosId: -1,
-      loading: false,
-      dialogVisible: false,
-      multipleSelection: [],
-      type: [],
-      titleLevels: ["正高级", "副高级", "中级", "初级", "员级"],
-      nameLabelName: this.state == "position" ? "职位名称" : "职称名称",
-      posData: []
-    };
-  },
-  props: ["state"]
-};
+    props: ["state"]
+  };
 </script>
