@@ -8,7 +8,7 @@
       v-loading="loading"
       :style="note"
     >
-      <h3 class="login_title">系统登录</h3>
+      <h3 class="login_title">管道评安后台管理系统登录</h3>
       <div v-show="mode">
         <el-form-item prop="account">
           <el-input type="text" v-model="loginForm.username" placeholder="请输入手机号"></el-input>
