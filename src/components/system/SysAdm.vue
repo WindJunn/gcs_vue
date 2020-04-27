@@ -4,9 +4,9 @@
       style="padding: 0px;display:flex;justify-content:space-between;align-items: center;height:5px"
     ></el-header>
 
-    <div
+    <!-- <div
       style="width: 100%;height: 1px;background-color: #20a0ff;margin-top: 8px;margin-bottom: 0px;"
-    ></div>
+    ></div> -->
     <div
       style="width: 90%;height: 50px;margin-top: 18px;margin-bottom: 0px;box-shadow: 1px 1px 10px #6d83f1;padding: 10px 10px 10px 10px;border-radius: 15px;">
       <div>

@@ -34,7 +34,7 @@
       <el-col :span="4">
         <el-button
           type="primary"
-          size="mini"
+          
           style="margin-left: 5px;margin-top:5px"
           icon="el-icon-search"
           @click="queryCoursePieChart()"
