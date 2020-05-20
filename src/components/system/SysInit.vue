@@ -87,6 +87,7 @@
           :on-success="fileUploadSuccess"
           :on-error="fileUploadError"
           :disabled="fileUploadBtnText=='正在导入'"
+          :multiple="true"
           style="display: inline"
         >
           <el-button size="mini" type="success" :loading="fileUploadBtnText=='正在导入'">
@@ -103,6 +104,7 @@
           :on-success="fileUploadSuccess"
           :on-error="fileUploadError"
           :disabled="fileUploadBtnText=='正在导入'"
+          :multiple="true"
           style="display: inline"
         >
           <el-button class="success1" type="success" size="mini">
@@ -1630,7 +1632,9 @@ export default {
             "&isTestData=" +
             this.isTestData +
             "&isEvalutionData=" +
-            this.isEvalutionData
+            this.isEvalutionData +
+            "&time=" +
+            this.time
         ).then(resp => {
           _this.loading = false;
           if (resp && resp.status == 200) {

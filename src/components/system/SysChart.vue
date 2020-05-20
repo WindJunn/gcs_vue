@@ -31,27 +31,56 @@
           >{{department.departmentName}}</div>
         </el-popover>
       </el-col>
-      <el-col :span="4">
+      <el-col :span="3">
         <el-button
           type="primary"
-          
           style="margin-left: 5px;margin-top:5px"
           icon="el-icon-search"
           @click="queryCoursePieChart()"
         >搜索</el-button>
       </el-col>
+      <el-col :span="2">
+        <el-button
+          type="primary"
+          style="margin-left: 5px;margin-top:5px"
+          icon="el-icon-sort"
+          @click="swith()"
+        >切换</el-button>
+      </el-col>
+    </div>
+    <div style="margin:10px">
+      <el-col :span="8">
+        <el-button
+          type="primary"
+          style="margin-left: 5px;margin-top:5px"
+          icon="el-icon-search"
+          @click="exchangeType(1)"
+        >查看适用性评价数据分析</el-button>
+      </el-col>
+      <el-col :span="8">
+        <el-button
+          type="primary"
+          style="margin-left: 5px;margin-top:5px"
+          icon="el-icon-search"
+          @click="exchangeType(2)"
+        >查看无损检测数据分析</el-button>
+      </el-col>
+      <el-col :span="8">
+        <el-tag type="info" style="margin-left: 5px;margin-top:5px">点击切换后无数据时请刷新</el-tag>
+      </el-col>
     </div>
 
-   
-    <el-col :span="24">
-      <div class="echarts-box1">
-        <div id="pipelineOption" class="echarts"></div>
-      </div>
-    </el-col>
-    <div>
+    <div v-show="echartBtn">
       <el-col :span="12" v-for="(item,index) in datas" :key="index">
-        <div class="echarts-box">
+        <div class="echarts-box" style="margin-top:10px">
           <div :ref="'chartComponent'+index" :id="'chartComponent'+index" class="echarts"></div>
+        </div>
+      </el-col>
+    </div>
+    <div v-show="echartShow">
+      <el-col :span="24" v-for="(item,index) in datas" :key="index+100">
+        <div class="echarts-box" style="margin-top:10px">
+          <div :ref="'histogram'+index" :id="'histogram'+index" class="echarts"></div>
         </div>
       </el-col>
     </div>
@@ -131,7 +160,8 @@ export default {
         isLeaf: "leaf",
         children: "children"
       },
-      pipelineOption: {
+
+      histogram: {
         title: {
           text: "不同管线环焊缝数量",
           subtext: "按管线分类",
@@ -293,6 +323,7 @@ export default {
       showOrHidePop2: false,
       depTextColor: "#c0c4cc",
 
+      echartShow: true,
       echartBtn: true,
       echartOn: true,
       echartNum: 1,
@@ -305,18 +336,33 @@ export default {
       startYear: "",
       endYear: "",
       departmentId: "",
-      barData: []
+      barData: [],
+      type: 0
     };
   },
   mounted: function() {
     // this.test();
-  },
-  created: function() {
     this.queryCoursePieChart();
+  },
+
+  created: function() {
     this.initData();
+    this.queryCoursePieCharts();
   },
 
   methods: {
+    swith() {
+      this.echartBtn = !this.echartBtn;
+      this.echartShow = !this.echartShow;
+    },
+    exchangeType(type) {
+      this.type = type;
+      this.echartShow = true;
+      this.echartBtn = true;
+      this.queryCoursePieCharts();
+      this.queryCoursePieChart();
+    },
+
     initData() {
       var _this = this;
       this.getRequest("/system/user/basicdata").then(resp => {
@@ -344,48 +390,58 @@ export default {
     },
     queryCoursePieChart() {
       var _this = this;
+      let start = "";
       if (this.startYear != "") {
-        this.startYear = this.startYear.getFullYear();
+        start = this.startYear.getFullYear() + "";
       }
+      let end = "";
       if (this.endYear != "") {
-        this.endYear = this.endYear.getFullYear();
+        end = this.endYear.getFullYear() + "";
       }
-
+      this.echartShow = true;
       this.getRequest(
         "/data/?startYear=" +
-          this.startYear +
+          start +
           "&endYear=" +
-          this.endYear +
+          end +
           "&departmentId=" +
-          this.departmentId
+          this.departmentId +
+          "&type=" +
+          this.type
       ).then(async resp => {
         if (resp && resp.status == 200) {
-          this.startYear = "";
-          this.endYear = "";
+          // this.startYear = "";
+          // this.endYear = "";
           this.datas = resp.data.obj;
-          let chart = this.datas;
-          let d = this.datas[0].data;
+          if (this.datas) {
+            await this.test();
 
-          console.log(JSON.stringify(d));
-          console.log(d);
-          this.pipelineOption.xAxis[0].data = [];
-          this.pipelineOption.series[0].data = [];
-          d.forEach(v => {
-            this.pipelineOption.xAxis[0].data.push(v.name);
-            this.pipelineOption.series[0].data.push(v.value);
-          });
-          this.pipelineOption.title.subtext = "按管线分类";
-          this.pipelineOption.title.subtext +=
-            "，共" + d.length + "类" + this.sum(d) + "道";
+            await this.drawLine();
+          }
 
-          this.barData = d;
+          // let chart = this.datas;
+          // let d = this.datas[0].data;
+
+          // console.log(JSON.stringify(d));
+          // console.log(d);
+          // this.pipelineOption.xAxis[0].data = [];
+          // this.pipelineOption.series[0].data = [];
+          // d.forEach(v => {
+          //   this.pipelineOption.xAxis[0].data.push(v.name);
+          //   this.pipelineOption.series[0].data.push(v.value);
+          // });
+          // this.pipelineOption.title.subtext = "按管线分类";
+          // this.pipelineOption.title.subtext +=
+          //   "，共" + d.length + "类" + this.sum(d) + "道";
+
+          // this.barData = d;
 
           // 装数据
           // if (this.datas.length == 6) {
           //   document.getElementById(
           //     "companyDefect"
           //   ).parentNode.parentNode.style.display = "none";
-     
+
           // }
           // if (this.datas.length > 6) {
           //   document.getElementById(
@@ -406,15 +462,122 @@ export default {
 
           // }
           //初始化
-          await this.drawLine();
-          await this.test();
         }
       });
+    },
+    queryCoursePieCharts() {
+      var _this = this;
+       let start = "";
+      if (this.startYear != "") {
+        start = this.startYear.getFullYear() + "";
+      }
+      let end = "";
+      if (this.endYear != "") {
+        end = this.endYear.getFullYear() + "";
+      }
+      this.echartShow = true;
+      this.getRequest(
+        "/data/?startYear=" +
+          start +
+          "&endYear=" +
+          end +
+          "&departmentId=" +
+          this.departmentId +
+          "&type=" +
+          this.type
+      ).then(async resp => {
+        if (resp && resp.status == 200) {
+          // this.startYear = "";
+          // this.endYear = "";
+          this.datas = resp.data.obj;
+        }
+      });
+    },
+    drawLine: function() {
+      // 初始化echarts实例
+      //获取demo元素
+
+      let _this = this;
+      for (let i = 0; i < this.datas.length; i++) {
+        let ds = this.datas[i].data;
+        let chart = _this.histogram;
+        // console.log(chart);
+
+        chart.series[0].data = ds;
+        chart.title.subtext =
+          this.datas[i].title + "，共" + ds.length + "类" + this.sum(ds) + "道";
+        chart.title.text = this.datas[i].detail;
+        chart.xAxis[0].data = [];
+        chart.series[0].data = [];
+        ds.forEach(v => {
+          chart.xAxis[0].data.push(v.name);
+          chart.series[0].data.push(v.value);
+        });
+        let id = "histogram" + i;
+
+        let echartOne = echarts.init(document.getElementById(id));
+        echartOne.setOption(chart);
+        echartOne.resize();
+        chart = "";
+        // console.log(chart);
+        // 给图形添加点击事件
+        let self = this;
+        echartOne.getZr().on("click", params => {
+          const pointInPixel = [params.offsetX, params.offsetY];
+          console.log(pointInPixel);
+          console.log(params);
+
+          if (echartOne.containPixel("grid", pointInPixel)) {
+            let xIndex = echartOne.convertFromPixel({ seriesIndex: 0 }, [
+              params.offsetX,
+              params.offsetY
+            ])[0];
+            console.log(xIndex);
+            let data = ds[xIndex].query;
+            if (self.departmentId != "") {
+              data = data + "&departmentId=" + self.departmentId;
+            }
+
+            self.$router.push({
+              path: "/sys/init",
+              query: { param: data }
+            });
+          }
+        });
+        // echartOne.on("click", function(params) {
+        //   let p = params.data.query;
+        //   if (self.departmentId != "") {
+        //     p = p + "&departmentId=" + self.departmentId;
+        //   }
+
+        //   self.$router.push({
+        //     path: "/sys/init",
+        //     query: { param: p }
+        //   });
+        // });
+      }
+      this.echartShow = !this.echartBtn;
+      console.log(111);
+      console.log(this.echartShow);
+
+      /**
+       * 使用getZr添加图表的整个canvas区域的点击事件，并获取params携带的信息：
+       *    this.echart.getZr().on('click',params=>{})
+       * 获取到鼠标点击位置：
+       *    const pointInPixel= [params.offsetX, params.offsetY];
+       * 使用containPixel API判断点击位置是否在显示图形区域，下面的例子过滤了绘制图形的网格外的点击事件，比如X、Y轴lable、空白位置等的点击事件。
+       *    if (this.echart.containPixel('grid',pointInPixel)) {}
+       * 使用API convertFromPixel获取点击位置对应的x轴数据的索引值，我的实现是借助于索引值的，当然可以获取到其它的信息，详细请查看文档。
+       *    let xIndex=this.echart.convertFromPixel({seriesIndex:0},[params.offsetX, params.offsetY])[0];
+       * 其实在上一步骤中可以获取到丰富的诸如轴线、索引、ID等信息，可以在自己的事件处理代码中方便的使用。
+       * 这种方法仅响应图表区域的响应事件，通过convertFromPixel获取到可能需要的一些信息，可以很好的实现需求，并且不会有其它的性能影响，完美实现了如题的需求。
+       */
     },
 
     test() {
       console.log("数据长度" + this.datas.length);
       let _this = this;
+
       for (let i = 0; i < this.datas.length; i++) {
         let ds = this.datas[i].data;
         let chart = _this.chartComponent;
@@ -426,6 +589,7 @@ export default {
           chart.legend.data.push(element.name);
         });
         let id = "chartComponent" + i;
+        // console.log(document.getElementById(id));
 
         let echartOne = echarts.init(document.getElementById(id));
         echartOne.setOption(chart);
@@ -445,56 +609,6 @@ export default {
           });
         });
       }
-    },
-    drawLine: function() {
-      // 初始化echarts实例
-      //获取demo元素
-
-      let pipelineOption = echarts.init(
-        document.getElementById("pipelineOption")
-      );
-
-      //初始化echarts
-
-      pipelineOption.setOption(this.pipelineOption);
-
-      /**
-       * 使用getZr添加图表的整个canvas区域的点击事件，并获取params携带的信息：
-       *    this.echart.getZr().on('click',params=>{})
-       * 获取到鼠标点击位置：
-       *    const pointInPixel= [params.offsetX, params.offsetY];
-       * 使用containPixel API判断点击位置是否在显示图形区域，下面的例子过滤了绘制图形的网格外的点击事件，比如X、Y轴lable、空白位置等的点击事件。
-       *    if (this.echart.containPixel('grid',pointInPixel)) {}
-       * 使用API convertFromPixel获取点击位置对应的x轴数据的索引值，我的实现是借助于索引值的，当然可以获取到其它的信息，详细请查看文档。
-       *    let xIndex=this.echart.convertFromPixel({seriesIndex:0},[params.offsetX, params.offsetY])[0];
-       * 其实在上一步骤中可以获取到丰富的诸如轴线、索引、ID等信息，可以在自己的事件处理代码中方便的使用。
-       * 这种方法仅响应图表区域的响应事件，通过convertFromPixel获取到可能需要的一些信息，可以很好的实现需求，并且不会有其它的性能影响，完美实现了如题的需求。
-       */
-      let self = this;
-      pipelineOption.getZr().on("click", params => {
-        const pointInPixel = [params.offsetX, params.offsetY];
-        console.log(pointInPixel);
-        console.log(params);
-
-        if (pipelineOption.containPixel("grid", pointInPixel)) {
-          let xIndex = pipelineOption.convertFromPixel({ seriesIndex: 0 }, [
-            params.offsetX,
-            params.offsetY
-          ])[0];
-          console.log(xIndex);
-          let data = self.barData[xIndex].query;
-          // let s = data.split("=")[1];
-          // let p = params.data.query;
-          if (self.departmentId != "") {
-            data = data + "&departmentId=" + self.departmentId;
-          }
-
-          self.$router.push({
-            path: "/sys/init",
-            query: { param: data }
-          });
-        }
-      });
     }
   }
 };
