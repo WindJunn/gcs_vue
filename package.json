@@ -17,7 +17,7 @@
     "element-ui": "^2.12.0",
     "font-awesome": "^4.7.0",
     "mavon-editor": "^2.4.13",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.13.1",
     "videojs-contrib-hls": "^5.14.1",
     "videojs-contrib-hls.js": "^3.2.0",
     "videojs-flash": "^2.1.0",
